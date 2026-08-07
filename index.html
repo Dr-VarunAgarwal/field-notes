@@ -49,6 +49,16 @@
     padding:18px 18px 10px;
     border-bottom:1px solid var(--line);
     backdrop-filter: blur(6px);
+    position:sticky;
+  }
+  .header-inner{position:relative;}
+  .header-mark{
+    position:absolute; top:-4px; right:0;
+    width:38px; height:38px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line);
+    font-family:'Anton', sans-serif; font-size:13px; letter-spacing:0.01em;
+    color:var(--chalk-dim);
   }
   .eyebrow{
     font-size:11px; letter-spacing:0.25em; color:var(--chalk-dim);
@@ -101,29 +111,43 @@
   .count b{color:var(--chalk);}
 
   /* gallery */
-  main{padding:6px 14px 80px; max-width:1100px; margin:0 auto;}
+  main{padding:6px 14px 80px; max-width:1150px; margin:0 auto;}
   .wall{
     display:grid;
     grid-template-columns:1fr;
     gap:26px;
     padding-top:18px;
   }
+  /* desktop: a loose scattered-table layout instead of a strict grid —
+     masonry columns so heights vary naturally, plus per-card rotation/
+     offset so nothing lines up too neatly. Fun mode exaggerates this;
+     simple mode (see body.mode-simple below) flattens it back down. */
   @media(min-width:640px){
-    .wall{grid-template-columns:1fr 1fr; gap:34px 24px;}
+    .wall{
+      display:block; column-count:2; column-gap:30px; padding-top:28px;
+    }
+    .card{ break-inside:avoid; width:100%; margin-bottom:34px; }
   }
   @media(min-width:980px){
-    .wall{grid-template-columns:1fr 1fr 1fr;}
+    .wall{ column-count:3; }
   }
 
   .card{
-    opacity:0; transform:translateY(28px) rotate(var(--r,0deg));
-    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1);
+    opacity:0; transform:translateY(calc(28px + var(--y,0px))) rotate(var(--r,0deg));
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease;
     cursor:pointer;
   }
-  .card.in{opacity:1; transform:translateY(0) rotate(var(--r,0deg));}
-  .card:nth-child(3n+1){--r:-1.1deg;}
-  .card:nth-child(3n+2){--r:0.9deg;}
-  .card:nth-child(3n){--r:-0.4deg;}
+  .card.in{opacity:1; transform:translateY(var(--y,0px)) rotate(var(--r,0deg));}
+  .card:nth-child(6n+1){--r:-2.2deg; --y:6px;}
+  .card:nth-child(6n+2){--r:1.6deg;  --y:-10px;}
+  .card:nth-child(6n+3){--r:-0.8deg; --y:14px;}
+  .card:nth-child(6n+4){--r:2.4deg;  --y:-4px;}
+  .card:nth-child(6n+5){--r:-1.5deg; --y:8px;}
+  .card:nth-child(6n+6){--r:0.9deg;  --y:-12px;}
+  @media(min-width:640px){
+    .card:hover{ z-index:5; transform:translateY(calc(var(--y,0px) - 6px)) rotate(0deg) scale(1.025); }
+    .card:hover .frame{ box-shadow:0 24px 50px -18px rgba(0,0,0,0.8); }
+  }
 
   .frame{
     position:relative;
@@ -131,8 +155,48 @@
     border:1px solid var(--line);
     padding:10px 10px 14px;
     box-shadow:0 18px 40px -20px rgba(0,0,0,0.7);
+    transition:border-color .3s ease, box-shadow .3s ease;
   }
   .card:active .frame{transform:scale(0.98); transition:transform .1s;}
+
+  /* colour-sampled frame — border/tape colour taken from the photo's own
+     dominant colour, computed in the browser (see extractAvgColor). Only
+     applied to items flagged colorFrame:true in DATA. */
+  .frame.color-framed{
+    border-color: var(--frame-color, var(--line));
+    box-shadow:0 18px 40px -20px rgba(0,0,0,0.7), 0 0 0 1px var(--frame-color, transparent);
+  }
+  .frame.color-framed .tape{ background: var(--frame-color, var(--tape)); opacity:0.85; }
+
+  /* fun / simple mode toggle */
+  .mode-toggle{
+    display:inline-flex; border:1px solid var(--line); border-radius:100px;
+    padding:3px; gap:2px; margin-top:14px;
+  }
+  .mode-btn{
+    font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
+    text-transform:uppercase; padding:6px 14px; border-radius:100px; border:none;
+    background:transparent; color:var(--chalk-dim); cursor:pointer;
+  }
+  .mode-btn.active{background:var(--acid); color:#141400; font-weight:700;}
+
+  body.mode-simple .card{ --r:0deg !important; --y:0px !important; }
+  body.mode-simple .wall{
+    display:grid !important; column-count:unset !important;
+    grid-template-columns:1fr; gap:26px;
+  }
+  @media(min-width:640px){
+    body.mode-simple .wall{grid-template-columns:1fr 1fr; gap:34px 24px;}
+  }
+  @media(min-width:980px){
+    body.mode-simple .wall{grid-template-columns:1fr 1fr 1fr;}
+  }
+  body.mode-simple .frame.color-framed{
+    border-color:var(--line);
+    box-shadow:0 18px 40px -20px rgba(0,0,0,0.7);
+  }
+  body.mode-simple .frame.color-framed .tape{ background:rgba(216,210,189,0.85); opacity:1; }
+  body.mode-simple .card:hover{ transform:none; }
 
   .tape{
     position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-2deg);
@@ -167,25 +231,17 @@
     content:""; position:absolute; inset:0; pointer-events:none;
     background:linear-gradient(160deg, rgba(255,255,255,0.03), transparent 40%);
   }
-  /* watermark — pure CSS, laid over every photo thumb, never touches the
-     actual image file. Repeats diagonally so cropping/screenshotting a
-     section still catches at least one mark. Edit --wm-text below to change it. */
-  .thumb.has-photo::before{
-    content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
-    background-image: repeating-linear-gradient(
-      -28deg,
-      transparent 0px, transparent 90px,
-      rgba(240,237,226,0.16) 90px, rgba(240,237,226,0.16) 91px,
-      transparent 91px, transparent 220px
-    );
-    opacity:0.5;
-  }
-  .wm-label{
+  /* signature mark — small monogram in the corner of every photo, pure CSS/
+     text, never touches the image file itself. Edit MONOGRAM_TEXT below. */
+  .wm-mark{
     position:absolute; z-index:3; pointer-events:none;
-    font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.12em;
-    color:rgba(240,237,226,0.38); text-transform:uppercase;
-    bottom:9px; right:11px;
-    text-shadow:0 1px 2px rgba(0,0,0,0.6);
+    bottom:10px; right:10px;
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(19,18,17,0.5); backdrop-filter:blur(2px);
+    border:1px solid rgba(240,237,226,0.25);
+    font-family:'Anton', sans-serif; font-size:11px; letter-spacing:0.01em;
+    color:rgba(240,237,226,0.8);
   }
   .video-badge{
     position:absolute; top:8px; right:8px;
@@ -203,8 +259,9 @@
   .meta{padding-top:10px;}
   .meta .loc{
     font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--chalk-dim);
-    display:flex; align-items:center; gap:5px;
+    display:flex; align-items:center; gap:5px; justify-content:space-between;
   }
+  .meta .date{color:rgba(240,237,226,0.3); font-style:normal;}
   .meta .title{
     font-family:'Anton', sans-serif; font-weight:400; text-transform:uppercase;
     font-size:19px; letter-spacing:0.01em; margin:5px 0 4px; line-height:1.05;
@@ -245,7 +302,8 @@
     background:none; border:1px solid var(--line); color:var(--chalk-dim);
     width:30px; height:30px; border-radius:100px; font-size:14px; cursor:pointer;
   }
-  .d-loc{font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--chalk-dim);}
+  .d-loc{font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--chalk-dim); display:flex; justify-content:space-between; align-items:center;}
+  .d-loc .date{color:rgba(240,237,226,0.35); font-style:normal; letter-spacing:0.06em;}
   .d-title{font-family:'Anton',sans-serif; font-size:26px; text-transform:uppercase; margin:6px 0 2px; line-height:1;}
   .d-artist{color:var(--acid); font-size:12px; margin-bottom:14px;}
   .d-notes{font-size:13.5px; line-height:1.65; color:var(--chalk); white-space:pre-line;}
@@ -286,12 +344,20 @@
 <body>
 
 <header>
-  <div class="eyebrow"><a href="#" onclick="return false;">← field notes</a> / london</div>
-  <h1>STREET<br><span>ART</span> — LDN</h1>
-  <div class="sub">Tags, stencils, wheatpaste and whatever else caught my eye on foot. Some names keep turning up in different postcodes — tap a piece to see where else they've been.</div>
+  <div class="header-inner">
+    <span class="header-mark">VA</span>
+    <div class="eyebrow"><a href="#" onclick="return false;">← field notes</a> / london</div>
+    <h1>STREET<br><span>ART</span> — LDN</h1>
+    <div class="sub">Tags, stencils, wheatpaste and whatever else caught my eye on foot. Some names keep turning up in different postcodes — tap a piece to see where else they've been.</div>
 
-  <div class="filters" id="filters"></div>
-  <div class="count" id="count"></div>
+    <div class="mode-toggle" id="modeToggle">
+      <button class="mode-btn" data-mode="fun">Fun</button>
+      <button class="mode-btn" data-mode="simple">Simple</button>
+    </div>
+
+    <div class="filters" id="filters"></div>
+    <div class="count" id="count"></div>
+  </div>
 </header>
 
 <main>
@@ -349,6 +415,15 @@
                piece order:0 to bring it to the very front. Use
                decimals (1.5, 2.5...) to slot something between two
                existing items without renumbering everything else.
+   colorFrame— optional true/false. When true, the frame border/tape
+               takes its colour from that photo's own dominant colour
+               (sampled automatically in the browser). Use sparingly —
+               it's meant to highlight a handful of vivid pieces, not
+               everything.
+   date      — optional ISO date/time string ('2018-06-14T12:39:55').
+               Pulled from the photo's own EXIF capture time when it's
+               available — shown on the card and in the drawer. Leave
+               it out if a photo has no EXIF date; nothing breaks.
    ============================================================ */
 const CATEGORIES = [
   {id:'street-art', label:'Street Art'},
@@ -359,21 +434,20 @@ const CATEGORIES = [
 
 const GLYPHS = {'street-art':'🎨','political':'✊','fun':'🌀','random':'🚶'};
 
-// Watermark shown over every photo — pure CSS/text, never edits the actual
-// image file. Change this string to whatever you want it to say.
-const WATERMARK_TEXT = '@varunagarwal';
+// Small corner monogram shown on every photo — pure CSS/text, never edits
+// the actual image file. Change to your initials, a symbol, whatever.
+const MONOGRAM_TEXT = 'VA';
 
 const DATA = [
-  {id:1, img:'img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', order:1},
-  {id:2, img:'img/08-dank-cyberpunk-close.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Closer angle on the same wall as the wide shot — the carved WELCOME sign above the geisha's face. Same piece, same visit.", tags:['mural','black & white','detail'], ratio:'1400/1050', order:2},
-  {id:3, img:'img/01-bird-collage.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', order:3},
-  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', order:4},
-  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', order:5},
-  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', order:6},
-  {id:7, img:'img/10-hnrx-snail.jpg', type:'photo', category:'random', artist:'HNRX', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Small red snail relief tile on rusted metal, with a blue HNRX tag plate above — easy to miss unless you're looking down.", tags:['tag','found object','small scale'], ratio:'1050/1400', order:7},
-  {id:8, img:'img/02-iron-finial.jpg', type:'photo', category:'random', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Not street art — a decorative wrought-iron finial on a bollard against red brick. Kept it in the set for the handmade feel.", tags:['architecture','detail'], ratio:'1050/1400', order:8},
-  {id:9, img:'img/06-bad-dog-cushions.jpg', type:'photo', category:'fun', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A shop/stall display — dachshund "mugshot" cushion cover, police lineup backdrop, "BAD DOG" sign. Not street art, just funny.', tags:['shop find','dog'], ratio:'1050/1400', order:9},
-  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide mural — a face in oversized yellow sunglasses reflecting the photographer, curly hair, red hibiscus flowers, bold graffiti lettering. No signature spotted.", tags:['mural','portrait','lettering'], ratio:'1400/483', order:10},
+  {id:1, img:'img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', date:'2018-06-14T12:39:55', order:1},
+  {id:3, img:'img/01-bird-collage.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', date:'2018-06-14T14:03:55', order:3},
+  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', date:'2018-06-14T12:33:27', order:4, colorFrame:true},
+  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', date:'2018-06-14T13:58:44', order:5, colorFrame:true},
+  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', date:'2018-06-14T12:41:35', order:6, colorFrame:true},
+  {id:7, img:'img/10-hnrx-snail.jpg', type:'photo', category:'random', artist:'HNRX', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Small red snail relief tile on rusted metal, with a blue HNRX tag plate above — easy to miss unless you're looking down.", tags:['tag','found object','small scale'], ratio:'1050/1400', date:'2018-06-14T13:45:32', order:7},
+  {id:8, img:'img/02-iron-finial.jpg', type:'photo', category:'random', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Not street art — a decorative wrought-iron finial on a bollard against red brick. Kept it in the set for the handmade feel.", tags:['architecture','detail'], ratio:'1050/1400', date:'2018-06-14T13:40:31', order:8},
+  {id:9, img:'img/06-bad-dog-cushions.jpg', type:'photo', category:'fun', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A shop/stall display — dachshund "mugshot" cushion cover, police lineup backdrop, "BAD DOG" sign. Not street art, just funny.', tags:['shop find','dog'], ratio:'1050/1400', date:'2018-06-14T13:04:19', order:9},
+  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide mural — a face in oversized yellow sunglasses reflecting the photographer, curly hair, red hibiscus flowers, bold graffiti lettering. No signature spotted.", tags:['mural','portrait','lettering'], ratio:'1400/483', date:'2018-06-14T12:41:01', order:10, colorFrame:true},
 ];
 
 /* ============================================================
@@ -384,6 +458,13 @@ let activeCat = 'all';
 function relatedFor(item){
   if(!item.artist) return [];
   return DATA.filter(d => d.artist === item.artist && d.id !== item.id);
+}
+
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
 }
 
 function renderFilters(){
@@ -406,7 +487,7 @@ function thumbHTML(item, opts){
     return `
       <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
         ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
-        <span class="wm-label">${WATERMARK_TEXT}</span>
+        <span class="wm-mark">${MONOGRAM_TEXT}</span>
       </div>
     `;
   }
@@ -436,9 +517,10 @@ function renderWall(){
 
   wall.innerHTML = items.map(item => {
     const isRepeat = relatedFor(item).length > 0;
+    const frameClass = item.colorFrame ? ' color-framed' : '';
     return `
     <div class="card" data-id="${item.id}">
-      <div class="frame">
+      <div class="frame${frameClass}" ${item.colorFrame ? `data-color-frame="1" data-img="${item.img}"` : ''}>
         <div class="tape"></div>
         ${isRepeat ? `<div class="repeat-badge" style="position:relative;top:0;left:0;display:none;"></div>` : ''}
         <div style="position:relative;">
@@ -446,7 +528,7 @@ function renderWall(){
           ${thumbHTML(item)}
         </div>
         <div class="meta">
-          <div class="loc">📍 ${item.location}</div>
+          <div class="loc"><span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}</div>
           <div class="title">${item.title ? item.title : '— untitled —'}</div>
           <div class="tags">
             ${item.artist ? `<span class="tag t-artist">${item.artist}</span>` : ''}
@@ -461,6 +543,8 @@ function renderWall(){
     el.onclick = () => openDrawer(parseInt(el.dataset.id));
   });
 
+  applyColorFrames();
+
   requestAnimationFrame(()=>{
     const obs = new IntersectionObserver((entries)=>{
       entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target);} });
@@ -469,11 +553,51 @@ function renderWall(){
   });
 }
 
+/* ============================================================
+   Colour-sampled frames — reads each flagged photo's own pixels in the
+   browser (never uploads anywhere) and uses the average colour as that
+   card's frame/tape colour. Images are same-origin, so no CORS issues.
+   ============================================================ */
+function extractAvgColor(url, callback){
+  const img = new Image();
+  img.onload = () => {
+    try{
+      const size = 24;
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      let r=0,g=0,b=0,n=0;
+      for(let i=0; i<data.length; i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
+      r=Math.round(r/n); g=Math.round(g/n); b=Math.round(b/n);
+      // push toward more saturated/vivid so muted averages don't look flat
+      const max = Math.max(r,g,b), min = Math.min(r,g,b);
+      const boost = max===min ? 1 : Math.min(1.4, 1 + (60/(max-min)));
+      const mid = (max+min)/2;
+      const adj = v => Math.max(0, Math.min(255, Math.round(mid + (v-mid)*boost)));
+      callback(`rgb(${adj(r)},${adj(g)},${adj(b)})`);
+    } catch(e){ /* decoding issue — just skip, default frame colour stays */ }
+  };
+  img.src = url;
+}
+
+function applyColorFrames(){
+  document.querySelectorAll('[data-color-frame="1"]').forEach(frameEl => {
+    const url = frameEl.dataset.img;
+    if(!url || frameEl.dataset.colorApplied) return;
+    frameEl.dataset.colorApplied = '1';
+    extractAvgColor(url, (color) => {
+      frameEl.style.setProperty('--frame-color', color);
+    });
+  });
+}
+
 function openDrawer(id){
   const item = DATA.find(d=>d.id===id);
   if(!item) return;
   document.getElementById('dThumb').innerHTML = thumbHTML(item, {size:46});
-  document.getElementById('dLoc').textContent = '📍 ' + item.location;
+  document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
   document.getElementById('dTitle').textContent = item.title ? item.title : '— untitled —';
   document.getElementById('dArtist').textContent = item.artist ? '— ' + item.artist : '';
   document.getElementById('dArtist').style.display = item.artist ? 'block':'none';
@@ -529,6 +653,25 @@ function closeDrawer(){
 
 document.getElementById('scrim').onclick = closeDrawer;
 document.getElementById('drawerClose').onclick = closeDrawer;
+
+/* ============================================================
+   Fun / Simple mode — Fun gives the scattered table layout, rotation,
+   and colour frames. Simple flattens it to a clean grid. Remembered
+   per-visitor via localStorage.
+   ============================================================ */
+function setMode(mode){
+  document.body.classList.toggle('mode-simple', mode === 'simple');
+  document.querySelectorAll('.mode-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.mode === mode);
+  });
+  try{ localStorage.setItem('wanderMode', mode); }catch(e){}
+}
+document.querySelectorAll('.mode-btn').forEach(b=>{
+  b.onclick = () => setMode(b.dataset.mode);
+});
+let savedMode = 'fun';
+try{ savedMode = localStorage.getItem('wanderMode') || 'fun'; }catch(e){}
+setMode(savedMode);
 
 renderFilters();
 renderWall();
