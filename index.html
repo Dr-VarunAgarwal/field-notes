@@ -4,6 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>LONDON — Field Notes</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -141,10 +145,17 @@
     background:var(--concrete-2);
     position:relative; overflow:hidden;
     display:flex; align-items:center; justify-content:center;
+    -webkit-user-select:none; user-select:none;
+    -webkit-user-drag:none;
   }
-  .thumb.has-photo{ display:block; }
-  .thumb img{
-    display:block; width:100%; height:auto; max-height:70vh;
+  .thumb.has-photo{
+    display:block;
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .thumb.has-photo.crop{
+    background-size:cover;
   }
   .thumb .glyph{font-size:38px; opacity:0.85;}
   .thumb .ph-note{
@@ -153,8 +164,28 @@
     text-transform:uppercase;
   }
   .thumb::after{
-    content:""; position:absolute; inset:0;
+    content:""; position:absolute; inset:0; pointer-events:none;
     background:linear-gradient(160deg, rgba(255,255,255,0.03), transparent 40%);
+  }
+  /* watermark — pure CSS, laid over every photo thumb, never touches the
+     actual image file. Repeats diagonally so cropping/screenshotting a
+     section still catches at least one mark. Edit --wm-text below to change it. */
+  .thumb.has-photo::before{
+    content:""; position:absolute; inset:0; pointer-events:none; z-index:2;
+    background-image: repeating-linear-gradient(
+      -28deg,
+      transparent 0px, transparent 90px,
+      rgba(240,237,226,0.16) 90px, rgba(240,237,226,0.16) 91px,
+      transparent 91px, transparent 220px
+    );
+    opacity:0.5;
+  }
+  .wm-label{
+    position:absolute; z-index:3; pointer-events:none;
+    font-family:'Space Mono', monospace; font-size:10px; letter-spacing:0.12em;
+    color:rgba(240,237,226,0.38); text-transform:uppercase;
+    bottom:9px; right:11px;
+    text-shadow:0 1px 2px rgba(0,0,0,0.6);
   }
   .video-badge{
     position:absolute; top:8px; right:8px;
@@ -218,6 +249,18 @@
   .d-title{font-family:'Anton',sans-serif; font-size:26px; text-transform:uppercase; margin:6px 0 2px; line-height:1;}
   .d-artist{color:var(--acid); font-size:12px; margin-bottom:14px;}
   .d-notes{font-size:13.5px; line-height:1.65; color:var(--chalk); white-space:pre-line;}
+  .d-notes.notes-empty{color:var(--chalk-dim); font-style:italic;}
+  .d-idea{
+    margin-top:14px; padding:12px 13px;
+    background:rgba(231,255,60,0.05);
+    border:1px dashed rgba(231,255,60,0.25);
+    border-radius:4px;
+  }
+  .d-idea .lbl{
+    font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--acid); margin-bottom:5px; display:block;
+  }
+  .d-idea .txt{font-size:12.5px; line-height:1.55; color:var(--chalk-dim);}
   .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
   .d-related{margin-top:18px; padding-top:16px; border-top:1px dashed var(--line);}
   .d-related h4{
@@ -269,6 +312,10 @@
   <div class="d-title" id="dTitle"></div>
   <div class="d-artist" id="dArtist"></div>
   <div class="d-notes" id="dNotes"></div>
+  <div class="d-idea" id="dIdea" style="display:none;">
+    <span class="lbl">Note from Claude</span>
+    <div class="txt" id="dIdeaText"></div>
+  </div>
   <div class="d-tags" id="dTags"></div>
   <div class="d-related" id="dRelatedWrap" style="display:none;">
     <h4 id="dRelatedLabel">More from this artist</h4>
@@ -278,11 +325,30 @@
 
 <script>
 /* ============================================================
-   DATA — replace `img` with a real photo/video URL to go live.
-   type: "photo" | "video"
-   category: one of the CATEGORIES below
-   artist: optional — pieces sharing the same artist string get
-           linked together automatically under "More from this artist"
+   DATA — one object per photo/video.
+
+   img       — file path in img/
+   type      — "photo" | "video"
+   category  — one of the CATEGORIES below
+   artist    — optional; pieces sharing the same artist string get
+               auto-linked under "More from this artist"
+   location  — plain text
+   notes     — YOUR words only. Leave "" and it'll show a placeholder
+               until you write something. Claude never edits this.
+   claudeIdea— optional. A guess/suggestion about what the piece is —
+               shown separately in the drawer, clearly labelled "Note
+               from Claude", never mixed into your notes. Delete the
+               line, or clear it to "", once you don't need it anymore.
+   tags      — short labels, freely organised
+   ratio     — "width/height" of the actual image file, used so the
+               photo displays at its true proportions (no crop, no
+               stretch). Already set correctly for these 10 — only
+               matters if you add new photos by hand.
+   order     — controls display sequence, lowest first. Change this
+               number to reorder or highlight something — e.g. give a
+               piece order:0 to bring it to the very front. Use
+               decimals (1.5, 2.5...) to slot something between two
+               existing items without renumbering everything else.
    ============================================================ */
 const CATEGORIES = [
   {id:'street-art', label:'Street Art'},
@@ -293,17 +359,21 @@ const CATEGORIES = [
 
 const GLYPHS = {'street-art':'🎨','political':'✊','fun':'🌀','random':'🚶'};
 
+// Watermark shown over every photo — pure CSS/text, never edits the actual
+// image file. Change this string to whatever you want it to say.
+const WATERMARK_TEXT = '@varunagarwal';
+
 const DATA = [
-  {id:1, img:'img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'Cyberpunk geisha, wide wall', location:'Shoreditch, London', notes:"Full wall — black-and-white cyberpunk street scene, geisha on the left, robot samurai and neon Japanese signage stretching down the wall. Signed dankitchener.com.", tags:['mural','black & white','cyberpunk']},
-  {id:2, img:'img/08-dank-cyberpunk-close.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'Same mural, close on the "Welcome" sign', location:'Shoreditch, London', notes:"Closer shot of the same wall — the carved WELCOME sign above the geisha's face. Same visit, same piece as the wide shot.", tags:['mural','black & white','detail']},
-  {id:3, img:'img/01-bird-collage.jpg', type:'photo', category:'street-art', artist:null, title:'Inked bird over torn book page', location:'Shoreditch, London', notes:"Layered paste-up wall — a bold black-ink bird drawn straight onto a torn page from an old book, sitting on top of collaged posters and other pieces.", tags:['paste-up','collage','ink']},
-  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'"NOPE" — Buddha with a peace sign', location:'Shoreditch, London', notes:'Stencil on a blue-painted post: a peace-sign Buddha, "NOPE" tagged above, and "PEACE COMES FROM WITHIN" stencilled along the arm. Signed RIP.', tags:['stencil','peace sign']},
-  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'Elephant on a roller shutter', location:'Shoreditch, London', notes:"Bright pink/yellow/teal elephant painted across a shop shutter — one of the pieces that only exists when the shop's closed.", tags:['shutter art','colour']},
-  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'Split face / brick breaking through', location:'Shoreditch, London', notes:"A painted face half-dissolving into exposed brick, with a robotic blue hand and a pink tongue-out creature crowding in from the side. Busy, layered wall.", tags:['mural','surreal']},
-  {id:7, img:'img/10-hnrx-snail.jpg', type:'photo', category:'random', artist:'HNRX', title:'Snail tile + tag on rusted metal', location:'Shoreditch, London', notes:"Small red snail relief tile mounted on a rusting metal support, with a blue HNRX tag plate above it. Easy to walk past — only noticed it looking down.", tags:['tag','found object','small scale']},
-  {id:8, img:'img/02-iron-finial.jpg', type:'photo', category:'random', artist:null, title:'Wrought-iron finial on a bollard', location:'Shoreditch, London', notes:"Not street art exactly — a decorative ironwork loop capping a black bollard/post against a red-brick building. Kept it because it had the same handmade feel as the pieces around it.", tags:['architecture','detail']},
-  {id:9, img:'img/06-bad-dog-cushions.jpg', type:'photo', category:'fun', artist:null, title:'"Bad Dog" mugshot cushions', location:'Shoreditch, London', notes:'Stall or shop display — a dachshund "mugshot" cushion cover, police lineup backdrop, holding a BAD DOG sign. Not street art, just too good not to keep in the set.', tags:['shop find','dog']},
-  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'Face in oversized sunglasses', location:'Shoreditch, London', notes:"Wide mural — a face in big yellow-framed sunglasses reflecting the photographer, curly blonde hair, red hibiscus flowers, bold graffiti lettering along the wall.", tags:['mural','portrait','lettering']},
+  {id:1, img:'img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', order:1},
+  {id:2, img:'img/08-dank-cyberpunk-close.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Closer angle on the same wall as the wide shot — the carved WELCOME sign above the geisha's face. Same piece, same visit.", tags:['mural','black & white','detail'], ratio:'1400/1050', order:2},
+  {id:3, img:'img/01-bird-collage.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', order:3},
+  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', order:4},
+  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', order:5},
+  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', order:6},
+  {id:7, img:'img/10-hnrx-snail.jpg', type:'photo', category:'random', artist:'HNRX', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Small red snail relief tile on rusted metal, with a blue HNRX tag plate above — easy to miss unless you're looking down.", tags:['tag','found object','small scale'], ratio:'1050/1400', order:7},
+  {id:8, img:'img/02-iron-finial.jpg', type:'photo', category:'random', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Not street art — a decorative wrought-iron finial on a bollard against red brick. Kept it in the set for the handmade feel.", tags:['architecture','detail'], ratio:'1050/1400', order:8},
+  {id:9, img:'img/06-bad-dog-cushions.jpg', type:'photo', category:'fun', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A shop/stall display — dachshund "mugshot" cushion cover, police lineup backdrop, "BAD DOG" sign. Not street art, just funny.', tags:['shop find','dog'], ratio:'1050/1400', order:9},
+  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide mural — a face in oversized yellow sunglasses reflecting the photographer, curly hair, red hibiscus flowers, bold graffiti lettering. No signature spotted.", tags:['mural','portrait','lettering'], ratio:'1400/483', order:10},
 ];
 
 /* ============================================================
@@ -327,20 +397,23 @@ function renderFilters(){
   });
 }
 
-function thumbHTML(item, size){
+function thumbHTML(item, opts){
+  opts = opts || {};
   const g = GLYPHS[item.category] || '📍';
   if(item.img){
+    const cropClass = opts.crop ? ' crop' : '';
+    const ratioStyle = item.ratio ? `aspect-ratio:${item.ratio};` : '';
     return `
-      <div class="thumb has-photo">
+      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
         ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
-        <img src="${item.img}" alt="${item.title}" draggable="false" oncontextmenu="return false;" style="-webkit-user-drag:none; -webkit-touch-callout:none; user-select:none; pointer-events:none;">
+        <span class="wm-label">${WATERMARK_TEXT}</span>
       </div>
     `;
   }
   return `
     <div class="thumb">
       ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
-      <span class="glyph" style="font-size:${size||38}px">${g}</span>
+      <span class="glyph" style="font-size:${opts.size||38}px">${g}</span>
       <div class="ph-note">placeholder — add photo url</div>
     </div>
   `;
@@ -350,7 +423,9 @@ function renderWall(){
   const wall = document.getElementById('wall');
   const empty = document.getElementById('empty');
   const count = document.getElementById('count');
-  const items = DATA.filter(d => activeCat==='all' || d.category===activeCat);
+  const items = DATA
+    .filter(d => activeCat==='all' || d.category===activeCat)
+    .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
 
   count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCat!=='all' ? ' · ' + CATEGORIES.find(c=>c.id===activeCat).label : ''}`;
 
@@ -372,7 +447,7 @@ function renderWall(){
         </div>
         <div class="meta">
           <div class="loc">📍 ${item.location}</div>
-          <div class="title">${item.title}</div>
+          <div class="title">${item.title ? item.title : '— untitled —'}</div>
           <div class="tags">
             ${item.artist ? `<span class="tag t-artist">${item.artist}</span>` : ''}
             <span class="tag t-${item.category}">${CATEGORIES.find(c=>c.id===item.category).label}</span>
@@ -397,12 +472,29 @@ function renderWall(){
 function openDrawer(id){
   const item = DATA.find(d=>d.id===id);
   if(!item) return;
-  document.getElementById('dThumb').innerHTML = thumbHTML(item, 46);
+  document.getElementById('dThumb').innerHTML = thumbHTML(item, {size:46});
   document.getElementById('dLoc').textContent = '📍 ' + item.location;
-  document.getElementById('dTitle').textContent = item.title;
+  document.getElementById('dTitle').textContent = item.title ? item.title : '— untitled —';
   document.getElementById('dArtist').textContent = item.artist ? '— ' + item.artist : '';
   document.getElementById('dArtist').style.display = item.artist ? 'block':'none';
-  document.getElementById('dNotes').textContent = item.notes;
+
+  const notesEl = document.getElementById('dNotes');
+  if(item.notes && item.notes.trim()){
+    notesEl.textContent = item.notes;
+    notesEl.classList.remove('notes-empty');
+  } else {
+    notesEl.textContent = '— add your notes —';
+    notesEl.classList.add('notes-empty');
+  }
+
+  const ideaEl = document.getElementById('dIdea');
+  if(item.claudeIdea && item.claudeIdea.trim()){
+    ideaEl.style.display = 'block';
+    document.getElementById('dIdeaText').textContent = item.claudeIdea;
+  } else {
+    ideaEl.style.display = 'none';
+  }
+
   document.getElementById('dTags').innerHTML = [
     `<span class="tag t-${item.category}">${CATEGORIES.find(c=>c.id===item.category).label}</span>`,
     ...item.tags.map(t=>`<span class="tag">${t}</span>`)
@@ -415,7 +507,7 @@ function openDrawer(id){
     document.getElementById('dRelatedLabel').textContent = `More from ${item.artist} (${rel.length})`;
     document.getElementById('dRelated').innerHTML = rel.map(r=>`
       <div class="rel-item" data-id="${r.id}">
-        ${thumbHTML(r, 20)}
+        ${thumbHTML(r, {size:20, crop:true})}
         <div class="rl">${r.location}</div>
       </div>
     `).join('');
@@ -442,12 +534,15 @@ renderFilters();
 renderWall();
 
 // basic download deterrents (not foolproof — a determined viewer can always
-// screenshot — but this blocks the common right-click / long-press / drag save)
+// screenshot, or pull the file from dev tools — but this removes the common
+// right-click-image / long-press-save / drag-out paths). Photos render as
+// CSS backgrounds rather than <img> tags specifically so browsers don't show
+// their native "save/copy image" hover affordance at all.
 document.addEventListener('contextmenu', (e) => {
-  if(e.target.tagName === 'IMG') e.preventDefault();
+  if(e.target.closest('.thumb')) e.preventDefault();
 });
 document.addEventListener('dragstart', (e) => {
-  if(e.target.tagName === 'IMG') e.preventDefault();
+  if(e.target.closest('.thumb')) e.preventDefault();
 });
 
 </script>
