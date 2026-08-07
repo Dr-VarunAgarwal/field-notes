@@ -46,29 +46,43 @@
   header{
     position:sticky; top:0; z-index:50;
     background:linear-gradient(180deg, var(--asphalt) 70%, transparent);
-    padding:18px 18px 10px;
+    padding:16px 18px 10px;
     border-bottom:1px solid var(--line);
     backdrop-filter: blur(6px);
-    position:sticky;
+    transition:padding .3s ease;
   }
-  .header-inner{position:relative;}
+  .header-top{
+    position:absolute; top:14px; right:18px; z-index:2;
+    display:flex; align-items:center; gap:8px;
+  }
   .header-mark{
-    position:absolute; top:-4px; right:0;
-    width:38px; height:38px; border-radius:50%;
+    width:46px; height:46px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
     border:1px solid var(--line);
-    font-family:'Anton', sans-serif; font-size:13px; letter-spacing:0.01em;
-    color:var(--chalk-dim);
+    font-family:'Anton', sans-serif; font-size:17px; letter-spacing:0.01em;
+    color:var(--chalk);
+    flex:0 0 auto;
+    transition:width .3s ease, height .3s ease, font-size .3s ease;
   }
+  .mode-icon-btn{
+    width:34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); background:var(--concrete);
+    color:var(--chalk-dim); font-size:15px; cursor:pointer;
+    flex:0 0 auto; transition:color .2s ease, border-color .2s ease;
+  }
+  .mode-icon-btn.is-fun{ color:var(--acid); border-color:rgba(231,255,60,0.35); }
+  .header-inner{position:relative; padding-right:60px;}
   .eyebrow{
     font-size:11px; letter-spacing:0.25em; color:var(--chalk-dim);
     text-transform:uppercase; margin-bottom:4px;
+    transition:opacity .3s ease;
   }
   .eyebrow a{color:var(--chalk-dim); text-decoration:none; border-bottom:1px dotted var(--chalk-dim);}
   h1{
     font-family:'Anton', sans-serif;
     font-weight:400;
-    font-size:clamp(34px, 9vw, 56px);
+    font-size:clamp(28px, 6vw, 40px);
     letter-spacing:0.01em;
     margin:0;
     line-height:0.9;
@@ -76,11 +90,31 @@
     text-transform:uppercase;
     position:relative;
     display:inline-block;
+    transition:font-size .3s ease;
   }
   h1 span{color:var(--acid);}
   .sub{
     color:var(--chalk-dim); font-size:12.5px; margin-top:8px; max-width:60ch; line-height:1.5;
+    transition:opacity .25s ease, max-height .3s ease, margin .3s ease;
   }
+
+  /* desktop: put the title on the left and the description on the right,
+     side by side, instead of stacking — keeps the header from eating
+     half the viewport on wide screens. */
+  @media(min-width:860px){
+    .header-inner{ display:flex; align-items:flex-end; justify-content:space-between; gap:40px; }
+    .title-block{ flex:0 0 auto; }
+    .sub{ margin-top:0; max-width:320px; text-align:right; padding-bottom:4px; }
+  }
+
+  /* collapsed state — triggered by scroll (see JS), shrinks the header
+     down to a compact bar so it doesn't keep eating screen space,
+     especially useful on mobile. */
+  header.collapsed{ padding-top:10px; padding-bottom:6px; }
+  header.collapsed h1{ font-size:20px; }
+  header.collapsed .eyebrow{ opacity:0; height:0; margin:0; overflow:hidden; }
+  header.collapsed .sub{ opacity:0; max-height:0; margin:0; overflow:hidden; }
+  header.collapsed .header-mark{ width:34px; height:34px; font-size:13px; }
 
   /* filter bar */
   .filters{
@@ -168,18 +202,7 @@
   }
   .frame.color-framed .tape{ background: var(--frame-color, var(--tape)); opacity:0.85; }
 
-  /* fun / simple mode toggle */
-  .mode-toggle{
-    display:inline-flex; border:1px solid var(--line); border-radius:100px;
-    padding:3px; gap:2px; margin-top:14px;
-  }
-  .mode-btn{
-    font-family:'Space Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
-    text-transform:uppercase; padding:6px 14px; border-radius:100px; border:none;
-    background:transparent; color:var(--chalk-dim); cursor:pointer;
-  }
-  .mode-btn.active{background:var(--acid); color:#141400; font-weight:700;}
-
+  /* fun / simple mode — toggled by the single icon button in header-top */
   body.mode-simple .card{ --r:0deg !important; --y:0px !important; }
   body.mode-simple .wall{
     display:grid !important; column-count:unset !important;
@@ -343,21 +366,21 @@
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
+<header id="siteHeader">
+  <div class="header-top">
     <span class="header-mark">VA</span>
-    <div class="eyebrow"><a href="#" onclick="return false;">← field notes</a> / london</div>
-    <h1>STREET<br><span>ART</span> — LDN</h1>
-    <div class="sub">Tags, stencils, wheatpaste and whatever else caught my eye on foot. Some names keep turning up in different postcodes — tap a piece to see where else they've been.</div>
-
-    <div class="mode-toggle" id="modeToggle">
-      <button class="mode-btn" data-mode="fun">Fun</button>
-      <button class="mode-btn" data-mode="simple">Simple</button>
-    </div>
-
-    <div class="filters" id="filters"></div>
-    <div class="count" id="count"></div>
+    <button class="mode-icon-btn is-fun" id="modeIconBtn" title="Toggle fun / simple mode" aria-label="Toggle fun or simple layout">✦</button>
   </div>
+  <div class="header-inner">
+    <div class="title-block">
+      <div class="eyebrow"><a href="#" onclick="return false;">← field notes</a> / london</div>
+      <h1>STREET<br><span>ART</span> — LDN</h1>
+    </div>
+    <div class="sub">Tags, stencils, wheatpaste and whatever else caught my eye on foot. Some names keep turning up in different postcodes — tap a piece to see where else they've been.</div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="count" id="count"></div>
 </header>
 
 <main>
@@ -415,11 +438,12 @@
                piece order:0 to bring it to the very front. Use
                decimals (1.5, 2.5...) to slot something between two
                existing items without renumbering everything else.
-   colorFrame— optional true/false. When true, the frame border/tape
-               takes its colour from that photo's own dominant colour
-               (sampled automatically in the browser). Use sparingly —
-               it's meant to highlight a handful of vivid pieces, not
-               everything.
+   colorFrame— optional. Set to an "r,g,b" string (e.g. '29,121,140')
+               to give that card's frame/tape a colour pulled from the
+               photo itself — precomputed once so it shows immediately,
+               no JS dependency. The page also re-samples the live
+               image in the browser and refines it further if it can.
+               Leave unset for the plain neutral frame.
    date      — optional ISO date/time string ('2018-06-14T12:39:55').
                Pulled from the photo's own EXIF capture time when it's
                available — shown on the card and in the drawer. Leave
@@ -441,13 +465,13 @@ const MONOGRAM_TEXT = 'VA';
 const DATA = [
   {id:1, img:'img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', artist:'Dan Kitchener (DANK)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', date:'2018-06-14T12:39:55', order:1},
   {id:3, img:'img/01-bird-collage.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', date:'2018-06-14T14:03:55', order:3},
-  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', date:'2018-06-14T12:33:27', order:4, colorFrame:true},
-  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', date:'2018-06-14T13:58:44', order:5, colorFrame:true},
-  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', date:'2018-06-14T12:41:35', order:6, colorFrame:true},
+  {id:4, img:'img/03-nope-buddha.jpg', type:'photo', category:'political', artist:'RIP', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', date:'2018-06-14T12:33:27', order:4, colorFrame:'0,120,174'},
+  {id:5, img:'img/07-elephant-shutter.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', date:'2018-06-14T13:58:44', order:5, colorFrame:'29,121,140'},
+  {id:6, img:'img/09-split-face.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', date:'2018-06-14T12:41:35', order:6, colorFrame:'201,179,23'},
   {id:7, img:'img/10-hnrx-snail.jpg', type:'photo', category:'random', artist:'HNRX', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Small red snail relief tile on rusted metal, with a blue HNRX tag plate above — easy to miss unless you're looking down.", tags:['tag','found object','small scale'], ratio:'1050/1400', date:'2018-06-14T13:45:32', order:7},
   {id:8, img:'img/02-iron-finial.jpg', type:'photo', category:'random', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Not street art — a decorative wrought-iron finial on a bollard against red brick. Kept it in the set for the handmade feel.", tags:['architecture','detail'], ratio:'1050/1400', date:'2018-06-14T13:40:31', order:8},
   {id:9, img:'img/06-bad-dog-cushions.jpg', type:'photo', category:'fun', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A shop/stall display — dachshund "mugshot" cushion cover, police lineup backdrop, "BAD DOG" sign. Not street art, just funny.', tags:['shop find','dog'], ratio:'1050/1400', date:'2018-06-14T13:04:19', order:9},
-  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide mural — a face in oversized yellow sunglasses reflecting the photographer, curly hair, red hibiscus flowers, bold graffiti lettering. No signature spotted.", tags:['mural','portrait','lettering'], ratio:'1400/483', date:'2018-06-14T12:41:01', order:10, colorFrame:true},
+  {id:10, img:'img/04-shades-mural.jpg', type:'photo', category:'street-art', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Wide mural — a face in oversized yellow sunglasses reflecting the photographer, curly hair, red hibiscus flowers, bold graffiti lettering. No signature spotted.", tags:['mural','portrait','lettering'], ratio:'1400/483', date:'2018-06-14T12:41:01', order:10, colorFrame:'172,144,25'},
 ];
 
 /* ============================================================
@@ -518,9 +542,10 @@ function renderWall(){
   wall.innerHTML = items.map(item => {
     const isRepeat = relatedFor(item).length > 0;
     const frameClass = item.colorFrame ? ' color-framed' : '';
+    const frameStyle = item.colorFrame ? ` style="--frame-color:rgb(${item.colorFrame})"` : '';
     return `
     <div class="card" data-id="${item.id}">
-      <div class="frame${frameClass}" ${item.colorFrame ? `data-color-frame="1" data-img="${item.img}"` : ''}>
+      <div class="frame${frameClass}"${frameStyle} ${item.colorFrame ? `data-color-frame="1" data-img="${item.img}"` : ''}>
         <div class="tape"></div>
         ${isRepeat ? `<div class="repeat-badge" style="position:relative;top:0;left:0;display:none;"></div>` : ''}
         <div style="position:relative;">
@@ -554,30 +579,74 @@ function renderWall(){
 }
 
 /* ============================================================
-   Colour-sampled frames — reads each flagged photo's own pixels in the
-   browser (never uploads anywhere) and uses the average colour as that
-   card's frame/tape colour. Images are same-origin, so no CORS issues.
+   Colour-sampled frames — refines each flagged card's frame colour by
+   re-reading the actual photo pixels in the browser (never uploads
+   anywhere). The DATA colorFrame value is already a real colour picked
+   from the image, so this only improves on it when it can — if the
+   browser blocks canvas pixel access for any reason (e.g. local file
+   testing), the baked-in colour from DATA is what's shown, and nothing
+   breaks either way.
    ============================================================ */
-function extractAvgColor(url, callback){
+function rgbToHsv(r, g, b){
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d!==0){
+    if(mx===r) h = ((g-b)/d) % 6;
+    else if(mx===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60; if(h<0) h+=360;
+  }
+  return [h/360, mx===0?0:d/mx, mx];
+}
+function hsvToRgb(h,s,v){
+  const i = Math.floor(h*6), f = h*6-i;
+  const p=v*(1-s), q=v*(1-f*s), t=v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){
+    case 0: r=v;g=t;b=p; break; case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break; case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break; default: r=v;g=p;b=q;
+  }
+  return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+}
+function extractVividColor(url, callback){
   const img = new Image();
   img.onload = () => {
     try{
-      const size = 24;
+      const size = 48;
       const c = document.createElement('canvas');
       c.width = size; c.height = size;
       const ctx = c.getContext('2d');
       ctx.drawImage(img, 0, 0, size, size);
       const data = ctx.getImageData(0, 0, size, size).data;
-      let r=0,g=0,b=0,n=0;
-      for(let i=0; i<data.length; i+=4){ r+=data[i]; g+=data[i+1]; b+=data[i+2]; n++; }
-      r=Math.round(r/n); g=Math.round(g/n); b=Math.round(b/n);
-      // push toward more saturated/vivid so muted averages don't look flat
-      const max = Math.max(r,g,b), min = Math.min(r,g,b);
-      const boost = max===min ? 1 : Math.min(1.4, 1 + (60/(max-min)));
-      const mid = (max+min)/2;
-      const adj = v => Math.max(0, Math.min(255, Math.round(mid + (v-mid)*boost)));
-      callback(`rgb(${adj(r)},${adj(g)},${adj(b)})`);
-    } catch(e){ /* decoding issue — just skip, default frame colour stays */ }
+      let cutoff = 0.45;
+      let best = null;
+      while(!best && cutoff > 0.1){
+        const bins = {};
+        for(let i=0; i<data.length; i+=4){
+          const [h,s,v] = rgbToHsv(data[i], data[i+1], data[i+2]);
+          if(s < cutoff || v < 0.2) continue;
+          const bi = Math.floor(h*24) % 24;
+          const w = s*v;
+          if(!bins[bi]) bins[bi] = {w:0, r:0, g:0, b:0};
+          bins[bi].w += w; bins[bi].r += data[i]*w; bins[bi].g += data[i+1]*w; bins[bi].b += data[i+2]*w;
+        }
+        const keys = Object.keys(bins);
+        if(keys.length){
+          best = keys.reduce((a,b)=> bins[a].w > bins[b].w ? a : b);
+          best = bins[best];
+        } else {
+          cutoff -= 0.1;
+        }
+      }
+      if(!best) return; // give up quietly, baked-in DATA colour stays
+      let r = best.r/best.w, g = best.g/best.w, b = best.b/best.w;
+      let [h,s,v] = rgbToHsv(r,g,b);
+      s = Math.min(1, s*1.2); v = Math.min(1, Math.max(v, 0.55));
+      const [fr,fg,fb] = hsvToRgb(h,s,v);
+      callback(`rgb(${fr},${fg},${fb})`);
+    } catch(e){ /* canvas blocked (e.g. local file testing) — baked-in colour stays */ }
   };
   img.src = url;
 }
@@ -587,7 +656,7 @@ function applyColorFrames(){
     const url = frameEl.dataset.img;
     if(!url || frameEl.dataset.colorApplied) return;
     frameEl.dataset.colorApplied = '1';
-    extractAvgColor(url, (color) => {
+    extractVividColor(url, (color) => {
       frameEl.style.setProperty('--frame-color', color);
     });
   });
@@ -655,23 +724,39 @@ document.getElementById('scrim').onclick = closeDrawer;
 document.getElementById('drawerClose').onclick = closeDrawer;
 
 /* ============================================================
-   Fun / Simple mode — Fun gives the scattered table layout, rotation,
-   and colour frames. Simple flattens it to a clean grid. Remembered
-   per-visitor via localStorage.
+   Fun / Simple mode — single icon button, cycles between the two.
+   Fun gives the scattered table layout, rotation, and colour frames.
+   Simple flattens it to a clean grid. Remembered via localStorage.
    ============================================================ */
+const MODE_ICONS = {fun:'✦', simple:'▦'};
 function setMode(mode){
   document.body.classList.toggle('mode-simple', mode === 'simple');
-  document.querySelectorAll('.mode-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.mode === mode);
-  });
+  const btn = document.getElementById('modeIconBtn');
+  btn.textContent = MODE_ICONS[mode];
+  btn.classList.toggle('is-fun', mode === 'fun');
+  btn.title = mode === 'fun' ? 'Fun layout — tap for simple' : 'Simple layout — tap for fun';
   try{ localStorage.setItem('wanderMode', mode); }catch(e){}
 }
-document.querySelectorAll('.mode-btn').forEach(b=>{
-  b.onclick = () => setMode(b.dataset.mode);
-});
+document.getElementById('modeIconBtn').onclick = () => {
+  const next = document.body.classList.contains('mode-simple') ? 'fun' : 'simple';
+  setMode(next);
+};
 let savedMode = 'fun';
 try{ savedMode = localStorage.getItem('wanderMode') || 'fun'; }catch(e){}
 setMode(savedMode);
+
+/* Collapse the header on scroll so it doesn't keep eating screen space —
+   especially useful on mobile, where the title block is tall. */
+const siteHeader = document.getElementById('siteHeader');
+let collapseTicking = false;
+window.addEventListener('scroll', () => {
+  if(collapseTicking) return;
+  collapseTicking = true;
+  requestAnimationFrame(() => {
+    siteHeader.classList.toggle('collapsed', window.scrollY > 44);
+    collapseTicking = false;
+  });
+}, {passive:true});
 
 renderFilters();
 renderWall();
