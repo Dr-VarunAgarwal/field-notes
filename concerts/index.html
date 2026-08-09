@@ -12,14 +12,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#E7DFCB;
-    --card:#EFE9D8;
-    --ink:#18130F;
-    --red:#C31C24;
+    --paper:#110B0A;
+    --card:#1D1512;
+    --ink:#F1E7D6;
+    --red:#E12A2F;
     --red-dark:#7A0F14;
     --yellow:#E0B23C;
-    --grey:#6B6255;
-    --line: rgba(24,19,15,0.12);
+    --grey:#A8988A;
+    --line: rgba(241,231,214,0.14);
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   img{ -webkit-touch-callout: none; }
@@ -34,7 +34,7 @@
   body::before{
     content:"";
     position:fixed; inset:0; pointer-events:none; z-index:999;
-    opacity:.035; mix-blend-mode:multiply;
+    opacity:.05; mix-blend-mode:overlay;
     background-image:radial-gradient(var(--ink) 0.6px, transparent 0.6px);
     background-size:3px 3px;
   }
@@ -51,9 +51,9 @@
     position:absolute; top:14px; right:18px; z-index:2;
     width:46px; height:46px; border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    border:2px solid var(--ink);
+    border:2px solid var(--paper);
     font-family:'Anton', sans-serif; font-size:16px;
-    color:var(--ink); background:var(--yellow);
+    color:var(--paper); background:var(--yellow);
     transform:rotate(8deg);
   }
   .header-inner{position:relative; padding-right:60px;}
@@ -116,15 +116,15 @@
     cursor:pointer;
     position:relative;
     background:var(--card);
-    border:1px solid rgba(0,0,0,0.12);
-    box-shadow: 3px 5px 0 rgba(0,0,0,0.10), 0 10px 20px rgba(0,0,0,0.08);
+    border:1px solid var(--line);
+    box-shadow: 3px 5px 0 rgba(0,0,0,0.4), 0 10px 20px rgba(0,0,0,0.35);
   }
   .card.in{opacity:1; transform:translateY(0) rotate(var(--r,0deg));}
   .card:nth-child(3n+1){--r:-1.4deg;}
   .card:nth-child(3n+2){--r:0.8deg;}
   .card:nth-child(3n+3){--r:-0.4deg;}
   @media(hover:hover){
-    .card:hover{ transform:rotate(0deg) translateY(-4px); box-shadow:4px 8px 0 rgba(0,0,0,0.12), 0 16px 26px rgba(0,0,0,0.16); z-index:2; }
+    .card:hover{ transform:rotate(0deg) translateY(-4px); box-shadow:4px 8px 0 rgba(0,0,0,0.45), 0 16px 26px rgba(0,0,0,0.5); z-index:2; }
   }
 
   .tape{
@@ -134,28 +134,28 @@
   }
 
   .poster{
-    position:relative; height:150px; color:var(--paper);
+    position:relative; height:150px; color:var(--ink);
     display:flex; align-items:center; justify-content:center; overflow:hidden;
     background:radial-gradient(var(--ink) 1.1px, transparent 1.1px) 0 0/7px 7px, var(--red-dark);
   }
   .card:nth-child(even) .poster{
-    background:radial-gradient(var(--card) 1.1px, transparent 1.1px) 0 0/7px 7px, var(--ink);
+    background:radial-gradient(var(--ink) 1.1px, transparent 1.1px) 0 0/7px 7px, var(--card);
   }
   .poster svg{ width:60px; height:60px; }
-  .poster.has-photo{ background:var(--ink); }
+  .poster.has-photo{ background:var(--card); }
   .poster.has-photo img{ width:100%; height:100%; object-fit:cover; display:block; -webkit-user-drag:none; user-select:none; }
   .video-badge{
     position:absolute; top:8px; right:8px;
-    background:rgba(0,0,0,0.55); color:var(--paper);
+    background:rgba(0,0,0,0.55); color:var(--ink);
     font-size:9px; letter-spacing:0.08em; padding:3px 7px; border-radius:3px;
   }
   .badge{
     position:absolute; top:8px; left:8px; z-index:2;
     font-family:'Anton', sans-serif; font-size:10px; letter-spacing:.08em; text-transform:uppercase;
-    border:1.5px solid var(--paper); padding:3px 7px; transform:rotate(-4deg); color:var(--paper);
+    border:1.5px solid var(--ink); padding:3px 7px; transform:rotate(-4deg); color:var(--ink);
   }
 
-  .title-bar{ background:var(--ink); color:var(--paper); padding:10px 12px 8px; }
+  .title-bar{ background:var(--paper); color:var(--ink); padding:10px 12px 8px; border-bottom:1px solid var(--line); }
   .title-bar h3{ font-family:'Anton', sans-serif; font-weight:400; font-size:21px; line-height:1; margin:0; }
   .meta-line{ padding:10px 12px 0; font-size:11.5px; color:var(--grey); text-transform:uppercase; letter-spacing:.03em; }
 
@@ -163,7 +163,7 @@
   .perf::before, .perf::after{ content:""; position:absolute; top:-8px; width:16px; height:16px; background:var(--paper); border-radius:50%; }
   .perf::before{ left:-9px; } .perf::after{ right:-9px; }
   .stub{ display:flex; justify-content:space-between; align-items:flex-end; gap:8px; padding:10px 12px 14px; }
-  .stub .date{ font-size:12px; font-weight:700; color:var(--red-dark); white-space:nowrap; }
+  .stub .date{ font-size:12px; font-weight:700; color:var(--red); white-space:nowrap; }
 
   .empty{ text-align:center; padding:60px 20px; color:var(--grey); font-size:12px; }
 
@@ -256,9 +256,9 @@ const DATA = [
 ];
 
 const ICONS = [
-  `<svg viewBox="0 0 100 100" fill="var(--paper)"><rect x="38" y="8" width="24" height="42" rx="12"/><rect x="46" y="50" width="8" height="18"/><path d="M30 44a20 20 0 0 0 40 0" stroke="var(--paper)" stroke-width="6" fill="none"/><line x1="50" y1="70" x2="50" y2="84" stroke="var(--paper)" stroke-width="6"/><line x1="34" y1="84" x2="66" y2="84" stroke="var(--paper)" stroke-width="6"/></svg>`,
-  `<svg viewBox="0 0 100 100" fill="var(--paper)"><ellipse cx="36" cy="66" rx="24" ry="27"/><ellipse cx="36" cy="66" rx="8" ry="9" fill="var(--red-dark)"/><rect x="46" y="8" width="10" height="55" rx="3"/><rect x="43" y="4" width="16" height="10" rx="2"/></svg>`,
-  `<svg viewBox="0 0 100 100" fill="var(--paper)"><rect x="20" y="12" width="60" height="76" rx="6"/><circle cx="50" cy="36" r="15" fill="var(--red-dark)"/><circle cx="50" cy="70" r="10" fill="var(--red-dark)"/></svg>`
+  `<svg viewBox="0 0 100 100" fill="var(--ink)"><rect x="38" y="8" width="24" height="42" rx="12"/><rect x="46" y="50" width="8" height="18"/><path d="M30 44a20 20 0 0 0 40 0" stroke="var(--ink)" stroke-width="6" fill="none"/><line x1="50" y1="70" x2="50" y2="84" stroke="var(--ink)" stroke-width="6"/><line x1="34" y1="84" x2="66" y2="84" stroke="var(--ink)" stroke-width="6"/></svg>`,
+  `<svg viewBox="0 0 100 100" fill="var(--ink)"><ellipse cx="36" cy="66" rx="24" ry="27"/><ellipse cx="36" cy="66" rx="8" ry="9" fill="var(--red-dark)"/><rect x="46" y="8" width="10" height="55" rx="3"/><rect x="43" y="4" width="16" height="10" rx="2"/></svg>`,
+  `<svg viewBox="0 0 100 100" fill="var(--ink)"><rect x="20" y="12" width="60" height="76" rx="6"/><circle cx="50" cy="36" r="15" fill="var(--red-dark)"/><circle cx="50" cy="70" r="10" fill="var(--red-dark)"/></svg>`
 ];
 
 let activeYear = 'ALL';
