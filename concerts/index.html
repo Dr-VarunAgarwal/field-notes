@@ -184,8 +184,16 @@
     border:1.5px solid var(--ink); color:var(--ink);
     width:30px; height:30px; border-radius:100px; font-size:14px; cursor:pointer;
   }
-  .d-media{ margin-bottom:14px; border-radius:4px; overflow:hidden; background:var(--card); }
+  .d-media{ margin-bottom:10px; border-radius:4px; overflow:hidden; background:var(--card); }
   .d-media img, .d-media video{ width:100%; display:block; max-height:52vh; object-fit:cover; }
+  .d-extras{ display:flex; gap:8px; overflow-x:auto; padding-bottom:2px; margin-bottom:14px; scrollbar-width:none; }
+  .d-extras::-webkit-scrollbar{ display:none; }
+  .d-extras img{
+    width:68px; height:68px; flex:0 0 auto; object-fit:cover; border-radius:4px;
+    cursor:pointer; opacity:0.7; border:2px solid transparent; transition:opacity .15s ease, border-color .15s ease;
+  }
+  .d-extras img.active{ opacity:1; border-color:var(--red); }
+  .d-extras img:hover{ opacity:1; }
   .d-loc{ font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--grey); display:flex; justify-content:space-between; }
   .d-title{ font-family:'Anton',sans-serif; font-size:28px; text-transform:uppercase; margin:6px 0 12px; line-height:1; }
   .d-notes{ font-size:13.5px; line-height:1.65; color:var(--ink); white-space:pre-line; }
@@ -224,6 +232,7 @@
   <div class="drawer-handle"></div>
   <button class="drawer-close" id="drawerClose">✕</button>
   <div class="d-media" id="dMedia"></div>
+  <div class="d-extras" id="dExtras"></div>
   <div class="d-loc" id="dLoc"></div>
   <div class="d-title" id="dTitle"></div>
   <div class="d-notes" id="dNotes"></div>
@@ -241,6 +250,9 @@
    type      — 'photo' (default) or 'video'
    video     — path to a video file in img/, only used when type is 'video'
                (plays in the drawer; img above is used as its poster frame)
+   extras    — optional array of extra photo paths in img/. Shown as a
+               side-scrolling thumbnail strip in the drawer — tap one to
+               view it in the main media area. Leave out or [] if none.
    venue,city— plain text, leave "" until known
    date      — 'YYYY-MM-DD', or "" if unknown (shows under the TBC tab)
    billing   — free text, e.g. 'Headline', 'Support', 'Festival', 'DJ set'
@@ -250,17 +262,17 @@
    order     — lowest first when dates tie; otherwise sort is by date
    ============================================================ */
 const DATA = [
-  {id:1, artist:'A Murder of Crows', img:'img/banshee-labyrinth.jpg', type:'photo', video:null, venue:'The Banshee Labyrinth', city:'Edinburgh, Scotland', date:'2025-10-31', billing:'', notes:'Halloween show at The Banshee Labyrinth — self-billed as the most haunted nightclub in the world.', tags:['halloween show'], order:1},
-  {id:2, artist:'Green Day', img:'img/green-day.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-09', billing:'Headline', notes:'Lollapalooza India — headline set.', tags:['punk rock','festival'], order:2},
+  {id:1, artist:'A Murder of Crows', img:'img/banshee-labyrinth.jpg', type:'photo', video:null, extras:['img/banshee-labyrinth-2.jpg','img/banshee-labyrinth-3.jpg'], venue:'The Banshee Labyrinth', city:'Edinburgh, Scotland', date:'2025-10-31', billing:'', notes:'Halloween show at The Banshee Labyrinth — self-billed as the most haunted nightclub in the world.', tags:['halloween show'], order:1},
+  {id:2, artist:'Green Day', img:'img/green-day.jpg', type:'photo', video:null, extras:['img/green-day-2.jpg','img/green-day-3.jpg','img/green-day-4.jpg'], venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-09', billing:'Headline', notes:'Lollapalooza India — headline set.', tags:['punk rock','festival'], order:2},
   {id:3, artist:'Hanumankind', img:'img/hanumankind.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-09', billing:'Festival', notes:'Lollapalooza India.', tags:['hip-hop','festival'], order:3},
   {id:4, artist:'Nothing But Thieves', img:'img/nothing-but-thieves.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-09', billing:'Festival', notes:'Lollapalooza India — spotted their name on the big screen mid-set.', tags:['rock','festival'], order:4},
-  {id:5, artist:'Glass Beams', img:'img/glass-beams.jpg', type:'photo', video:null, venue:'', city:'Bangalore, India', date:'2025-10-12', billing:'', notes:'Bangalore show.', tags:['instrumental'], order:5},
+  {id:5, artist:'Glass Beams', img:'img/glass-beams.jpg', type:'photo', video:null, extras:['img/glass-beams-2.jpg','img/glass-beams-3.jpg'], venue:'', city:'Bangalore, India', date:'2025-10-12', billing:'', notes:'Bangalore show.', tags:['instrumental'], order:5},
   {id:6, artist:'John Mayer', img:'img/john-mayer.jpg', type:'photo', video:null, venue:'', city:'Mumbai, India', date:'2026-02-11', billing:'', notes:'Mumbai show.', tags:['pop rock'], order:6},
   {id:7, artist:'Jonita Gandhi', img:'img/jonita-gandhi.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-08', billing:'Festival', notes:'Lollapalooza India — day one, Corona Sunsets stage.', tags:['pop','festival'], order:7},
-  {id:8, artist:'Ben Howard', img:'img/ben-howard.jpg', type:'photo', video:null, venue:'', city:'Mumbai, India', date:'2024-05-17', billing:'', notes:'Mumbai show.', tags:['folk'], order:8},
-  {id:9, artist:'Isabel LaRosa', img:'img/isabel-larosa.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-08', billing:'Festival', notes:'Lollapalooza India — day one.', tags:['pop','festival'], order:9},
+  {id:8, artist:'Ben Howard', img:'img/ben-howard.jpg', type:'photo', video:null, extras:['img/ben-howard-2.jpg'], venue:'', city:'Mumbai, India', date:'2024-05-17', billing:'', notes:'Mumbai show.', tags:['folk'], order:8},
+  {id:9, artist:'Isabel LaRosa', img:'img/isabel-larosa.jpg', type:'photo', video:null, extras:['img/isabel-larosa-2.jpg','img/isabel-larosa-3.jpg'], venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-08', billing:'Festival', notes:'Lollapalooza India — day one.', tags:['pop','festival'], order:9},
   {id:10, artist:'AURORA', img:'img/aurora.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-09', billing:'Festival', notes:'Lollapalooza India — day two.', tags:['pop','festival'], order:10},
-  {id:11, artist:'Talwiinder', img:'img/talwinder.jpg', type:'photo', video:null, venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-08', billing:'Festival', notes:'Lollapalooza India — day one.', tags:['hip-hop','festival'], order:11},
+  {id:11, artist:'Talwiinder', img:'img/talwinder.jpg', type:'photo', video:null, extras:['img/talwinder-2.jpg','img/talwinder-3.jpg'], venue:'Mahalaxmi Race Course', city:'Mumbai, India', date:'2025-03-08', billing:'Festival', notes:'Lollapalooza India — day one.', tags:['hip-hop','festival'], order:11},
   {id:12, artist:'Amit Trivedi', img:'img/amit-trivedi.jpg', type:'video', video:'img/amit-trivedi.mp4', venue:'', city:'', date:'2025-05-04', billing:'', notes:'', tags:[], order:12},
   {id:13, artist:'Prateek Kuhad', img:'img/prateek-kuhad.jpg', type:'photo', video:null, venue:'', city:'', date:'2023-02-11', billing:'', notes:'', tags:[], order:13},
   {id:15, artist:'Lucky Ali', img:null, type:'photo', video:null, venue:'', city:'', date:'', billing:'', notes:'', tags:[], order:15},
@@ -345,17 +357,40 @@ function renderWall(){
   });
 }
 
-function openDrawer(id){
-  const s = DATA.find(d => d.id === id);
-  if(!s) return;
+function showMedia(s, src){
   const mediaEl = document.getElementById('dMedia');
-  if(s.type === 'video' && s.video){
+  if(src){
+    mediaEl.innerHTML = `<img src="${src}" alt="${esc(s.artist)}">`;
+  } else if(s.type === 'video' && s.video){
     mediaEl.innerHTML = `<video src="${s.video}" ${s.img ? `poster="${s.img}"` : ''} controls playsinline></video>`;
   } else if(s.img){
     mediaEl.innerHTML = `<img src="${s.img}" alt="${esc(s.artist)}">`;
   } else {
     mediaEl.innerHTML = '';
   }
+}
+
+function openDrawer(id){
+  const s = DATA.find(d => d.id === id);
+  if(!s) return;
+  showMedia(s, null);
+
+  const extrasEl = document.getElementById('dExtras');
+  const extras = s.extras || [];
+  if(extras.length){
+    extrasEl.style.display = 'flex';
+    extrasEl.innerHTML = extras.map((src, i) => `<img src="${src}" alt="${esc(s.artist)} — extra ${i+1}" data-src="${src}">`).join('');
+    extrasEl.querySelectorAll('img').forEach(thumb => {
+      thumb.onclick = () => {
+        showMedia(s, thumb.dataset.src);
+        extrasEl.querySelectorAll('img').forEach(t => t.classList.toggle('active', t === thumb));
+      };
+    });
+  } else {
+    extrasEl.style.display = 'none';
+    extrasEl.innerHTML = '';
+  }
+
   document.getElementById('dLoc').innerHTML = `<span>${[s.venue, s.city].filter(Boolean).join(', ') || 'venue / city tbc'}</span><span>${s.date ? fmtDate(s.date) : 'date tbc'}</span>`;
   document.getElementById('dTitle').textContent = s.artist;
   const notesEl = document.getElementById('dNotes');
