@@ -380,7 +380,12 @@ function openDrawer(id){
   const extras = s.extras || [];
   if(extras.length){
     extrasEl.style.display = 'flex';
-    extrasEl.innerHTML = extras.map((src, i) => `<img src="${src}" alt="${esc(s.artist)} — extra ${i+1}" data-src="${src}">`).join('');
+    // include the cover photo itself as the first thumbnail (highlighted,
+    // since it's what's showing by default) so it's never orphaned once
+    // you've tapped over to one of the extras — for video shows, leave it
+    // out so tapping around doesn't swap the playable video for a still.
+    const allSrcs = s.type === 'video' ? extras : [s.img, ...extras];
+    extrasEl.innerHTML = allSrcs.map((src, i) => `<img src="${src}" alt="${esc(s.artist)} — photo ${i+1}" data-src="${src}" class="${i===0 && s.type!=='video' ? 'active' : ''}">`).join('');
     extrasEl.querySelectorAll('img').forEach(thumb => {
       thumb.onclick = () => {
         showMedia(s, thumb.dataset.src);
