@@ -176,6 +176,33 @@
     color:var(--navy); margin-top:10px; display:block; font-weight:700;
   }
 
+  .gift-shop{
+    margin-top:56px; padding-top:8px;
+    border-top:2px solid var(--navy);
+  }
+  .gift-shop .eyebrow{ margin-bottom:6px; }
+  .gift-shop h2{
+    font-family:'Fraunces', serif; font-weight:600; font-style:italic;
+    font-size:clamp(26px, 5vw, 36px); margin:0 0 10px; color:var(--navy);
+  }
+  .gift-shop h2 em{ color:var(--oxblood); font-style:italic; }
+  .gift-shop p{
+    color:var(--ink-soft); font-size:13.5px; line-height:1.7;
+    max-width:56ch; margin:0 0 22px;
+  }
+  .tour-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    font-family:'Fraunces', serif; font-style:italic; font-weight:600;
+    font-size:14px; color:var(--ink-soft);
+    background:var(--card); border:1.5px dashed var(--navy);
+    padding:12px 20px; cursor:not-allowed; opacity:0.75;
+  }
+  .tour-btn .tag{
+    font-family:'Courier Prime', monospace; font-style:normal;
+    font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase;
+    background:var(--navy); color:var(--paper); padding:3px 8px; border-radius:100px;
+  }
+
   footer{
     text-align:center; padding:34px 16px 60px; color:var(--ink-soft); font-size:11px;
     letter-spacing:0.05em; font-family:'Fraunces', serif; font-style:italic;
@@ -189,11 +216,18 @@
   <span class="header-mark">VA</span>
   <div class="eyebrow">wander / index</div>
   <h1>Field <em>Notes</em></h1>
-  <div class="intro">Photos and video from wherever I end up walking — street art, protest stickers, the odd wrestler-mask sculpture bolted to a wall. Each place gets its own page. Tap in to browse.</div>
+  <div class="intro">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</div>
 </header>
 
 <main>
   <div class="wall" id="wall"></div>
+
+  <section class="gift-shop">
+    <div class="eyebrow">wander / a closer look</div>
+    <h2>Exit through the <em>gift shop</em></h2>
+    <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Eventually a guided, story-style tour through them one at a time.</p>
+    <span class="tour-btn" aria-disabled="true"><span class="tag">Coming soon</span> Begin the tour →</span>
+  </section>
 </main>
 
 <footer>Field Notes, catalogued as I go</footer>
