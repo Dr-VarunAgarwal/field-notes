@@ -98,15 +98,6 @@
   .sidebar-stories .story-avatar{ width:44px; height:44px; border-width:2px; }
   .sidebar-stories .story-username{ font-size:0.6rem; max-width:60px; color:var(--blue); }
   .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
-  .wordmark-corner{
-    position:fixed; left:1.1rem; bottom:1.1rem; z-index:30;
-    font-family:"Fredoka", sans-serif; font-weight:700; font-size:1.05rem;
-    color:var(--blue); text-decoration:none;
-    background:rgba(255,255,255,0.88); padding:0.4rem 0.9rem; border-radius:100px;
-    box-shadow:0 8px 20px -10px rgba(23,20,12,0.4);
-    transition:background .15s ease;
-  }
-  .wordmark-corner:hover{ background:#fff; }
   .doodle-tagline-row{ display:flex; align-items:center; gap:0.8rem; }
   .doodle{ width:72px; height:auto; opacity:0.85; flex:none; }
   .tagline{
@@ -120,8 +111,10 @@
     padding-top:0.6rem; margin-top:0.1rem;
   }
   .ticker-wrap--top{
-    border-top:none; margin-top:0;
-    padding:1rem 1.5rem 0.8rem;
+    padding:1rem 1.5rem;
+  }
+  @media(min-width:1024px){
+    .ticker-wrap--top{ order:-1; border-top:none; }
   }
   .ticker{
     display:flex; gap:0.5rem; white-space:nowrap;
@@ -135,7 +128,7 @@
   @media (prefers-reduced-motion: reduce){ .ticker{ animation:none; } }
 
   /* ---------- main ---------- */
-  .main{ flex:1; min-width:0; }
+  .main{ flex:1; min-width:0; display:flex; flex-direction:column; }
 
   /* ---------- page header — full-bleed rotating photo ---------- */
   .page-header{
@@ -162,8 +155,14 @@
   .page-header-inner{
     position:absolute; z-index:6; top:0; left:0; right:0; bottom:0;
     display:flex; flex-direction:column;
-    justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
+    justify-content:flex-end; padding:0.9rem 1rem; color:#fff;
     pointer-events:none;
+  }
+  .header-wordmark{
+    font-family:"Fredoka", sans-serif; font-weight:700;
+    font-size:clamp(1.6rem, 4vw, 2.2rem); line-height:1;
+    color:#fff; text-shadow:0 3px 14px rgba(0,0,0,0.45);
+    margin:0 0 0.25rem;
   }
   .header-coords{
     font-family:"Courier New", monospace; font-size:0.76rem;
@@ -469,19 +468,14 @@
     </div>
   </aside>
 
-  <a class="wordmark-corner" href="#top">Wander</a>
-
   <main class="main" id="top">
-
-    <div class="ticker-wrap ticker-wrap--top">
-      <div class="ticker" id="ticker"></div>
-    </div>
 
     <header class="page-header">
       <div class="header-collage" id="header-collage" aria-hidden="true">
         <img class="header-photo" id="header-photo" src="skye/img/d3-08-quiraing.jpg" alt="">
       </div>
       <div class="page-header-inner">
+        <span class="header-wordmark">Wander</span>
         <p class="header-coords" id="header-coords"></p>
       </div>
     </header>
@@ -503,6 +497,10 @@
       <p class="lede">Not filed yet, but on the map.</p>
       <ul class="itin-list" id="itin-list"></ul>
     </section>
+
+    <div class="ticker-wrap ticker-wrap--top">
+      <div class="ticker" id="ticker"></div>
+    </div>
 
     <div class="signoff">
       <h3>Fewer plans.<br>More detours.</h3>
