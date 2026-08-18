@@ -22,7 +22,7 @@
     --sidebar-w: 300px;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
-  html,body{margin:0;padding:0;}
+  html,body{margin:0;padding:0; overflow-x:hidden; max-width:100%;}
   body{
     font-family:"Inter", sans-serif;
     color:var(--ink);
@@ -42,8 +42,8 @@
   @media(min-width:1024px){
     .sidebar{
       width:var(--sidebar-w); flex:none;
-      position:sticky; top:0; height:100vh;
-      justify-content:space-between;
+      position:sticky; top:0; max-height:100vh;
+      overflow-y:auto;
     }
   }
   .pill-nav{ display:flex; gap:0.4rem; flex-wrap:wrap; }
@@ -58,7 +58,7 @@
   }
   .home-link:hover{ opacity:1; }
 
-  .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; }
+  .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; min-width:0; }
   .sidebar-stories{
     border-top:1px solid rgba(23,20,12,0.15); padding-top:1.35rem;
     margin-top:0.45rem;
@@ -81,11 +81,14 @@
   .doodle{ width:120px; height:auto; opacity:0.85; }
   .tagline{
     font-size:0.85rem; line-height:1.6; color:var(--blue); opacity:0.85;
-    max-width:26ch; margin:0;
+    max-width:42ch; margin:0;
+  }
+  @media(min-width:1024px){
+    .tagline{ max-width:26ch; }
   }
 
   .ticker-wrap{
-    overflow:hidden; border-top:1px solid rgba(23,20,12,0.15);
+    overflow:hidden; min-width:0; border-top:1px solid rgba(23,20,12,0.15);
     padding-top:0.9rem; margin-top:0.4rem;
   }
   .ticker{
@@ -104,7 +107,7 @@
 
   /* ---------- page header — full-bleed editorial photo stack ---------- */
   .page-header{
-    position:relative; overflow:visible; padding-bottom:4.5rem;
+    position:relative; overflow:visible;
     background:var(--cream); isolation:isolate;
   }
   .header-collage{
@@ -117,9 +120,10 @@
   }
   .header-photo{
     position:absolute; display:block; object-fit:cover;
-    border:1px solid rgba(255,255,255,0.62);
-    box-shadow:0 18px 34px -18px rgba(0,0,0,0.72);
+    border:6px solid #fff;
+    box-shadow:0 14px 28px -14px rgba(0,0,0,0.6);
     transform-origin:center;
+    transition:opacity 0.15s ease;
   }
   /* The first photograph is the full-bleed photographic ground, not a card. */
   .header-photo.one{
@@ -127,21 +131,23 @@
     z-index:1; object-position:center 52%;
     border:0; box-shadow:none;
   }
+  .header-photo.swappable{ cursor:pointer; }
   .header-photo.two{
-    width:45%; height:67%; right:7%; top:6%; transform:rotate(1.8deg);
+    width:26%; height:42%; right:6%; top:7%;
     z-index:3; object-position:center;
   }
   .header-photo.three{
-    width:49%; height:58%; left:28%; bottom:-4%; transform:rotate(-0.9deg);
+    width:26%; height:42%; right:6%; top:calc(7% + 42% + 3%);
     z-index:4; object-position:center;
   }
   @media(max-width:639px){
     .header-collage{ height:285px; }
-    .header-photo.two{ width:48%; height:57%; right:1%; top:5%; }
-    .header-photo.three{ width:58%; height:48%; left:23%; bottom:1%; }
+    .header-photo{ border-width:4px; }
+    .header-photo.two{ width:30%; height:40%; right:4%; top:6%; }
+    .header-photo.three{ width:30%; height:40%; right:4%; top:calc(6% + 40% + 3%); }
   }
   .page-header-inner{
-    position:absolute; z-index:6; top:0; left:0; right:0; bottom:4.5rem;
+    position:absolute; z-index:6; top:0; left:0; right:0; bottom:0;
     display:flex; flex-direction:column;
     justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
     pointer-events:none;
@@ -149,6 +155,7 @@
   .page-header .eyebrow{
     font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
     color:rgba(255,255,255,0.82); margin:0 0 0.4rem;
+    text-shadow:0 2px 10px rgba(0,0,0,0.5);
   }
   .page-title{
     font-family:"Fredoka", sans-serif; font-weight:700;
@@ -437,16 +444,17 @@
         <circle cx="30" cy="41" r="2.4"/>
       </svg>
       <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
+
+      <div class="ticker-wrap">
+        <div class="ticker" id="ticker"></div>
+      </div>
+
       <a class="featured-card" id="featured"></a>
     </div>
 
     <div class="sidebar-stories">
       <p class="label">Stories</p>
       <div class="stories-feed" id="stories-feed"></div>
-    </div>
-
-    <div class="ticker-wrap">
-      <div class="ticker" id="ticker"></div>
     </div>
   </aside>
 
@@ -455,13 +463,13 @@
     <header class="page-header">
       <div class="header-collage" aria-hidden="true">
         <img class="header-photo one" src="skye/img/d3-08-quiraing.jpg" alt="">
-        <img class="header-photo two" src="london/img/69-designated-graffiti-area-stencil.jpg" alt="">
-        <img class="header-photo three" src="khajuraho/img/11-dusk-two-temples-pink-sky.jpg" alt="">
+        <img class="header-photo two swappable" src="london/img/69-designated-graffiti-area-stencil.jpg" alt="">
+        <img class="header-photo three swappable" src="khajuraho/img/11-dusk-two-temples-pink-sky.jpg" alt="">
       </div>
       <div class="page-header-inner">
-        <p class="eyebrow">wander / index</p>
+        <p class="eyebrow">index</p>
         <h1 class="page-title">Wander</h1>
-              </div>
+      </div>
     </header>
 
     <section class="section" style="padding-top:2.5rem;">
@@ -561,6 +569,36 @@ const PLACES = [
 
 const live = PLACES.filter(p => p.status === 'live');
 const draft = PLACES.filter(p => p.status === 'draft');
+
+/* ============================================================
+   HEADER_SETS — curated bg + two overlay photos for the header
+   collage. Hand-paired (not fully random) so the three always sit
+   together well. One set picked at random on load; clicking either
+   overlay photo swaps it with the background photo.
+   ============================================================ */
+const HEADER_SETS = [
+  {bg:'skye/img/d3-08-quiraing.jpg', two:'london/img/69-designated-graffiti-area-stencil.jpg', three:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg'},
+  {bg:'skye/img/d2-02-eilean-donan-wide.jpg', two:'khajuraho/img/05-mithuna-carving-niche.jpg', three:'london/img/32-heron-mural-gable.jpg'},
+  {bg:'khajuraho/img/26-white-temple-domes-wide.jpg', two:'skye/img/d3-02-fairy-pools-turquoise.jpg', three:'london/img/05-dank-cyberpunk-wide.jpg'},
+  {bg:'khajuraho/img/01-sunset-temple-silhouette.jpg', two:'london/img/43-xray-ribcage-mural.jpg', three:'khajuraho/img/18-nandi-bull-statue.jpg'},
+];
+const headerSet = HEADER_SETS[Math.floor(Math.random() * HEADER_SETS.length)];
+const hOne = document.querySelector('.header-photo.one');
+const hTwo = document.querySelector('.header-photo.two');
+const hThree = document.querySelector('.header-photo.three');
+hOne.src = headerSet.bg;
+hTwo.src = headerSet.two;
+hThree.src = headerSet.three;
+function swapHeaderPhoto(overlay){
+  const bgSrc = hOne.src, overlaySrc = overlay.src;
+  hOne.style.opacity = 0; overlay.style.opacity = 0;
+  setTimeout(() => {
+    hOne.src = overlaySrc;
+    overlay.src = bgSrc;
+    hOne.style.opacity = 1; overlay.style.opacity = 1;
+  }, 150);
+}
+[hTwo, hThree].forEach(el => el.addEventListener('click', () => swapHeaderPhoto(el)));
 
 /* ============================================================
    FEATURED_PHOTOS — a small curated selection from the live albums.
