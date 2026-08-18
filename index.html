@@ -238,6 +238,125 @@
   footer .foot-nav{ display:flex; justify-content:center; gap:1rem; margin-bottom:0.8rem; }
   footer .foot-nav a{ text-decoration:none; color:var(--ink); font-weight:600; font-size:0.78rem; }
   footer .foot-nav a:hover{ color:var(--blue); }
+
+  /* ============================================================
+     STORIES — Instagram-style ring feed + full-screen viewer.
+     Real photos only; captions shown only where a piece has real,
+     hand-written notes (same rule as the featured card above).
+     ============================================================ */
+  .stories-section{ padding:0.5rem 1.5rem 0; max-width:900px; margin:0 auto; }
+  .stories-section h2{
+    font-family:"Fredoka", sans-serif; font-weight:600;
+    font-size:clamp(1.2rem, 3vw, 1.5rem); margin:0 0 1rem;
+  }
+  .stories-feed{
+    display:flex; gap:1.1rem; overflow-x:auto; padding:0.3rem 0.2rem 1rem;
+    -ms-overflow-style:none; scrollbar-width:none;
+  }
+  .stories-feed::-webkit-scrollbar{ display:none; }
+  .story-item{ display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex-shrink:0; }
+  .story-ring{
+    padding:3px; border-radius:50%; display:inline-block; cursor:pointer;
+    transition:transform 0.2s ease; border:none; background:none;
+  }
+  .story-ring:hover{ transform:scale(1.05); }
+  .story-ring.color-0{ background:linear-gradient(135deg,#2A46E0 0%,#5B7CFA 100%); }
+  .story-ring.color-1{ background:linear-gradient(135deg,#454F30 0%,#7C8A57 100%); }
+  .story-ring.color-2{ background:linear-gradient(135deg,#FF7F00 0%,#FFB347 100%); }
+  .story-ring.color-3{ background:linear-gradient(135deg,#E73F1E 0%,#F9B637 100%); }
+  .story-ring.viewed{ background:#d8d4c8; }
+  .story-avatar{
+    width:64px; height:64px; border:3px solid var(--cream);
+    border-radius:50%; background:#fff; object-fit:cover; display:block;
+  }
+  .story-username{
+    font-size:0.68rem; max-width:72px; white-space:nowrap; overflow:hidden;
+    text-overflow:ellipsis; text-align:center; font-weight:600; color:var(--ink);
+  }
+  .story-username.viewed{ color:var(--ink-soft); font-weight:500; }
+
+  .story-modal{
+    display:none; position:fixed; inset:0; z-index:100; background:#000;
+    align-items:center; justify-content:center; touch-action:none;
+  }
+  .story-modal.open{ display:flex; }
+  .viewer-container{
+    position:relative; width:100%; height:100%; background:#000;
+    overflow:hidden; perspective:1200px; display:flex; flex-direction:column;
+  }
+  @media(min-width:640px){
+    .viewer-container{ width:400px; height:800px; max-height:90vh; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.6); }
+  }
+  .cube-wrapper{
+    transform-style:preserve-3d; width:100%; flex:1; position:relative;
+    display:flex; flex-direction:column; transform-origin:center center -200px;
+  }
+  .rotate-cube-left-out{ animation:cubeLeftOut 0.5s forwards cubic-bezier(0.4,0,0.2,1); }
+  .rotate-cube-left-in{ animation:cubeLeftIn 0.5s forwards cubic-bezier(0.4,0,0.2,1); }
+  .rotate-cube-right-out{ animation:cubeRightOut 0.5s forwards cubic-bezier(0.4,0,0.2,1); }
+  .rotate-cube-right-in{ animation:cubeRightIn 0.5s forwards cubic-bezier(0.4,0,0.2,1); }
+  @keyframes cubeLeftOut{ 0%{transform:translateZ(0) rotateY(0deg); opacity:1;} 100%{transform:translateZ(-200px) rotateY(-90deg); opacity:0;} }
+  @keyframes cubeLeftIn{ 0%{transform:translateZ(-200px) rotateY(90deg); opacity:0;} 100%{transform:translateZ(0) rotateY(0deg); opacity:1;} }
+  @keyframes cubeRightOut{ 0%{transform:translateZ(0) rotateY(0deg); opacity:1;} 100%{transform:translateZ(-200px) rotateY(90deg); opacity:0;} }
+  @keyframes cubeRightIn{ 0%{transform:translateZ(-200px) rotateY(-90deg); opacity:0;} 100%{transform:translateZ(0) rotateY(0deg); opacity:1;} }
+
+  .progress-container{ position:absolute; top:0; left:0; right:0; z-index:40; display:flex; gap:4px; padding:12px 8px 0; pointer-events:none; }
+  .prog-bar{ flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:100px; overflow:hidden; }
+  .prog-fill{ height:100%; background:#fff; width:0%; border-radius:100px; }
+
+  .viewer-header{
+    position:absolute; top:0; left:0; right:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:32px 16px 16px; background:linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    pointer-events:none;
+  }
+  .viewer-header-left{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
+  .viewer-avatar{ width:32px; height:32px; border-radius:50%; border:1px solid #9ca3af; object-fit:cover; }
+  .viewer-username{ color:#fff; font-weight:600; font-size:0.875rem; text-shadow:0 1px 2px rgba(0,0,0,0.5); }
+  .story-close-btn{
+    color:#fff; padding:8px; border-radius:50%; background:transparent; border:none;
+    cursor:pointer; pointer-events:auto; position:relative; z-index:50; transition:background .15s;
+  }
+  .story-close-btn:hover{ background:rgba(255,255,255,0.2); }
+  .story-close-btn svg{ width:24px; height:24px; }
+
+  .media-area{ position:relative; flex:1; background:#111827; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .story-loading{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:10; }
+  .dot-matrix-loader{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px; width:36px; height:36px; }
+  .dot-matrix-loader .dot{ background:#fff; border-radius:2px; width:100%; height:100%; opacity:0.2; animation:dotMatrixPulse 1.2s infinite ease-in-out; }
+  .dot-matrix-loader .dot:nth-child(1){ animation-delay:0.0s; }
+  .dot-matrix-loader .dot:nth-child(2){ animation-delay:0.1s; }
+  .dot-matrix-loader .dot:nth-child(3){ animation-delay:0.2s; }
+  .dot-matrix-loader .dot:nth-child(6){ animation-delay:0.3s; }
+  .dot-matrix-loader .dot:nth-child(9){ animation-delay:0.4s; }
+  .dot-matrix-loader .dot:nth-child(8){ animation-delay:0.5s; }
+  .dot-matrix-loader .dot:nth-child(7){ animation-delay:0.6s; }
+  .dot-matrix-loader .dot:nth-child(4){ animation-delay:0.7s; }
+  .dot-matrix-loader .dot:nth-child(5){ animation-delay:0.8s; }
+  @keyframes dotMatrixPulse{ 0%,100%{opacity:0.2; transform:scale(0.8);} 40%{opacity:1; transform:scale(1.1); box-shadow:0 0 8px rgba(255,255,255,0.8);} }
+
+  .story-image{ width:100%; height:100%; object-fit:cover; user-select:none; z-index:0; display:block; }
+  .story-image.hidden{ display:none; }
+  .tap-left{ position:absolute; left:0; top:0; bottom:0; width:33.333%; z-index:20; cursor:pointer; }
+  .tap-right{ position:absolute; right:0; top:0; bottom:0; width:66.666%; z-index:20; cursor:pointer; }
+
+  .story-caption{
+    position:absolute; left:16px; right:16px; bottom:74px; z-index:30;
+    font-family:"Fraunces", serif; font-style:italic; color:#fff; font-size:0.92rem;
+    line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); pointer-events:none;
+  }
+
+  .viewer-footer{
+    position:absolute; bottom:0; left:0; right:0; padding:16px; z-index:30;
+    background:linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    display:flex; flex-direction:column; align-items:center; pointer-events:none;
+  }
+  .viewer-footer-label{
+    color:rgba(255,255,255,0.8); font-size:11px; font-weight:500; letter-spacing:0.1em;
+    display:flex; align-items:center; gap:8px;
+  }
+  .viewer-footer-label svg{ width:14px; height:14px; color:#E73F1E; }
+  .viewer-handle{ width:48px; height:4px; background:rgba(255,255,255,0.3); border-radius:100px; margin-top:8px; }
 </style>
 </head>
 <body>
@@ -285,7 +404,12 @@
       <a class="featured-card" id="featured"></a>
     </header>
 
-    <section class="section" style="padding-top:2.5rem;">
+    <section class="stories-section" style="padding-top:2.5rem;">
+      <h2>Stories</h2>
+      <div class="stories-feed" id="stories-feed"></div>
+    </section>
+
+    <section class="section">
       <h2>Travel stories</h2>
       <div class="grid" id="grid"></div>
     </section>
@@ -317,6 +441,48 @@
     </footer>
 
   </main>
+</div>
+
+<div id="story-modal" class="story-modal">
+  <div class="viewer-container">
+    <div id="cube-wrapper" class="cube-wrapper">
+
+      <div id="progress-container" class="progress-container"></div>
+
+      <div class="viewer-header">
+        <div class="viewer-header-left">
+          <img id="modal-avatar" class="viewer-avatar" src="" alt="">
+          <span id="modal-username" class="viewer-username"></span>
+        </div>
+        <button id="close-btn" class="story-close-btn" aria-label="Close">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <div id="media-area" class="media-area">
+        <div id="loading-spinner" class="story-loading">
+          <div class="dot-matrix-loader">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+        </div>
+        <img id="story-image" class="story-image hidden" src="" alt="">
+        <p id="story-caption" class="story-caption"></p>
+        <div id="tap-left" class="tap-left"></div>
+        <div id="tap-right" class="tap-right"></div>
+      </div>
+
+      <div class="viewer-footer">
+        <div class="viewer-footer-label">
+          <span>Wander, one piece at a time</span>
+          <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"></path></svg>
+        </div>
+        <div class="viewer-handle"></div>
+      </div>
+
+    </div>
+  </div>
 </div>
 
 <script>
@@ -407,6 +573,202 @@ document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
 // ticker — real logged places, looped twice for seamless scroll
 const tickerItems = live.map(p => `<span>${p.name} <span class="dot">·</span></span>`).join('');
 document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
+
+/* ============================================================
+   STORIES — one "user" per place, one "story" per photo. Captions
+   only appear where a piece has real, hand-written notes (same rule
+   as FEATURED_PHOTOS above) — pieces without notes just show as a
+   plain photo, same as a real Instagram story with no text on it.
+   To add more: copy a slide object, point img at a real file in
+   that place's img/ folder, add notes if you've written any.
+   ============================================================ */
+const STORIES = [
+  { id:'london', username:'London', avatar:'london/img/07-elephant-shutter.jpg', slug:'london', slides:[
+    {img:'london/img/05-dank-cyberpunk-wide.jpg', caption:''},
+    {img:'london/img/01-bird-collage.jpg', caption:'Birdy.'},
+    {img:'london/img/03-nope-buddha.jpg', caption:'PEACE!'},
+    {img:'london/img/09-split-face.jpg', caption:''},
+    {img:'london/img/04-shades-mural.jpg', caption:''},
+    {img:'london/img/12-cosmic-profile-mural.jpg', caption:''},
+    {img:'london/img/15-grandfather-child-mural.jpg', caption:''},
+  ]},
+  { id:'khajuraho', username:'Khajuraho', avatar:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', slug:'khajuraho', slides:[
+    {img:'khajuraho/img/01-sunset-temple-silhouette.jpg', caption:''},
+    {img:'khajuraho/img/05-mithuna-carving-niche.jpg', caption:''},
+    {img:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', caption:''},
+    {img:'khajuraho/img/13-shikhara-tower-close.jpg', caption:''},
+    {img:'khajuraho/img/18-nandi-bull-statue.jpg', caption:''},
+    {img:'khajuraho/img/26-white-temple-domes-wide.jpg', caption:''},
+  ]},
+  { id:'concerts', username:'Concerts', avatar:'concerts/img/green-day.jpg', slug:'concerts', slides:[
+    {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.'},
+    {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.'},
+    {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.'},
+    {img:'concerts/img/glass-beams.jpg', caption:'Glass Beams — Bangalore show.'},
+    {img:'concerts/img/john-mayer.jpg', caption:'John Mayer — Mumbai show.'},
+    {img:'concerts/img/aurora.jpg', caption:'AURORA — Lollapalooza India, day two.'},
+    {img:'concerts/img/isabel-larosa.jpg', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
+    {img:'concerts/img/talwinder.jpg', caption:'Talwiinder — Lollapalooza India, day one.'},
+  ]},
+  { id:'udupi', username:'Udupi', avatar:'udupi/img/05-sunset-lake.jpg', slug:'udupi', slides:[
+    {img:'udupi/img/01-lake-boats-aerial.jpg', caption:''},
+    {img:'udupi/img/02-lake-island-framed-trees.jpg', caption:''},
+    {img:'udupi/img/04-walking-path-leaves.jpg', caption:''},
+    {img:'udupi/img/05-sunset-lake.jpg', caption:''},
+    {img:'udupi/img/03-lake-island-wide.jpg', caption:''},
+  ]},
+];
+const STORY_SLIDE_DURATION = 4500;
+
+let curUserIdx = 0, curSlideIdx = 0, storyRAF = null, storyStart = 0, storyElapsed = 0, storyPaused = false;
+let viewedStories = {};
+
+function loadViewed(){
+  try { const s = localStorage.getItem('wander_stories_viewed'); if (s) viewedStories = JSON.parse(s); }
+  catch(e) {}
+}
+function saveViewed(){
+  try { localStorage.setItem('wander_stories_viewed', JSON.stringify(viewedStories)); } catch(e) {}
+}
+function markViewed(id){ viewedStories[id] = true; saveViewed(); renderStoriesFeed(); }
+
+function renderStoriesFeed(){
+  const feed = document.getElementById('stories-feed');
+  feed.innerHTML = STORIES.map((user, i) => {
+    const isViewed = viewedStories[user.id];
+    const ringClass = isViewed ? 'viewed' : `color-${i % 4}`;
+    return `
+      <div class="story-item">
+        <button class="story-ring ${ringClass}" data-idx="${i}" aria-label="View ${user.username} story">
+          <img class="story-avatar" src="${user.avatar}" alt="">
+        </button>
+        <span class="story-username ${isViewed ? 'viewed' : ''}">${user.username}</span>
+      </div>`;
+  }).join('');
+  feed.querySelectorAll('.story-ring').forEach(btn => {
+    btn.onclick = () => openStoryViewer(parseInt(btn.dataset.idx, 10));
+  });
+}
+
+const storyModal = document.getElementById('story-modal');
+const cubeWrapper = document.getElementById('cube-wrapper');
+const storyImg = document.getElementById('story-image');
+const storySpinner = document.getElementById('loading-spinner');
+const storyCaptionEl = document.getElementById('story-caption');
+const progContainer = document.getElementById('progress-container');
+const modalAvatar = document.getElementById('modal-avatar');
+const modalUsername = document.getElementById('modal-username');
+
+function openStoryViewer(userIdx){
+  curUserIdx = userIdx; curSlideIdx = 0;
+  storyModal.classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadSlide();
+}
+function closeStoryViewer(){
+  storyModal.classList.remove('open');
+  document.body.style.overflow = '';
+  cancelAnimationFrame(storyRAF);
+  markViewed(STORIES[curUserIdx].id);
+}
+document.getElementById('close-btn').addEventListener('click', e => { e.stopPropagation(); closeStoryViewer(); });
+document.getElementById('close-btn').addEventListener('pointerdown', e => e.stopPropagation());
+
+function renderProgressBars(user){
+  progContainer.innerHTML = user.slides.map((_, idx) => `
+    <div class="prog-bar"><div class="prog-fill" id="prog-fill-${idx}"></div></div>
+  `).join('');
+}
+
+function loadSlide(direction = 'none'){
+  cancelAnimationFrame(storyRAF);
+  const user = STORIES[curUserIdx];
+  const slide = user.slides[curSlideIdx];
+
+  modalAvatar.src = user.avatar;
+  modalUsername.textContent = user.username;
+  renderProgressBars(user);
+  for (let i = 0; i < curSlideIdx; i++) document.getElementById(`prog-fill-${i}`).style.width = '100%';
+
+  storyImg.classList.add('hidden');
+  storySpinner.classList.remove('hidden');
+  storyCaptionEl.textContent = '';
+  storyImg.src = '';
+
+  if (direction === 'nextUser') { cubeWrapper.classList.add('rotate-cube-left-out'); setTimeout(() => { cubeWrapper.classList.remove('rotate-cube-left-out'); cubeWrapper.classList.add('rotate-cube-left-in'); setTimeout(() => cubeWrapper.classList.remove('rotate-cube-left-in'), 500); }, 250); }
+  else if (direction === 'prevUser') { cubeWrapper.classList.add('rotate-cube-right-out'); setTimeout(() => { cubeWrapper.classList.remove('rotate-cube-right-out'); cubeWrapper.classList.add('rotate-cube-right-in'); setTimeout(() => cubeWrapper.classList.remove('rotate-cube-right-in'), 500); }, 250); }
+
+  const preload = new Image();
+  preload.onload = () => {
+    storyImg.src = slide.img;
+    storySpinner.classList.add('hidden');
+    storyImg.classList.remove('hidden');
+    storyCaptionEl.textContent = slide.caption || '';
+    storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
+    storyRAF = requestAnimationFrame(animateStoryProgress);
+  };
+  preload.src = slide.img;
+}
+
+function animateStoryProgress(ts){
+  if (storyPaused) { storyStart = ts - storyElapsed; storyRAF = requestAnimationFrame(animateStoryProgress); return; }
+  if (!ts) ts = performance.now();
+  storyElapsed = ts - storyStart;
+  const pct = Math.min((storyElapsed / STORY_SLIDE_DURATION) * 100, 100);
+  const bar = document.getElementById(`prog-fill-${curSlideIdx}`);
+  if (bar) bar.style.width = `${pct}%`;
+  if (storyElapsed < STORY_SLIDE_DURATION) storyRAF = requestAnimationFrame(animateStoryProgress);
+  else storyGoNext();
+}
+
+function storyGoNext(){
+  const user = STORIES[curUserIdx];
+  if (curSlideIdx < user.slides.length - 1) { curSlideIdx++; loadSlide(); }
+  else {
+    markViewed(user.id);
+    if (curUserIdx < STORIES.length - 1) { curUserIdx++; curSlideIdx = 0; loadSlide('nextUser'); }
+    else closeStoryViewer();
+  }
+}
+function storyGoPrev(){
+  if (curSlideIdx > 0) { curSlideIdx--; loadSlide(); }
+  else if (curUserIdx > 0) { curUserIdx--; curSlideIdx = STORIES[curUserIdx].slides.length - 1; loadSlide('prevUser'); }
+  else { curSlideIdx = 0; loadSlide(); }
+}
+
+document.getElementById('tap-right').onclick = storyGoNext;
+document.getElementById('tap-left').onclick = storyGoPrev;
+const pauseStory = () => { storyPaused = true; };
+const resumeStory = () => { storyPaused = false; };
+['mousedown','touchstart'].forEach(ev => {
+  document.getElementById('tap-right').addEventListener(ev, pauseStory, {passive:true});
+  document.getElementById('tap-left').addEventListener(ev, pauseStory, {passive:true});
+});
+['mouseup','touchend'].forEach(ev => {
+  document.getElementById('tap-right').addEventListener(ev, resumeStory, {passive:true});
+  document.getElementById('tap-left').addEventListener(ev, resumeStory, {passive:true});
+});
+
+let dragStartX = 0, dragStartY = 0, isDragging = false;
+cubeWrapper.addEventListener('pointerdown', e => {
+  if (e.target.closest('button')) return;
+  dragStartX = e.clientX; dragStartY = e.clientY; isDragging = true; storyPaused = true;
+});
+cubeWrapper.addEventListener('pointerup', e => {
+  if (!isDragging) return;
+  isDragging = false; storyPaused = false;
+  const dx = e.clientX - dragStartX, dy = e.clientY - dragStartY;
+  if (Math.abs(dy) > 80 && dy > Math.abs(dx)) { closeStoryViewer(); }
+  else if (Math.abs(dx) > 50) {
+    if (dx < 0) {
+      if (curUserIdx < STORIES.length - 1) { markViewed(STORIES[curUserIdx].id); curUserIdx++; curSlideIdx = 0; loadSlide('nextUser'); }
+      else closeStoryViewer();
+    } else if (curUserIdx > 0) { curUserIdx--; curSlideIdx = 0; loadSlide('prevUser'); }
+  }
+});
+
+loadViewed();
+renderStoriesFeed();
 </script>
 
 </body>
