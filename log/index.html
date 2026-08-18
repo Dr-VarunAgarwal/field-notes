@@ -62,7 +62,7 @@
 <body>
 
 <h1>Add a story</h1>
-<p class="lede">Quick photo drops for an existing city's story ring — from anywhere, no laptop needed. New places (a whole new city) still go through a full pass, this is just for adding fresh slides to one already up.</p>
+<p class="lede">Quick photo drops from anywhere, no laptop needed — either onto an existing city's story ring, or as a brand new standalone story that isn't tied to any of the main "Travel stories" cards. A whole new <em>city page</em> (cover, blurb, full gallery) still goes through a full pass separately.</p>
 
 <div id="token-gate">
   <div class="card">
@@ -79,6 +79,14 @@
 
 <form id="story-form" style="display:none;">
   <div class="card">
+    <label for="mode">What are you doing?</label>
+    <select id="mode" onchange="onModeChange()">
+      <option value="existing">Add photos to an existing story</option>
+      <option value="new">Create a brand new standalone story</option>
+    </select>
+  </div>
+
+  <div class="card" id="existing-fields">
     <label for="place">Place</label>
     <select id="place">
       <option value="london" data-slug="london">Shoreditch (London)</option>
@@ -87,6 +95,14 @@
       <option value="udupi" data-slug="udupi">Udupi</option>
       <option value="skye" data-slug="skye">Isle of Skye</option>
     </select>
+  </div>
+
+  <div class="card" id="new-fields" style="display:none;">
+    <label for="new-username">Story name</label>
+    <input type="text" id="new-username" placeholder="e.g. Rishikesh Trek">
+    <p id="new-id-preview" style="font-size:0.72rem;color:var(--ink-soft);margin:-0.5rem 0 0.9rem;"></p>
+    <label>Cover photo (shown as the ring's thumbnail)</label>
+    <input type="file" accept="image/*" id="new-avatar">
   </div>
 
   <div id="slides"></div>
@@ -126,6 +142,24 @@ function forgetToken(){
   renderTokenStatus();
 }
 renderTokenStatus();
+
+/* ---------- mode toggle ---------- */
+function onModeChange(){
+  const mode = document.getElementById('mode').value;
+  document.getElementById('existing-fields').style.display = mode === 'existing' ? 'block' : 'none';
+  document.getElementById('new-fields').style.display = mode === 'new' ? 'block' : 'none';
+}
+function slugify(str){
+  return str.toLowerCase().trim()
+    .normalize('NFKD').replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 40);
+}
+document.getElementById('new-username').addEventListener('input', () => {
+  const id = slugify(document.getElementById('new-username').value);
+  document.getElementById('new-id-preview').textContent = id ? `Will be saved as: ${id}` : '';
+});
 
 /* ---------- slide rows ---------- */
 let slideCount = 0;
@@ -224,6 +258,24 @@ function slideLiteral(imgPath, location, caption){
   return `{img:${JSON.stringify(imgPath)}, location:${JSON.stringify(location)}, caption:${JSON.stringify(caption || '')}}`;
 }
 
+/* ---------- insert a whole new STORIES entry (standalone story) ---------- */
+function insertNewStory(content, storyLiteral){
+  const storiesMarker = 'const STORIES = [';
+  const storiesStart = content.indexOf(storiesMarker);
+  if (storiesStart === -1) throw new Error("Couldn't find the STORIES array — has the file structure changed?");
+  const openBracketPos = storiesStart + storiesMarker.length - 1;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  return content.slice(0, closeBracketPos) + `\n  ${storyLiteral},\n` + content.slice(closeBracketPos);
+}
+function newStoryLiteral(id, username, avatarPath, slideLiterals){
+  const slidesInner = slideLiterals.map(s => `\n    ${s},`).join('') + '\n  ';
+  return `{ id:${JSON.stringify(id)}, username:${JSON.stringify(username)}, avatar:${JSON.stringify(avatarPath)}, slides:[${slidesInner}] }`;
+}
+function escapeRegex(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+function storyIdExists(content, id){
+  return new RegExp(`id:\\s*['"]${escapeRegex(id)}['"]`).test(content);
+}
+
 /* ---------- logging UI ---------- */
 const logEl = document.getElementById('log');
 function log(msg, cls){
@@ -242,9 +294,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
   submitBtn.disabled = true;
   logEl.innerHTML = '';
 
-  const placeSelect = document.getElementById('place');
-  const placeId = placeSelect.value;
-  const slug = placeSelect.selectedOptions[0].dataset.slug;
+  const mode = document.getElementById('mode').value;
 
   const rows = Array.from(document.querySelectorAll('.slide-row'));
   const slides = rows.map(row => ({
@@ -259,39 +309,85 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     return;
   }
 
+  let placeId, folderSlug, newUsername, newAvatarFile, newId;
+
+  if (mode === 'existing'){
+    const placeSelect = document.getElementById('place');
+    placeId = placeSelect.value;
+    folderSlug = placeSelect.selectedOptions[0].dataset.slug;
+  } else {
+    newUsername = document.getElementById('new-username').value.trim();
+    newAvatarFile = document.getElementById('new-avatar').files[0];
+    newId = slugify(newUsername);
+    if (!newUsername || !newAvatarFile || !newId){
+      log('A new story needs a name and a cover photo.', 'log-err');
+      submitBtn.disabled = false;
+      return;
+    }
+    folderSlug = `stories/${newId}`;
+    placeId = newId;
+  }
+
   try {
+    log('Fetching current index.html...', 'log-mid');
+    const file = await ghGet('index.html');
+    const content = base64ToUtf8(file.content);
+
+    if (mode === 'new' && storyIdExists(content, newId)){
+      throw new Error(`A story with id "${newId}" already exists — pick a different name.`);
+    }
+
     const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
     const uploaded = [];
+
+    if (mode === 'new'){
+      log('Resizing cover photo...', 'log-mid');
+      const avBlob = await resizeImage(newAvatarFile);
+      const avBase64 = await blobToBase64(avBlob);
+      const avPath = `${folderSlug}/img/avatar.jpg`;
+      log('Uploading cover photo...', 'log-mid');
+      await ghPut(avPath, { message: `Add story cover: ${avPath}`, content: avBase64 });
+      log('✓ Cover photo uploaded', 'log-ok');
+    }
 
     for (let i = 0; i < slides.length; i++){
       log(`Resizing photo ${i + 1}/${slides.length}...`, 'log-mid');
       const blob = await resizeImage(slides[i].file);
       const base64 = await blobToBase64(blob);
       const filename = `log-${stamp}-${i + 1}.jpg`;
-      const imgPath = `${slug}/img/${filename}`;
+      const imgPath = `${folderSlug}/img/${filename}`;
       log(`Uploading ${filename}...`, 'log-mid');
-      await ghPut(imgPath, { message: `Add story photo: ${slug}/${filename}`, content: base64 });
+      await ghPut(imgPath, { message: `Add story photo: ${imgPath}`, content: base64 });
       uploaded.push({ ...slides[i], imgPath });
       log(`✓ ${filename} uploaded`, 'log-ok');
     }
 
-    log('Fetching current index.html...', 'log-mid');
-    const file = await ghGet('index.html');
-    const content = base64ToUtf8(file.content);
-
     const literals = uploaded.map(s => slideLiteral(s.imgPath, s.location, s.caption));
-    const updated = appendSlides(content, placeId, literals);
+    let updated;
+    if (mode === 'existing'){
+      updated = appendSlides(content, placeId, literals);
+    } else {
+      const avatarPathFinal = `${folderSlug}/img/avatar.jpg`;
+      const literal = newStoryLiteral(newId, newUsername, avatarPathFinal, literals);
+      updated = insertNewStory(content, literal);
+    }
 
     log('Publishing updated index.html...', 'log-mid');
     await ghPut('index.html', {
-      message: `Add ${uploaded.length} story photo(s) to ${placeId}`,
+      message: mode === 'existing'
+        ? `Add ${uploaded.length} story photo(s) to ${placeId}`
+        : `Add new story: ${newUsername}`,
       content: utf8ToBase64(updated),
       sha: file.sha,
     });
 
-    log(`✓ Done — ${uploaded.length} photo(s) added to ${placeId}'s story.`, 'log-ok');
+    log(mode === 'existing'
+      ? `✓ Done — ${uploaded.length} photo(s) added to ${placeId}'s story.`
+      : `✓ Done — new story "${newUsername}" created.`, 'log-ok');
     log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
     document.getElementById('story-form').reset();
+    onModeChange();
+    document.getElementById('new-id-preview').textContent = '';
     document.getElementById('slides').innerHTML = '';
     slideCount = 0;
     addSlideRow();

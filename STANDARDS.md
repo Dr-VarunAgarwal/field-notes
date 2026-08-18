@@ -85,25 +85,36 @@ whether it should also be added to these arrays in `index.html`:
 - The ticker pulls from all of `PLACES` (live + draft) automatically —
   nothing to do there beyond adding the place.
 
-## 6. Adding photos to an existing place's story
+## 6. Adding stories from a phone — `log/index.html`
 
-For quick photo drops to a city that's already live (not a whole new
-place) — `log/index.html`, unlinked from the site nav and blocked from
-search engines via `robots.txt`, so it's only reachable if you know the
-URL. Bookmark it on mobile for one-tap access.
+Unlinked from the site nav and blocked from search engines via
+`robots.txt`, so it's only reachable if you know the URL. Bookmark it
+on mobile for one-tap access.
 
 - Enter a GitHub personal access token once (fine-grained, scoped only
   to this repo, `Contents: Read and write`) — stored in that browser's
   localStorage, not re-asked after that.
-- Pick the place, add one or more photos with a location and optional
-  caption. Resizing happens client-side (Canvas, same ~1280px/quality
-  0.75 treatment as everywhere else); it uploads each photo then
-  splices new slide entries into that place's existing `STORIES` block
-  via the GitHub Contents API — no server involved.
-- Scoped deliberately to *existing* places only. A brand new place
-  still needs the fuller pass in section 5 above (cover photo, blurb,
-  editorial judgment on what's worth including) — better suited to a
-  proper session than a phone form.
+- Resizing happens client-side (Canvas, same ~1280px/quality 0.75
+  treatment as everywhere else); uploads go through the GitHub Contents
+  API — no server involved.
+- Two modes:
+  - **Add photos to an existing story** — pick one of the 5 places,
+    add photo(s) with a location and optional caption. Splices new
+    slide entries into that place's existing `STORIES` block.
+  - **Create a brand new standalone story** — a story doesn't have to
+    correspond to one of the "Travel stories" cards (the ring feed and
+    `PLACES` grid are independent arrays; a `STORIES` entry's `slug`
+    field isn't even read by the viewer). Give it a name (auto-slugged
+    into an id) and a cover photo, add photo(s) the same way. Images
+    land in a new `stories/<id>/img/` folder rather than an existing
+    place's own folder. Inserts a whole new entry at the end of
+    `STORIES` — checks the id doesn't already collide before uploading
+    anything.
+- A brand new *place* (its own city page — cover, blurb, full gallery,
+  editorial judgment on what's worth including) is a different, bigger
+  thing than a standalone story and still needs the fuller pass in
+  section 5 above — better suited to a proper session than a phone
+  form.
 - The repo is public, so the tool's source is technically visible to
   anyone who goes looking at the GitHub file tree directly — the real
   gate is the access token, not the page being hidden. If that's ever
