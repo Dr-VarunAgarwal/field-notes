@@ -326,7 +326,8 @@
   .dot-matrix-loader .dot:nth-child(5){ animation-delay:0.8s; }
   @keyframes dotMatrixPulse{ 0%,100%{opacity:0.2; transform:scale(0.8);} 40%{opacity:1; transform:scale(1.1); box-shadow:0 0 8px rgba(255,255,255,0.8);} }
 
-  .story-image{ width:100%; height:100%; object-fit:cover; user-select:none; z-index:0; display:block; }
+  .story-image{ width:100%; height:100%; object-fit:cover; user-select:none; z-index:0; display:block; -webkit-user-drag:none; -khtml-user-drag:none; -moz-user-drag:none; -o-user-drag:none; user-drag:none; -webkit-touch-callout:none; pointer-events:none; }
+  .story-avatar, .viewer-avatar{ -webkit-user-drag:none; user-drag:none; -webkit-touch-callout:none; user-select:none; pointer-events:none; }
   .hidden{ display:none !important; }
   .tap-left{ position:absolute; left:0; top:0; bottom:0; width:33.333%; z-index:20; cursor:pointer; }
   .tap-right{ position:absolute; right:0; top:0; bottom:0; width:66.666%; z-index:20; cursor:pointer; }
@@ -346,6 +347,32 @@
     line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
   }
   .story-caption:empty{ display:none; }
+  /* small, clearly-labelled AI-assessment note — same "Note from Claude"
+     convention used in the album drawers, never mixed into the caption
+     above (which is always your own words). */
+  .story-note{
+    font-size:0.68rem; line-height:1.45; color:rgba(255,255,255,0.6);
+    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0.5rem 0 0; max-width:88%;
+  }
+  .story-note .lbl{
+    text-transform:uppercase; letter-spacing:0.08em; font-size:0.6rem;
+    font-weight:700; opacity:0.75; margin-right:0.3rem;
+  }
+  .story-note:empty{ display:none; }
+
+  /* corner signature mark on every story slide — pure CSS/text overlay,
+     never touches the image file itself. Mirrors the .wm-mark badge used
+     across the album pages. */
+  .story-wm{
+    position:absolute; z-index:15; pointer-events:none;
+    bottom:18px; right:16px;
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.45); backdrop-filter:blur(2px);
+    border:1px solid rgba(255,255,255,0.25);
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:11px; letter-spacing:0.03em;
+    color:rgba(255,255,255,0.85);
+  }
 
   .viewer-footer{
     position:absolute; bottom:0; left:0; right:0; padding:16px; z-index:30;
@@ -442,7 +469,7 @@
 
       <div class="viewer-header">
         <div class="viewer-header-left">
-          <img id="modal-avatar" class="viewer-avatar" src="" alt="">
+          <img id="modal-avatar" class="viewer-avatar" src="" alt="" draggable="false" oncontextmenu="return false">
           <span id="modal-username" class="viewer-username"></span>
         </div>
         <button id="close-btn" class="story-close-btn" aria-label="Close">
@@ -458,13 +485,15 @@
             <div class="dot"></div><div class="dot"></div><div class="dot"></div>
           </div>
         </div>
-        <img id="story-image" class="story-image hidden" src="" alt="">
+        <img id="story-image" class="story-image hidden" src="" alt="" draggable="false" oncontextmenu="return false">
+        <span class="story-wm" aria-hidden="true">VA</span>
         <div id="story-info" class="story-info">
           <p id="story-location" class="story-location">
             <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.493 1.698 5.988 3.354 7.584a13.731 13.731 0 002.274 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"></path></svg>
             <span id="story-location-text"></span>
           </p>
           <p id="story-caption" class="story-caption"></p>
+          <p id="story-note" class="story-note"></p>
         </div>
         <div id="tap-left" class="tap-left"></div>
         <div id="tap-right" class="tap-right"></div>
@@ -490,7 +519,7 @@ const PLACES = [
   {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
   {name:'Glasgow', slug:'glasgow', status:'draft', count:''},
-  {name:'Isle of Skye', slug:'skye', status:'draft', count:''},
+  {name:'Isle of Skye', slug:'skye', status:'live', cover:'skye/img/d3-08-quiraing.jpg', blurb:'Four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'36 pieces'},
 ];
 
 const live = PLACES.filter(p => p.status === 'live');
@@ -602,6 +631,14 @@ const STORIES = [
     {img:'udupi/img/05-sunset-lake.jpg', location:'Udupi, Karnataka', caption:''},
     {img:'udupi/img/03-lake-island-wide.jpg', location:'Udupi, Karnataka', caption:''},
   ]},
+  { id:'skye', username:'Skye', avatar:'skye/img/d3-08-quiraing.jpg', slug:'skye', slides:[
+    {img:'skye/img/d2-02-eilean-donan-wide.jpg', location:'Eilean Donan Castle, Dornie', caption:''},
+    {img:'skye/img/d2-10-sligachan-bridge-cuillins.jpg', location:'Sligachan Old Bridge', caption:''},
+    {img:'skye/img/d3-02-fairy-pools-turquoise.jpg', location:'Fairy Pools, Glenbrittle', caption:''},
+    {img:'skye/img/d3-08-quiraing.jpg', location:'The Quiraing, Trotternish', caption:''},
+    {img:'skye/img/d3-09-kilt-rock.jpg', location:'Kilt Rock, Trotternish', caption:''},
+    {img:'skye/img/coda-02-glenfinnan-viaduct.jpg', location:'Glenfinnan Viaduct, Lochaber', caption:''},
+  ]},
 ];
 const STORY_SLIDE_DURATION = 4500;
 
@@ -625,7 +662,7 @@ function renderStoriesFeed(){
     return `
       <div class="story-item">
         <button class="story-ring ${ringClass}" data-idx="${i}" aria-label="View ${user.username} story">
-          <img class="story-avatar" src="${user.avatar}" alt="">
+          <img class="story-avatar" src="${user.avatar}" alt="" draggable="false" oncontextmenu="return false">
         </button>
         <span class="story-username ${isViewed ? 'viewed' : ''}">${user.username}</span>
       </div>`;
@@ -640,6 +677,7 @@ const cubeWrapper = document.getElementById('cube-wrapper');
 const storyImg = document.getElementById('story-image');
 const storySpinner = document.getElementById('loading-spinner');
 const storyCaptionEl = document.getElementById('story-caption');
+const storyNoteEl = document.getElementById('story-note');
 const storyLocationText = document.getElementById('story-location-text');
 const progContainer = document.getElementById('progress-container');
 const modalAvatar = document.getElementById('modal-avatar');
@@ -679,6 +717,7 @@ function loadSlide(direction = 'none'){
   storyImg.classList.add('hidden');
   storySpinner.classList.remove('hidden');
   storyCaptionEl.textContent = '';
+  storyNoteEl.innerHTML = '';
   storyLocationText.textContent = '';
   storyImg.src = '';
 
@@ -691,6 +730,7 @@ function loadSlide(direction = 'none'){
     storySpinner.classList.add('hidden');
     storyImg.classList.remove('hidden');
     storyCaptionEl.textContent = slide.caption || '';
+    storyNoteEl.innerHTML = slide.note ? `<span class="lbl">Note from Claude</span>${slide.note}` : '';
     storyLocationText.textContent = slide.location || '';
     storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
     storyRAF = requestAnimationFrame(animateStoryProgress);
