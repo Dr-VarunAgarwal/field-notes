@@ -14,6 +14,7 @@
   :root{
     --sky: #B9CBF3;
     --blue: #2A46E0;
+    --coral: #FF6B4A;
     --cream: #F3ECDE;
     --card: #FFFFFF;
     --olive: #454F30;
@@ -46,12 +47,34 @@
       overflow-y:auto;
     }
   }
-  .pill-nav{ display:flex; gap:0.4rem; flex-wrap:wrap; }
-  .pill-nav a{
-    background:rgba(255,255,255,0.7); color:var(--ink); text-decoration:none;
+  .sidebar-head{ display:flex; align-items:center; justify-content:space-between; gap:0.6rem; position:relative; }
+  .sidebar-head-actions{ display:flex; align-items:center; gap:0.5rem; flex:none; }
+  .nav-pill{
+    background:rgba(255,255,255,0.7); color:var(--ink); text-decoration:none; border:none;
+    font-family:inherit; cursor:pointer;
     font-size:0.72rem; font-weight:600; padding:0.35rem 0.8rem; border-radius:100px;
   }
-  .pill-nav a:hover{ background:#fff; }
+  .nav-pill:hover{ background:#fff; }
+  .va-mark{
+    width:34px; height:34px; border-radius:50%; flex:none;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--blue); color:#fff; text-decoration:none;
+    font-family:"Fredoka", sans-serif; font-weight:700; font-size:0.7rem; letter-spacing:0.02em;
+    transition:opacity .15s ease;
+  }
+  .va-mark:hover{ opacity:0.82; }
+  .nav-menu{
+    display:none; flex-direction:column; gap:0.2rem;
+    position:absolute; top:100%; right:0; margin-top:0.5rem; z-index:20;
+    background:#fff; border-radius:10px; padding:0.4rem;
+    box-shadow:0 12px 26px -10px rgba(23,20,12,0.4);
+  }
+  .nav-menu.open{ display:flex; }
+  .nav-menu a{
+    color:var(--ink); text-decoration:none; font-size:0.8rem; font-weight:600;
+    padding:0.45rem 0.7rem; border-radius:6px; white-space:nowrap;
+  }
+  .nav-menu a:hover{ background:var(--cream); }
   .home-link{
     font-family:"Fraunces", serif; font-style:italic; font-size:0.85rem;
     color:var(--blue); text-decoration:none; opacity:0.75;
@@ -75,16 +98,16 @@
   .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
   .wordmark-big{
     font-family:"Fredoka", sans-serif; font-weight:700;
-    font-size:clamp(2.1rem, 4vw, 2.5rem); line-height:0.98;
+    font-size:clamp(2.6rem, 5.5vw, 3.2rem); line-height:0.98;
     color:var(--blue); margin:0; text-decoration:none; display:block;
   }
-  .doodle{ width:120px; height:auto; opacity:0.85; }
+  .wordmark-swash{ width:150px; height:14px; display:block; margin:0.15rem 0 0; }
+  .doodle-tagline-row{ display:flex; align-items:center; gap:1rem; }
+  .doodle{ width:90px; height:auto; opacity:0.85; flex:none; }
   .tagline{
+    flex:1; min-width:0;
     font-size:0.85rem; line-height:1.6; color:var(--blue); opacity:0.85;
-    max-width:42ch; margin:0;
-  }
-  @media(min-width:1024px){
-    .tagline{ max-width:26ch; }
+    margin:0;
   }
 
   .ticker-wrap{
@@ -152,22 +175,17 @@
     justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
     pointer-events:none;
   }
-  .page-header .eyebrow{
-    font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
-    color:rgba(255,255,255,0.82); margin:0 0 0.4rem;
-    text-shadow:0 2px 10px rgba(0,0,0,0.5);
-  }
-  .page-title{
-    font-family:"Fredoka", sans-serif; font-weight:700;
-    font-size:clamp(2rem, 6vw, 2.8rem); margin:0 0 0.5rem; color:#fff; line-height:1;
-    text-shadow:0 3px 16px rgba(0,0,0,0.38);
+  .header-path{
+    font-family:"Fraunces", serif; font-style:italic; font-size:0.8rem;
+    letter-spacing:0.03em; color:rgba(255,255,255,0.88); margin:0;
+    text-shadow:0 2px 10px rgba(0,0,0,0.55);
   }
 
   /* ---------- featured (random) card — sidebar editorial card ---------- */
   .featured-card{
     position:relative; left:auto; bottom:auto; z-index:10;
     display:block; width:100%; max-width:280px;
-    align-self:flex-start;
+    align-self:center;
     background:var(--card); padding:0.6rem 0.6rem 0.8rem;
     border-radius:14px; text-decoration:none; color:inherit;
     box-shadow:0 14px 28px -14px rgba(23,20,12,0.45);
@@ -429,21 +447,33 @@
 
   <aside class="sidebar">
     <div class="sidebar-top">
-      <a class="home-link" href="https://blog.varunagarwal.com">lucidité</a>
-      <nav class="pill-nav">
-        <a href="https://books.varunagarwal.com">Books</a>
-        <a href="https://notes.varunagarwal.com">Notes</a>
-        <a href="https://contact.varunagarwal.com">Contact</a>
-      </nav>
+      <div class="sidebar-head">
+        <a class="home-link" href="https://blog.varunagarwal.com">lucidité</a>
+        <div class="sidebar-head-actions">
+          <button class="nav-pill" id="navigate-btn" type="button" aria-haspopup="true" aria-expanded="false">Navigate</button>
+          <a class="va-mark" href="https://contact.varunagarwal.com" aria-label="Contact">VA</a>
+        </div>
+        <nav class="nav-menu" id="nav-menu">
+          <a href="https://books.varunagarwal.com">Books</a>
+          <a href="https://notes.varunagarwal.com">Notes</a>
+        </nav>
+      </div>
+
       <a class="wordmark-big" href="#top">Wander</a>
-      <svg class="doodle" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#2A46E0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M8 66c10-14 22-14 30 0s20 14 28-2 20-16 28-2 18 12 26 0"/>
-        <circle cx="112" cy="20" r="11"/>
-        <path d="M112 9v5M112 26v5M101 20h5M118 20h5M104 12l3.5 3.5M116.5 24.5l3.5 3.5M104 28l3.5-3.5M116.5 15.5l3.5-3.5"/>
-        <path d="M20 46l6-10h8l6 10z"/>
-        <circle cx="30" cy="41" r="2.4"/>
+      <svg class="wordmark-swash" viewBox="0 0 200 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 8c16-10 32-10 48 0s32 10 48 0 32-10 48 0 32 10 44 0" stroke="#FF6B4A" stroke-width="3" stroke-linecap="round"/>
       </svg>
-      <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
+
+      <div class="doodle-tagline-row">
+        <svg class="doodle" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#2A46E0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 66c10-14 22-14 30 0s20 14 28-2 20-16 28-2 18 12 26 0"/>
+          <circle cx="112" cy="20" r="11"/>
+          <path d="M112 9v5M112 26v5M101 20h5M118 20h5M104 12l3.5 3.5M116.5 24.5l3.5 3.5M104 28l3.5-3.5M116.5 15.5l3.5-3.5"/>
+          <path d="M20 46l6-10h8l6 10z"/>
+          <circle cx="30" cy="41" r="2.4"/>
+        </svg>
+        <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
+      </div>
 
       <div class="ticker-wrap">
         <div class="ticker" id="ticker"></div>
@@ -467,8 +497,7 @@
         <img class="header-photo three swappable" src="khajuraho/img/11-dusk-two-temples-pink-sky.jpg" alt="">
       </div>
       <div class="page-header-inner">
-        <p class="eyebrow">index</p>
-        <h1 class="page-title">Wander</h1>
+        <p class="header-path" id="header-path"></p>
       </div>
     </header>
 
@@ -573,32 +602,72 @@ const draft = PLACES.filter(p => p.status === 'draft');
 /* ============================================================
    HEADER_SETS — curated bg + two overlay photos for the header
    collage. Hand-paired (not fully random) so the three always sit
-   together well. One set picked at random on load; clicking either
-   overlay photo swaps it with the background photo.
+   together well. Each photo carries a "path" — a short location code
+   (country/region/place) shown as the header caption, since the bg
+   photo can change (via swap-on-click) independently of which
+   album's page you're actually on.
+   One set picked at random on load; clicking either overlay photo
+   swaps it with the background photo, and the caption follows it.
    ============================================================ */
 const HEADER_SETS = [
-  {bg:'skye/img/d3-08-quiraing.jpg', two:'london/img/69-designated-graffiti-area-stencil.jpg', three:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg'},
-  {bg:'skye/img/d2-02-eilean-donan-wide.jpg', two:'khajuraho/img/05-mithuna-carving-niche.jpg', three:'london/img/32-heron-mural-gable.jpg'},
-  {bg:'khajuraho/img/26-white-temple-domes-wide.jpg', two:'skye/img/d3-02-fairy-pools-turquoise.jpg', three:'london/img/05-dank-cyberpunk-wide.jpg'},
-  {bg:'khajuraho/img/01-sunset-temple-silhouette.jpg', two:'london/img/43-xray-ribcage-mural.jpg', three:'khajuraho/img/18-nandi-bull-statue.jpg'},
+  {
+    bg:{src:'skye/img/d3-08-quiraing.jpg', path:'uk/sctlnd/ios'},
+    two:{src:'london/img/69-designated-graffiti-area-stencil.jpg', path:'uk/ldn/shrdtch'},
+    three:{src:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', path:'in/mp/khajuraho'},
+  },
+  {
+    bg:{src:'skye/img/d2-02-eilean-donan-wide.jpg', path:'uk/sctlnd/ios'},
+    two:{src:'khajuraho/img/18-nandi-bull-statue.jpg', path:'in/mp/khajuraho'},
+    three:{src:'london/img/32-heron-mural-gable.jpg', path:'uk/ldn/shrdtch'},
+  },
+  {
+    bg:{src:'khajuraho/img/26-white-temple-domes-wide.jpg', path:'in/mp/khajuraho'},
+    two:{src:'skye/img/d3-02-fairy-pools-turquoise.jpg', path:'uk/sctlnd/ios'},
+    three:{src:'london/img/05-dank-cyberpunk-wide.jpg', path:'uk/ldn/shrdtch'},
+  },
+  {
+    bg:{src:'khajuraho/img/01-sunset-temple-silhouette.jpg', path:'in/mp/khajuraho'},
+    two:{src:'london/img/43-xray-ribcage-mural.jpg', path:'uk/ldn/shrdtch'},
+    three:{src:'skye/img/d3-08-quiraing.jpg', path:'uk/sctlnd/ios'},
+  },
 ];
 const headerSet = HEADER_SETS[Math.floor(Math.random() * HEADER_SETS.length)];
 const hOne = document.querySelector('.header-photo.one');
 const hTwo = document.querySelector('.header-photo.two');
 const hThree = document.querySelector('.header-photo.three');
-hOne.src = headerSet.bg;
-hTwo.src = headerSet.two;
-hThree.src = headerSet.three;
+const headerPathEl = document.getElementById('header-path');
+function setHeaderPhoto(el, data){ el.src = data.src; el.dataset.path = data.path; }
+setHeaderPhoto(hOne, headerSet.bg);
+setHeaderPhoto(hTwo, headerSet.two);
+setHeaderPhoto(hThree, headerSet.three);
+headerPathEl.textContent = hOne.dataset.path;
 function swapHeaderPhoto(overlay){
-  const bgSrc = hOne.src, overlaySrc = overlay.src;
+  const bgSrc = hOne.src, bgPath = hOne.dataset.path;
+  const overlaySrc = overlay.src, overlayPath = overlay.dataset.path;
   hOne.style.opacity = 0; overlay.style.opacity = 0;
   setTimeout(() => {
-    hOne.src = overlaySrc;
-    overlay.src = bgSrc;
+    hOne.src = overlaySrc; hOne.dataset.path = overlayPath;
+    overlay.src = bgSrc; overlay.dataset.path = bgPath;
+    headerPathEl.textContent = hOne.dataset.path;
     hOne.style.opacity = 1; overlay.style.opacity = 1;
   }, 150);
 }
 [hTwo, hThree].forEach(el => el.addEventListener('click', () => swapHeaderPhoto(el)));
+
+/* ---------- Navigate pill dropdown ---------- */
+const navigateBtn = document.getElementById('navigate-btn');
+const navMenu = document.getElementById('nav-menu');
+navigateBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  const open = navMenu.classList.toggle('open');
+  navigateBtn.setAttribute('aria-expanded', open);
+});
+document.addEventListener('click', (e) => {
+  if (!navMenu.contains(e.target) && e.target !== navigateBtn) {
+    navMenu.classList.remove('open');
+    navigateBtn.setAttribute('aria-expanded', false);
+  }
+});
 
 /* ============================================================
    FEATURED_PHOTOS — a small curated selection from the live albums.
