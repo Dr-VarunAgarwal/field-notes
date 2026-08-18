@@ -131,11 +131,21 @@ function renderTokenStatus(){
   document.getElementById('story-form').style.display = has ? 'block' : 'none';
   document.getElementById('pat').value = '';
 }
-function saveToken(){
+async function saveToken(){
   const val = document.getElementById('pat').value.trim();
   if (!val) return;
   localStorage.setItem(TOKEN_KEY, val);
   renderTokenStatus();
+  const statusEl = document.getElementById('token-status');
+  statusEl.innerHTML = '<span>Checking access to the repo...</span>';
+  try {
+    await ghGet('index.html');
+    statusEl.innerHTML = '<span style="color:var(--green);">✓ Token saved and verified — can read the repo.</span>';
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color:var(--red);">✗ Saved, but can't read the repo yet: ${err.message}</span>`;
+    log(`Token check failed: ${err.message}`, 'log-err');
+    log('Check: Repository access is "Only select repositories" → field-notes (not "Public Repositories"), and Contents permission is set to "Read and write" under Repository permissions.', 'log-err');
+  }
 }
 function forgetToken(){
   localStorage.removeItem(TOKEN_KEY);
