@@ -730,7 +730,7 @@ function loadSlide(direction = 'none'){
     storySpinner.classList.add('hidden');
     storyImg.classList.remove('hidden');
     storyCaptionEl.textContent = slide.caption || '';
-    storyNoteEl.innerHTML = slide.note ? `<span class="lbl">Note from Claude</span>${slide.note}` : '';
+    storyNoteEl.innerHTML = '';
     storyLocationText.textContent = slide.location || '';
     storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
     storyRAF = requestAnimationFrame(animateStoryProgress);
