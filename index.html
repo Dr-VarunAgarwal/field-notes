@@ -106,14 +106,15 @@
   .main{ flex:1; min-width:0; }
 
   /* ---------- page header (static banner photo) ---------- */
-  .page-header{ position:relative; overflow:hidden; }
+  .page-header{ position:relative; overflow:visible; padding-bottom:4.5rem; }
   .page-header-bg{
     width:100%; height:240px; object-fit:cover; display:block;
     filter:brightness(0.55);
   }
   @media(min-width:640px){ .page-header-bg{ height:320px; } }
   .page-header-inner{
-    position:absolute; inset:0; display:flex; flex-direction:column;
+    position:absolute; top:0; left:0; right:0; bottom:4.5rem;
+    display:flex; flex-direction:column;
     justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
   }
   .page-header .eyebrow{
@@ -129,19 +130,21 @@
     max-width:56ch; margin:0;
   }
 
-  /* ---------- featured (random) card ---------- */
-  .featured-wrap{ padding:1.6rem 1.5rem 0.5rem; }
+  /* ---------- featured (random) card — overlaps the header photo ---------- */
   .featured-card{
-    position:relative; display:block; width:100%; max-width:260px;
+    position:absolute; left:1.5rem; bottom:0;
+    display:block; width:calc(100% - 3rem); max-width:260px;
     background:var(--card); padding:0.6rem 0.6rem 0.8rem;
     border-radius:14px; text-decoration:none; color:inherit;
-    box-shadow:0 10px 24px -14px rgba(23,20,12,0.35);
+    box-shadow:0 14px 28px -14px rgba(23,20,12,0.45);
   }
+  @media(min-width:640px){ .featured-card{ left:2.5rem; } }
   .featured-tag{
-    position:absolute; top:-10px; left:14px;
+    position:absolute; top:-11px; right:16px;
     background:var(--blue); color:#fff;
-    font-size:0.62rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
-    padding:4px 10px; border-radius:100px;
+    font-family:"Fredoka", sans-serif; font-size:0.68rem; font-weight:600; letter-spacing:0.03em;
+    padding:5px 12px; border-radius:100px;
+    box-shadow:0 3px 8px -2px rgba(23,20,12,0.4);
   }
   .featured-card img{
     width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; display:block;
@@ -279,14 +282,11 @@
         <h1 class="page-title">Wander</h1>
         <p class="page-intro">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
       </div>
+      <a class="featured-card" id="featured"></a>
     </header>
 
-    <div class="featured-wrap">
-      <a class="featured-card" id="featured"></a>
-    </div>
-
-    <section class="section">
-      <h2>Latest travel stories</h2>
+    <section class="section" style="padding-top:2.5rem;">
+      <h2>Travel stories</h2>
       <div class="grid" id="grid"></div>
     </section>
 
@@ -365,7 +365,7 @@ if (featured) {
   const card = document.getElementById('featured');
   card.href = `${featured.slug}/`;
   card.innerHTML = `
-    <span class="featured-tag">🎲 Random pick</span>
+    <span class="featured-tag">Featured</span>
     <img src="${featured.img}" alt="">
     <p class="place-label">From ${featured.place}</p>
     <p class="caption">${featured.caption}</p>
