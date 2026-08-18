@@ -107,7 +107,7 @@
   .sidebar-stories .stories-feed{
     padding:0.2rem 0.1rem 0.3rem; gap:0.7rem;
   }
-  .sidebar-stories .story-avatar{ width:44px; height:44px; border-width:2px; }
+  .sidebar-stories .story-avatar{ width:56px; height:56px; border-width:2px; }
   .sidebar-stories .story-username{ font-size:0.6rem; max-width:60px; color:var(--blue); }
   .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
   .sidebar-wordmark{
@@ -321,7 +321,10 @@
   .story-ring.color-1{ background:linear-gradient(135deg,#454F30 0%,#7C8A57 100%); }
   .story-ring.color-2{ background:linear-gradient(135deg,#FF7F00 0%,#FFB347 100%); }
   .story-ring.color-3{ background:linear-gradient(135deg,#E73F1E 0%,#F9B637 100%); }
-  .story-ring.viewed{ background:#d8d4c8; }
+  .story-ring.color-0.viewed{ background:linear-gradient(135deg,#AEB9EC 0%,#C7D0F5 100%); }
+  .story-ring.color-1.viewed{ background:linear-gradient(135deg,#A7AC98 0%,#BFC4AC 100%); }
+  .story-ring.color-2.viewed{ background:linear-gradient(135deg,#F2C093 0%,#F8D8B5 100%); }
+  .story-ring.color-3.viewed{ background:linear-gradient(135deg,#EFAA97 0%,#F6D79B 100%); }
   .story-avatar{
     width:64px; height:64px; border:3px solid var(--cream);
     border-radius:50%; background:#fff; object-fit:cover; display:block;
@@ -597,6 +600,10 @@ const PLACES = [
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
   {name:'Glasgow', slug:'glasgow', status:'draft', count:''},
   {name:'Isle of Skye', slug:'skye', status:'live', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'42 pieces'},
+  {name:'Rishikesh', slug:'rishikesh', status:'draft', count:''},
+  {name:'Edinburgh', slug:'edinburgh', status:'draft', count:''},
+  {name:'Mussoorie', slug:'mussoorie', status:'draft', count:''},
+  {name:'Dehradun', slug:'dehradun', status:'draft', count:''},
 ];
 
 const live = PLACES.filter(p => p.status === 'live');
@@ -717,8 +724,8 @@ document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
   </li>
 `).join('');
 
-// ticker — real logged places, looped twice for seamless scroll
-const tickerItems = live.map(p => `<span>${p.name} <span class="dot">·</span></span>`).join('');
+// ticker — every place, catalogued or upcoming, looped twice for seamless scroll
+const tickerItems = PLACES.map(p => `<span>${p.name} <span class="dot">·</span></span>`).join('');
 document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
 
 /* ============================================================
@@ -794,7 +801,7 @@ function renderStoriesFeed(){
   const feed = document.getElementById('stories-feed');
   feed.innerHTML = STORIES.map((user, i) => {
     const isViewed = viewedStories[user.id];
-    const ringClass = isViewed ? 'viewed' : `color-${i % 4}`;
+    const ringClass = `color-${i % 4}${isViewed ? ' viewed' : ''}`;
     return `
       <div class="story-item">
         <button class="story-ring ${ringClass}" data-idx="${i}" aria-label="View ${user.username} story">
