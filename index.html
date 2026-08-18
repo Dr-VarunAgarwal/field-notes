@@ -105,11 +105,18 @@
     color:var(--blue); opacity:0.85; margin:0 0 0.5rem;
   }
   .sidebar-stories .stories-feed{
-    padding:0.2rem 0.1rem 0.3rem; gap:0.7rem;
+    padding:0.2rem 0.1rem 0.3rem; gap:0.9rem;
   }
-  .sidebar-stories .story-avatar{ width:56px; height:56px; border-width:2px; }
-  .sidebar-stories .story-username{ font-size:0.6rem; max-width:60px; color:var(--blue); }
+  .sidebar-stories .story-ring{ padding:4px; }
+  .sidebar-stories .story-avatar{ width:72px; height:72px; border-width:3px; }
+  .sidebar-stories .story-username{ font-size:0.66rem; max-width:76px; color:var(--blue); }
   .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
+  @media(min-width:1024px){
+    .sidebar-stories .stories-feed{ gap:0.7rem; }
+    .sidebar-stories .story-ring{ padding:3px; }
+    .sidebar-stories .story-avatar{ width:56px; height:56px; border-width:2px; }
+    .sidebar-stories .story-username{ font-size:0.6rem; max-width:60px; }
+  }
   .sidebar-wordmark{
     font-family:"Fraunces", serif; font-style:italic; font-weight:600;
     font-size:1.4rem; color:var(--blue); text-decoration:none;
