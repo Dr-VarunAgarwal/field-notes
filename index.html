@@ -60,7 +60,8 @@
 
   .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; }
   .sidebar-stories{
-    border-top:1px solid rgba(23,20,12,0.15); padding-top:1rem;
+    border-top:1px solid rgba(23,20,12,0.15); padding-top:1.35rem;
+    margin-top:0.45rem;
   }
   .sidebar-stories .label{
     font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
@@ -155,15 +156,19 @@
     text-shadow:0 3px 16px rgba(0,0,0,0.38);
   }
 
-  /* ---------- featured (random) card — overlaps the header photo ---------- */
+  /* ---------- featured (random) card — sidebar editorial card ---------- */
   .featured-card{
-    position:absolute; left:1.5rem; bottom:2rem; z-index:10;
-    display:block; width:calc(100% - 3rem); max-width:260px;
+    position:relative; left:auto; bottom:auto; z-index:10;
+    display:block; width:100%; max-width:280px;
+    align-self:flex-start;
     background:var(--card); padding:0.6rem 0.6rem 0.8rem;
     border-radius:14px; text-decoration:none; color:inherit;
     box-shadow:0 14px 28px -14px rgba(23,20,12,0.45);
+    margin-top:0.1rem;
   }
-  @media(min-width:640px){ .featured-card{ left:2.5rem; } }
+  @media(max-width:639px){
+    .featured-card{ max-width:320px; }
+  }
   .featured-tag{
     position:absolute; top:-11px; right:16px;
     background:var(--blue); color:#fff;
@@ -432,6 +437,7 @@
         <circle cx="30" cy="41" r="2.4"/>
       </svg>
       <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
+      <a class="featured-card" id="featured"></a>
     </div>
 
     <div class="sidebar-stories">
@@ -456,7 +462,6 @@
         <p class="eyebrow">wander / index</p>
         <h1 class="page-title">Wander</h1>
               </div>
-      <a class="featured-card" id="featured"></a>
     </header>
 
     <section class="section" style="padding-top:2.5rem;">
