@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Add a story</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#2A46E0; --cream:#F3ECDE; --card:#FFFFFF; --ink:#17140C;
+    --ink-soft:rgba(23,20,12,0.62); --line:rgba(23,20,12,0.14); --red:#C0392B; --green:#2E7D32;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter", sans-serif; color:var(--ink); background:var(--cream);
+    padding:1.5rem 1.2rem 4rem; max-width:520px; margin:0 auto;
+  }
+  h1{
+    font-family:"Fredoka", sans-serif; font-weight:700; font-size:1.7rem;
+    color:var(--blue); margin:0 0 0.3rem;
+  }
+  p.lede{ font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin:0 0 1.6rem; }
+  .card{
+    background:var(--card); border-radius:14px; padding:1.1rem 1.1rem 1.3rem;
+    margin-bottom:1.2rem; box-shadow:0 10px 24px -16px rgba(23,20,12,0.3);
+  }
+  label{ display:block; font-size:0.72rem; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 0.35rem; }
+  input[type=text], input[type=password], select, textarea{
+    width:100%; font-family:inherit; font-size:0.95rem; color:var(--ink);
+    border:1px solid var(--line); border-radius:8px; padding:0.6rem 0.7rem;
+    background:#fff; margin-bottom:0.9rem;
+  }
+  textarea{ resize:vertical; min-height:3.2rem; }
+  input[type=file]{ font-size:0.85rem; margin-bottom:0.9rem; width:100%; }
+  .slide-row{ border-top:1px solid var(--line); padding-top:0.9rem; margin-top:0.9rem; }
+  .slide-row:first-of-type{ border-top:none; padding-top:0; margin-top:0; }
+  .slide-num{ font-size:0.72rem; font-weight:700; color:var(--blue); margin-bottom:0.5rem; }
+  button{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.9rem;
+    border:none; border-radius:100px; padding:0.7rem 1.3rem; cursor:pointer;
+  }
+  .btn-primary{ background:var(--blue); color:#fff; width:100%; }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-secondary{ background:rgba(42,70,224,0.1); color:var(--blue); font-size:0.8rem; padding:0.5rem 1rem; }
+  .btn-danger-text{ background:none; color:var(--red); font-size:0.72rem; padding:0; text-decoration:underline; }
+  #token-gate .card{ display:flex; flex-direction:column; gap:0; }
+  #token-status{ font-size:0.78rem; color:var(--ink-soft); margin:0 0 0.9rem; display:flex; justify-content:space-between; align-items:center; }
+  #log{
+    font-family:"SF Mono", "Courier New", monospace; font-size:0.78rem; line-height:1.7;
+    background:#111; color:#e0e0e0; border-radius:10px; padding:0.9rem 1rem;
+    margin-top:1rem; white-space:pre-wrap; word-break:break-word; display:none;
+  }
+  #log.show{ display:block; }
+  .log-ok{ color:#7ee787; } .log-err{ color:#ff7b72; } .log-mid{ color:#ffd580; }
+  a{ color:var(--blue); }
+  hr{ border:none; border-top:1px solid var(--line); margin:1.5rem 0; }
+</style>
+</head>
+<body>
+
+<h1>Add a story</h1>
+<p class="lede">Quick photo drops for an existing city's story ring — from anywhere, no laptop needed. New places (a whole new city) still go through a full pass, this is just for adding fresh slides to one already up.</p>
+
+<div id="token-gate">
+  <div class="card">
+    <div id="token-status"></div>
+    <label for="pat">GitHub access token</label>
+    <input type="password" id="pat" placeholder="github_pat_...">
+    <p style="font-size:0.72rem;color:var(--ink-soft);line-height:1.5;margin:0 0 0.9rem;">
+      Create one at <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">github.com/settings/tokens</a> —
+      fine-grained, scoped only to the <code>field-notes</code> repo, with <strong>Contents: Read and write</strong> permission. Stored only in this browser.
+    </p>
+    <button class="btn-primary" onclick="saveToken()">Save token</button>
+  </div>
+</div>
+
+<form id="story-form" style="display:none;">
+  <div class="card">
+    <label for="place">Place</label>
+    <select id="place">
+      <option value="london" data-slug="london">Shoreditch (London)</option>
+      <option value="khajuraho" data-slug="khajuraho">Khajuraho</option>
+      <option value="concerts" data-slug="concerts">Concerts</option>
+      <option value="udupi" data-slug="udupi">Udupi</option>
+      <option value="skye" data-slug="skye">Isle of Skye</option>
+    </select>
+  </div>
+
+  <div id="slides"></div>
+
+  <button type="button" class="btn-secondary" onclick="addSlideRow()" style="margin-bottom:1.2rem;">+ Add another photo</button>
+
+  <button type="submit" class="btn-primary" id="submit-btn">Publish to site</button>
+
+  <div id="log"></div>
+</form>
+
+<hr>
+<p style="font-size:0.72rem;color:var(--ink-soft);"><button class="btn-danger-text" onclick="forgetToken()">Forget saved token</button></p>
+
+<script>
+const REPO = 'Dr-VarunAgarwal/field-notes';
+const API = `https://api.github.com/repos/${REPO}/contents`;
+const TOKEN_KEY = 'wander_gh_pat';
+
+/* ---------- token gate ---------- */
+function renderTokenStatus(){
+  const has = !!localStorage.getItem(TOKEN_KEY);
+  document.getElementById('token-status').innerHTML = has
+    ? '<span>✓ Token saved on this device</span>'
+    : '<span>No token saved yet</span>';
+  document.getElementById('story-form').style.display = has ? 'block' : 'none';
+  document.getElementById('pat').value = '';
+}
+function saveToken(){
+  const val = document.getElementById('pat').value.trim();
+  if (!val) return;
+  localStorage.setItem(TOKEN_KEY, val);
+  renderTokenStatus();
+}
+function forgetToken(){
+  localStorage.removeItem(TOKEN_KEY);
+  renderTokenStatus();
+}
+renderTokenStatus();
+
+/* ---------- slide rows ---------- */
+let slideCount = 0;
+function addSlideRow(){
+  slideCount++;
+  const row = document.createElement('div');
+  row.className = 'slide-row';
+  row.innerHTML = `
+    <div class="slide-num">Photo ${slideCount}</div>
+    <label>Photo</label>
+    <input type="file" accept="image/*" class="slide-file" required>
+    <label>Location</label>
+    <input type="text" class="slide-location" placeholder="e.g. Hanbury Street, London" required>
+    <label>Caption (optional — leave blank if you don't have one)</label>
+    <textarea class="slide-caption" placeholder=""></textarea>
+  `;
+  document.getElementById('slides').appendChild(row);
+}
+addSlideRow();
+
+/* ---------- image resize (client-side, no server) ---------- */
+async function resizeImage(file, maxDim = 1280, quality = 0.75){
+  const bitmap = await createImageBitmap(file);
+  let { width, height } = bitmap;
+  const scale = Math.min(1, maxDim / Math.max(width, height));
+  width = Math.round(width * scale);
+  height = Math.round(height * scale);
+  const canvas = document.createElement('canvas');
+  canvas.width = width; canvas.height = height;
+  canvas.getContext('2d').drawImage(bitmap, 0, 0, width, height);
+  return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
+}
+function blobToBase64(blob){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+/* ---------- UTF-8 safe base64 (the file has em dashes, curly quotes, etc. —
+   plain atob/btoa mangle any multi-byte character) ---------- */
+function base64ToUtf8(base64){
+  const binary = atob(base64.replace(/\n/g, ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function utf8ToBase64(str){
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+
+/* ---------- GitHub Contents API ---------- */
+function ghHeaders(){
+  return {
+    'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
+    'Accept': 'application/vnd.github+json',
+  };
+}
+async function ghGet(path){
+  const res = await fetch(`${API}/${path}`, { headers: ghHeaders() });
+  if (!res.ok) throw new Error(`GET ${path} failed (${res.status}): ${(await res.json().catch(()=>({})))?.message || res.statusText}`);
+  return res.json();
+}
+async function ghPut(path, body){
+  const res = await fetch(`${API}/${path}`, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`PUT ${path} failed (${res.status}): ${(await res.json().catch(()=>({})))?.message || res.statusText}`);
+  return res.json();
+}
+
+/* ---------- find & splice this place's slides:[...] array ---------- */
+function findMatchingBracket(str, openIdx){
+  let depth = 0;
+  for (let i = openIdx; i < str.length; i++){
+    if (str[i] === '[') depth++;
+    else if (str[i] === ']'){ depth--; if (depth === 0) return i; }
+  }
+  throw new Error('Could not find the end of this place\'s slides array — file structure may have changed.');
+}
+function appendSlides(content, placeId, newSlideLiterals){
+  const idMarker = `id:'${placeId}'`;
+  const idPos = content.indexOf(idMarker);
+  if (idPos === -1) throw new Error(`Couldn't find id:'${placeId}' in STORIES — has the file structure changed?`);
+  const slidesKeyPos = content.indexOf('slides:[', idPos);
+  if (slidesKeyPos === -1) throw new Error(`Couldn't find slides:[ for "${placeId}".`);
+  const openBracketPos = slidesKeyPos + 'slides:'.length;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  const insertion = newSlideLiterals.map(s => `\n    ${s},`).join('');
+  return content.slice(0, closeBracketPos) + insertion + '\n  ' + content.slice(closeBracketPos);
+}
+function slideLiteral(imgPath, location, caption){
+  return `{img:${JSON.stringify(imgPath)}, location:${JSON.stringify(location)}, caption:${JSON.stringify(caption || '')}}`;
+}
+
+/* ---------- logging UI ---------- */
+const logEl = document.getElementById('log');
+function log(msg, cls){
+  logEl.classList.add('show');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  logEl.appendChild(line);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+/* ---------- submit ---------- */
+document.getElementById('story-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const submitBtn = document.getElementById('submit-btn');
+  submitBtn.disabled = true;
+  logEl.innerHTML = '';
+
+  const placeSelect = document.getElementById('place');
+  const placeId = placeSelect.value;
+  const slug = placeSelect.selectedOptions[0].dataset.slug;
+
+  const rows = Array.from(document.querySelectorAll('.slide-row'));
+  const slides = rows.map(row => ({
+    file: row.querySelector('.slide-file').files[0],
+    location: row.querySelector('.slide-location').value.trim(),
+    caption: row.querySelector('.slide-caption').value.trim(),
+  }));
+
+  if (slides.some(s => !s.file || !s.location)){
+    log('Every photo needs a file and a location.', 'log-err');
+    submitBtn.disabled = false;
+    return;
+  }
+
+  try {
+    const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+    const uploaded = [];
+
+    for (let i = 0; i < slides.length; i++){
+      log(`Resizing photo ${i + 1}/${slides.length}...`, 'log-mid');
+      const blob = await resizeImage(slides[i].file);
+      const base64 = await blobToBase64(blob);
+      const filename = `log-${stamp}-${i + 1}.jpg`;
+      const imgPath = `${slug}/img/${filename}`;
+      log(`Uploading ${filename}...`, 'log-mid');
+      await ghPut(imgPath, { message: `Add story photo: ${slug}/${filename}`, content: base64 });
+      uploaded.push({ ...slides[i], imgPath });
+      log(`✓ ${filename} uploaded`, 'log-ok');
+    }
+
+    log('Fetching current index.html...', 'log-mid');
+    const file = await ghGet('index.html');
+    const content = base64ToUtf8(file.content);
+
+    const literals = uploaded.map(s => slideLiteral(s.imgPath, s.location, s.caption));
+    const updated = appendSlides(content, placeId, literals);
+
+    log('Publishing updated index.html...', 'log-mid');
+    await ghPut('index.html', {
+      message: `Add ${uploaded.length} story photo(s) to ${placeId}`,
+      content: utf8ToBase64(updated),
+      sha: file.sha,
+    });
+
+    log(`✓ Done — ${uploaded.length} photo(s) added to ${placeId}'s story.`, 'log-ok');
+    log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
+    document.getElementById('story-form').reset();
+    document.getElementById('slides').innerHTML = '';
+    slideCount = 0;
+    addSlideRow();
+  } catch (err){
+    log(`✗ ${err.message}`, 'log-err');
+    log('Nothing further was changed after this error — safe to fix and retry.', 'log-err');
+  } finally {
+    submitBtn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>
