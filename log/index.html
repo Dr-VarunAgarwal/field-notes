@@ -231,7 +231,7 @@ async function resizeImage(file, maxDim = 1280, quality = 0.75){
     try {
       bitmap = await decodeViaImgElement(file);
     } catch (err2) {
-      const signature = await detectFileSignature(file).catch(() => 'could not read file bytes');
+      const signature = await detectFileSignature(file).catch(e => `could not read file bytes (${e && e.message ? e.message : e})`);
       throw new Error(`Couldn't read "${file.name}" — reported type "${file.type || 'none'}", ${(file.size / 1024).toFixed(0)}KB, actual format detected: ${signature}. Try re-selecting it, or convert it to JPEG first and retry.`);
     }
   }
