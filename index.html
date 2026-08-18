@@ -331,11 +331,21 @@
   .tap-left{ position:absolute; left:0; top:0; bottom:0; width:33.333%; z-index:20; cursor:pointer; }
   .tap-right{ position:absolute; right:0; top:0; bottom:0; width:66.666%; z-index:20; cursor:pointer; }
 
-  .story-caption{
-    position:absolute; left:16px; right:16px; bottom:74px; z-index:30;
-    font-family:"Fraunces", serif; font-style:italic; color:#fff; font-size:0.92rem;
-    line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); pointer-events:none;
+  .story-info{
+    position:absolute; left:16px; right:16px; bottom:70px; z-index:30;
+    pointer-events:none;
   }
+  .story-location{
+    display:inline-flex; align-items:center; gap:5px;
+    font-size:0.72rem; font-weight:600; color:#fff;
+    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0 0 0.35rem;
+  }
+  .story-location svg{ width:12px; height:12px; flex:none; }
+  .story-caption{
+    font-family:"Fraunces", serif; font-style:italic; color:#fff; font-size:0.92rem;
+    line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
+  }
+  .story-caption:empty{ display:none; }
 
   .viewer-footer{
     position:absolute; bottom:0; left:0; right:0; padding:16px; z-index:30;
@@ -449,7 +459,13 @@
           </div>
         </div>
         <img id="story-image" class="story-image hidden" src="" alt="">
-        <p id="story-caption" class="story-caption"></p>
+        <div id="story-info" class="story-info">
+          <p id="story-location" class="story-location">
+            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.493 1.698 5.988 3.354 7.584a13.731 13.731 0 002.274 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"></path></svg>
+            <span id="story-location-text"></span>
+          </p>
+          <p id="story-caption" class="story-caption"></p>
+        </div>
         <div id="tap-left" class="tap-left"></div>
         <div id="tap-right" class="tap-right"></div>
       </div>
@@ -469,7 +485,7 @@
    itinerary section instead of the grid).
    ============================================================ */
 const PLACES = [
-  {name:'London', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'69 pieces'},
+  {name:'London — Shoreditch Street Art', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'69 pieces'},
   {name:'Khajuraho', slug:'khajuraho', status:'live', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
   {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
@@ -488,8 +504,8 @@ const draft = PLACES.filter(p => p.status === 'draft');
    One is picked at random on load; clicking it opens its album.
    ============================================================ */
 const FEATURED_PHOTOS = [
-  {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'London', slug:'london'},
-  {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'London', slug:'london'},
+  {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'London — Shoreditch Street Art', slug:'london'},
+  {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'London — Shoreditch Street Art', slug:'london'},
   {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.', place:'Concerts', slug:'concerts'},
@@ -541,47 +557,50 @@ const tickerItems = live.map(p => `<span>${p.name} <span class="dot">·</span></
 document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
 
 /* ============================================================
-   STORIES — one "user" per place, one "story" per photo. Captions
-   only appear where a piece has real, hand-written notes (same rule
-   as FEATURED_PHOTOS above) — pieces without notes just show as a
-   plain photo, same as a real Instagram story with no text on it.
+   STORIES — one "user" per place, one "story" per photo.
+   `location` shows at the bottom of every slide, Instagram-pin style
+   — always real, pulled from that photo's own location/city field.
+   `caption` only appears where a piece has real, hand-written notes
+   (same rule as FEATURED_PHOTOS above) — leave it '' when there's
+   no real caption; the slide still shows its location either way.
    To add more: copy a slide object, point img at a real file in
-   that place's img/ folder, add notes if you've written any.
+   that place's img/ folder, fill in location, add a caption if
+   you've actually written one for that piece.
    ============================================================ */
 const STORIES = [
-  { id:'london', username:'London', avatar:'london/img/07-elephant-shutter.jpg', slug:'london', slides:[
-    {img:'london/img/05-dank-cyberpunk-wide.jpg', caption:''},
-    {img:'london/img/01-bird-collage.jpg', caption:'Birdy.'},
-    {img:'london/img/03-nope-buddha.jpg', caption:'PEACE!'},
-    {img:'london/img/09-split-face.jpg', caption:''},
-    {img:'london/img/04-shades-mural.jpg', caption:''},
-    {img:'london/img/12-cosmic-profile-mural.jpg', caption:''},
-    {img:'london/img/15-grandfather-child-mural.jpg', caption:''},
+  { id:'london', username:'Shoreditch', avatar:'london/img/07-elephant-shutter.jpg', slug:'london', slides:[
+    {img:'london/img/05-dank-cyberpunk-wide.jpg', location:'Shoreditch, London', caption:''},
+    {img:'london/img/01-bird-collage.jpg', location:'Shoreditch, London', caption:'Birdy.'},
+    {img:'london/img/03-nope-buddha.jpg', location:'Shoreditch, London', caption:'PEACE!'},
+    {img:'london/img/09-split-face.jpg', location:'Shoreditch, London', caption:''},
+    {img:'london/img/04-shades-mural.jpg', location:'Shoreditch, London', caption:''},
+    {img:'london/img/12-cosmic-profile-mural.jpg', location:'Shoreditch, London', caption:''},
+    {img:'london/img/15-grandfather-child-mural.jpg', location:'Shoreditch, London', caption:''},
   ]},
   { id:'khajuraho', username:'Khajuraho', avatar:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', slug:'khajuraho', slides:[
-    {img:'khajuraho/img/01-sunset-temple-silhouette.jpg', caption:''},
-    {img:'khajuraho/img/05-mithuna-carving-niche.jpg', caption:''},
-    {img:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', caption:''},
-    {img:'khajuraho/img/13-shikhara-tower-close.jpg', caption:''},
-    {img:'khajuraho/img/18-nandi-bull-statue.jpg', caption:''},
-    {img:'khajuraho/img/26-white-temple-domes-wide.jpg', caption:''},
+    {img:'khajuraho/img/01-sunset-temple-silhouette.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
+    {img:'khajuraho/img/05-mithuna-carving-niche.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
+    {img:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
+    {img:'khajuraho/img/13-shikhara-tower-close.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
+    {img:'khajuraho/img/18-nandi-bull-statue.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
+    {img:'khajuraho/img/26-white-temple-domes-wide.jpg', location:'Khajuraho, Madhya Pradesh', caption:''},
   ]},
   { id:'concerts', username:'Concerts', avatar:'concerts/img/green-day.jpg', slug:'concerts', slides:[
-    {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.'},
-    {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.'},
-    {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.'},
-    {img:'concerts/img/glass-beams.jpg', caption:'Glass Beams — Bangalore show.'},
-    {img:'concerts/img/john-mayer.jpg', caption:'John Mayer — Mumbai show.'},
-    {img:'concerts/img/aurora.jpg', caption:'AURORA — Lollapalooza India, day two.'},
-    {img:'concerts/img/isabel-larosa.jpg', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
-    {img:'concerts/img/talwinder.jpg', caption:'Talwiinder — Lollapalooza India, day one.'},
+    {img:'concerts/img/green-day.jpg', location:'Mumbai, India', caption:'Green Day — Lollapalooza India, headline set.'},
+    {img:'concerts/img/banshee-labyrinth.jpg', location:'Edinburgh, Scotland', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.'},
+    {img:'concerts/img/hanumankind.jpg', location:'Mumbai, India', caption:'Hanumankind — Lollapalooza India.'},
+    {img:'concerts/img/glass-beams.jpg', location:'Bangalore, India', caption:'Glass Beams — Bangalore show.'},
+    {img:'concerts/img/john-mayer.jpg', location:'Mumbai, India', caption:'John Mayer — Mumbai show.'},
+    {img:'concerts/img/aurora.jpg', location:'Mumbai, India', caption:'AURORA — Lollapalooza India, day two.'},
+    {img:'concerts/img/isabel-larosa.jpg', location:'Mumbai, India', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
+    {img:'concerts/img/talwinder.jpg', location:'Mumbai, India', caption:'Talwiinder — Lollapalooza India, day one.'},
   ]},
   { id:'udupi', username:'Udupi', avatar:'udupi/img/05-sunset-lake.jpg', slug:'udupi', slides:[
-    {img:'udupi/img/01-lake-boats-aerial.jpg', caption:''},
-    {img:'udupi/img/02-lake-island-framed-trees.jpg', caption:''},
-    {img:'udupi/img/04-walking-path-leaves.jpg', caption:''},
-    {img:'udupi/img/05-sunset-lake.jpg', caption:''},
-    {img:'udupi/img/03-lake-island-wide.jpg', caption:''},
+    {img:'udupi/img/01-lake-boats-aerial.jpg', location:'Udupi, Karnataka', caption:''},
+    {img:'udupi/img/02-lake-island-framed-trees.jpg', location:'Udupi, Karnataka', caption:''},
+    {img:'udupi/img/04-walking-path-leaves.jpg', location:'Udupi, Karnataka', caption:''},
+    {img:'udupi/img/05-sunset-lake.jpg', location:'Udupi, Karnataka', caption:''},
+    {img:'udupi/img/03-lake-island-wide.jpg', location:'Udupi, Karnataka', caption:''},
   ]},
 ];
 const STORY_SLIDE_DURATION = 4500;
@@ -621,6 +640,7 @@ const cubeWrapper = document.getElementById('cube-wrapper');
 const storyImg = document.getElementById('story-image');
 const storySpinner = document.getElementById('loading-spinner');
 const storyCaptionEl = document.getElementById('story-caption');
+const storyLocationText = document.getElementById('story-location-text');
 const progContainer = document.getElementById('progress-container');
 const modalAvatar = document.getElementById('modal-avatar');
 const modalUsername = document.getElementById('modal-username');
@@ -659,6 +679,7 @@ function loadSlide(direction = 'none'){
   storyImg.classList.add('hidden');
   storySpinner.classList.remove('hidden');
   storyCaptionEl.textContent = '';
+  storyLocationText.textContent = '';
   storyImg.src = '';
 
   if (direction === 'nextUser') { cubeWrapper.classList.add('rotate-cube-left-out'); setTimeout(() => { cubeWrapper.classList.remove('rotate-cube-left-out'); cubeWrapper.classList.add('rotate-cube-left-in'); setTimeout(() => cubeWrapper.classList.remove('rotate-cube-left-in'), 500); }, 250); }
@@ -670,6 +691,7 @@ function loadSlide(direction = 'none'){
     storySpinner.classList.add('hidden');
     storyImg.classList.remove('hidden');
     storyCaptionEl.textContent = slide.caption || '';
+    storyLocationText.textContent = slide.location || '';
     storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
     storyRAF = requestAnimationFrame(animateStoryProgress);
   };
