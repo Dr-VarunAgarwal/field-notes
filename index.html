@@ -128,14 +128,14 @@
   /* ---------- main ---------- */
   .main{ flex:1; min-width:0; }
 
-  /* ---------- page header — full-bleed editorial photo stack ---------- */
+  /* ---------- page header — full-bleed rotating photo ---------- */
   .page-header{
     position:relative; overflow:visible;
     background:var(--cream); isolation:isolate;
   }
   .header-collage{
     position:relative; height:320px; overflow:hidden;
-    background:#111; /* only visible at the extreme crop edges */
+    background:#111; cursor:pointer;
   }
   .header-collage::after{
     content:""; position:absolute; inset:0; z-index:5; pointer-events:none;
@@ -143,31 +143,12 @@
   }
   .header-photo{
     position:absolute; display:block; object-fit:cover;
-    border:6px solid #fff;
-    box-shadow:0 14px 28px -14px rgba(0,0,0,0.6);
-    transform-origin:center;
-    transition:opacity 0.15s ease;
-  }
-  /* The first photograph is the full-bleed photographic ground, not a card. */
-  .header-photo.one{
-    width:100%; height:100%; left:0; top:0; transform:none;
+    width:100%; height:100%; left:0; top:0;
     z-index:1; object-position:center 52%;
-    border:0; box-shadow:none;
-  }
-  .header-photo.swappable{ cursor:pointer; }
-  .header-photo.two{
-    width:26%; height:42%; right:6%; top:7%;
-    z-index:3; object-position:center;
-  }
-  .header-photo.three{
-    width:26%; height:42%; right:6%; top:calc(7% + 42% + 3%);
-    z-index:4; object-position:center;
+    transition:opacity 0.2s ease;
   }
   @media(max-width:639px){
     .header-collage{ height:285px; }
-    .header-photo{ border-width:4px; }
-    .header-photo.two{ width:30%; height:40%; right:4%; top:6%; }
-    .header-photo.three{ width:30%; height:40%; right:4%; top:calc(6% + 40% + 3%); }
   }
   .page-header-inner{
     position:absolute; z-index:6; top:0; left:0; right:0; bottom:0;
@@ -175,9 +156,9 @@
     justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
     pointer-events:none;
   }
-  .header-path{
-    font-family:"Fraunces", serif; font-style:italic; font-size:0.8rem;
-    letter-spacing:0.03em; color:rgba(255,255,255,0.88); margin:0;
+  .header-coords{
+    font-family:"Courier New", monospace; font-size:0.76rem;
+    letter-spacing:0.04em; color:rgba(255,255,255,0.88); margin:0;
     text-shadow:0 2px 10px rgba(0,0,0,0.55);
   }
 
@@ -491,13 +472,11 @@
   <main class="main" id="top">
 
     <header class="page-header">
-      <div class="header-collage" aria-hidden="true">
-        <img class="header-photo one" src="skye/img/d3-08-quiraing.jpg" alt="">
-        <img class="header-photo two swappable" src="london/img/69-designated-graffiti-area-stencil.jpg" alt="">
-        <img class="header-photo three swappable" src="khajuraho/img/11-dusk-two-temples-pink-sky.jpg" alt="">
+      <div class="header-collage" id="header-collage" aria-hidden="true">
+        <img class="header-photo" id="header-photo" src="skye/img/d3-08-quiraing.jpg" alt="">
       </div>
       <div class="page-header-inner">
-        <p class="header-path" id="header-path"></p>
+        <p class="header-coords" id="header-coords"></p>
       </div>
     </header>
 
@@ -600,59 +579,42 @@ const live = PLACES.filter(p => p.status === 'live');
 const draft = PLACES.filter(p => p.status === 'draft');
 
 /* ============================================================
-   HEADER_SETS — curated bg + two overlay photos for the header
-   collage. Hand-paired (not fully random) so the three always sit
-   together well. Each photo carries a "path" — a short location code
-   (country/region/place) shown as the header caption, since the bg
-   photo can change (via swap-on-click) independently of which
-   album's page you're actually on.
-   One set picked at random on load; clicking either overlay photo
-   swaps it with the background photo, and the caption follows it.
+   HEADER_PHOTOS — curated pool for the full-bleed header photo.
+   These get the rare wide/full-bleed treatment most of these photos
+   don't otherwise get on their own city pages. One is picked at
+   random on load; clicking the header advances to the next photo in
+   the pool, and the coordinates caption updates with it.
    ============================================================ */
-const HEADER_SETS = [
-  {
-    bg:{src:'skye/img/d3-08-quiraing.jpg', path:'uk/sctlnd/ios'},
-    two:{src:'london/img/69-designated-graffiti-area-stencil.jpg', path:'uk/ldn/shrdtch'},
-    three:{src:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', path:'in/mp/khajuraho'},
-  },
-  {
-    bg:{src:'skye/img/d2-02-eilean-donan-wide.jpg', path:'uk/sctlnd/ios'},
-    two:{src:'khajuraho/img/18-nandi-bull-statue.jpg', path:'in/mp/khajuraho'},
-    three:{src:'london/img/32-heron-mural-gable.jpg', path:'uk/ldn/shrdtch'},
-  },
-  {
-    bg:{src:'khajuraho/img/26-white-temple-domes-wide.jpg', path:'in/mp/khajuraho'},
-    two:{src:'skye/img/d3-02-fairy-pools-turquoise.jpg', path:'uk/sctlnd/ios'},
-    three:{src:'london/img/05-dank-cyberpunk-wide.jpg', path:'uk/ldn/shrdtch'},
-  },
-  {
-    bg:{src:'khajuraho/img/01-sunset-temple-silhouette.jpg', path:'in/mp/khajuraho'},
-    two:{src:'london/img/43-xray-ribcage-mural.jpg', path:'uk/ldn/shrdtch'},
-    three:{src:'skye/img/d3-08-quiraing.jpg', path:'uk/sctlnd/ios'},
-  },
+const HEADER_PHOTOS = [
+  {src:'skye/img/d3-08-quiraing.jpg', coords:'57.6417°N, 6.2897°W'},
+  {src:'skye/img/d2-02-eilean-donan-wide.jpg', coords:'57.6417°N, 6.2897°W'},
+  {src:'skye/img/d3-02-fairy-pools-turquoise.jpg', coords:'57.6417°N, 6.2897°W'},
+  {src:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', coords:'24.8318°N, 79.9199°E'},
+  {src:'khajuraho/img/18-nandi-bull-statue.jpg', coords:'24.8318°N, 79.9199°E'},
+  {src:'khajuraho/img/26-white-temple-domes-wide.jpg', coords:'24.8318°N, 79.9199°E'},
+  {src:'khajuraho/img/01-sunset-temple-silhouette.jpg', coords:'24.8318°N, 79.9199°E'},
+  {src:'london/img/69-designated-graffiti-area-stencil.jpg', coords:'51.5229°N, 0.0777°W'},
+  {src:'london/img/32-heron-mural-gable.jpg', coords:'51.5229°N, 0.0777°W'},
+  {src:'london/img/05-dank-cyberpunk-wide.jpg', coords:'51.5229°N, 0.0777°W'},
+  {src:'london/img/43-xray-ribcage-mural.jpg', coords:'51.5229°N, 0.0777°W'},
 ];
-const headerSet = HEADER_SETS[Math.floor(Math.random() * HEADER_SETS.length)];
-const hOne = document.querySelector('.header-photo.one');
-const hTwo = document.querySelector('.header-photo.two');
-const hThree = document.querySelector('.header-photo.three');
-const headerPathEl = document.getElementById('header-path');
-function setHeaderPhoto(el, data){ el.src = data.src; el.dataset.path = data.path; }
-setHeaderPhoto(hOne, headerSet.bg);
-setHeaderPhoto(hTwo, headerSet.two);
-setHeaderPhoto(hThree, headerSet.three);
-headerPathEl.textContent = hOne.dataset.path;
-function swapHeaderPhoto(overlay){
-  const bgSrc = hOne.src, bgPath = hOne.dataset.path;
-  const overlaySrc = overlay.src, overlayPath = overlay.dataset.path;
-  hOne.style.opacity = 0; overlay.style.opacity = 0;
-  setTimeout(() => {
-    hOne.src = overlaySrc; hOne.dataset.path = overlayPath;
-    overlay.src = bgSrc; overlay.dataset.path = bgPath;
-    headerPathEl.textContent = hOne.dataset.path;
-    hOne.style.opacity = 1; overlay.style.opacity = 1;
-  }, 150);
+const headerPhotoEl = document.getElementById('header-photo');
+const headerCoordsEl = document.getElementById('header-coords');
+let headerPhotoIdx = Math.floor(Math.random() * HEADER_PHOTOS.length);
+function renderHeaderPhoto(){
+  const p = HEADER_PHOTOS[headerPhotoIdx];
+  headerPhotoEl.src = p.src;
+  headerCoordsEl.textContent = p.coords;
 }
-[hTwo, hThree].forEach(el => el.addEventListener('click', () => swapHeaderPhoto(el)));
+renderHeaderPhoto();
+document.getElementById('header-collage').addEventListener('click', () => {
+  headerPhotoEl.style.opacity = 0;
+  setTimeout(() => {
+    headerPhotoIdx = (headerPhotoIdx + 1) % HEADER_PHOTOS.length;
+    renderHeaderPhoto();
+    headerPhotoEl.style.opacity = 1;
+  }, 200);
+});
 
 /* ---------- Navigate pill dropdown ---------- */
 const navigateBtn = document.getElementById('navigate-btn');
