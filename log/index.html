@@ -208,6 +208,21 @@ function decodeViaImgElement(file){
     img.src = url;
   });
 }
+/* Identify the file's actual format from its bytes, not its name/reported
+   MIME type -- either can lie (a renamed file, an app that mislabels a
+   conversion). Cheap enough to always run when we're about to report an
+   error, to get a real diagnosis instead of another guess. */
+async function detectFileSignature(file){
+  const bytes = new Uint8Array(await file.slice(0, 16).arrayBuffer());
+  const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join(' ');
+  if (bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF) return `JPEG (bytes: ${hex})`;
+  if (bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47) return `PNG (bytes: ${hex})`;
+  if (bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46) return `WEBP/RIFF (bytes: ${hex})`;
+  if (bytes[0] === 0x47 && bytes[1] === 0x49 && bytes[2] === 0x46) return `GIF (bytes: ${hex})`;
+  const ftyp = String.fromCharCode(...bytes.slice(4, 8));
+  if (ftyp === 'ftyp') return `HEIC/HEIF container, brand "${String.fromCharCode(...bytes.slice(8, 12))}" (bytes: ${hex})`;
+  return `unrecognized (first bytes: ${hex})`;
+}
 async function resizeImage(file, maxDim = 1280, quality = 0.75){
   let bitmap;
   try {
@@ -216,7 +231,8 @@ async function resizeImage(file, maxDim = 1280, quality = 0.75){
     try {
       bitmap = await decodeViaImgElement(file);
     } catch (err2) {
-      throw new Error(`Couldn't read "${file.name}" — your browser can't decode this photo's format (common with HEIC photos from an iPhone). Try re-selecting it, or convert it to JPEG first and retry.`);
+      const signature = await detectFileSignature(file).catch(() => 'could not read file bytes');
+      throw new Error(`Couldn't read "${file.name}" — reported type "${file.type || 'none'}", ${(file.size / 1024).toFixed(0)}KB, actual format detected: ${signature}. Try re-selecting it, or convert it to JPEG first and retry.`);
     }
   }
   let { width, height } = bitmap;
