@@ -98,12 +98,15 @@
   .sidebar-stories .story-avatar{ width:44px; height:44px; border-width:2px; }
   .sidebar-stories .story-username{ font-size:0.6rem; max-width:60px; color:var(--blue); }
   .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
-  .wordmark-big{
-    font-family:"Fredoka", sans-serif; font-weight:700;
-    font-size:clamp(2.6rem, 5.5vw, 3.2rem); line-height:0.98;
-    color:var(--blue); margin:0; text-decoration:none; display:block;
+  .wordmark-corner{
+    position:fixed; left:1.1rem; bottom:1.1rem; z-index:30;
+    font-family:"Fredoka", sans-serif; font-weight:700; font-size:1.05rem;
+    color:var(--blue); text-decoration:none;
+    background:rgba(255,255,255,0.88); padding:0.4rem 0.9rem; border-radius:100px;
+    box-shadow:0 8px 20px -10px rgba(23,20,12,0.4);
+    transition:background .15s ease;
   }
-  .wordmark-swash{ width:150px; height:14px; display:block; margin:0.1rem 0 0; }
+  .wordmark-corner:hover{ background:#fff; }
   .doodle-tagline-row{ display:flex; align-items:center; gap:0.8rem; }
   .doodle{ width:72px; height:auto; opacity:0.85; flex:none; }
   .tagline{
@@ -115,6 +118,10 @@
   .ticker-wrap{
     overflow:hidden; min-width:0; border-top:1px solid rgba(23,20,12,0.15);
     padding-top:0.6rem; margin-top:0.1rem;
+  }
+  .ticker-wrap--top{
+    border-top:none; margin-top:0;
+    padding:1rem 1.5rem 0.8rem;
   }
   .ticker{
     display:flex; gap:0.5rem; white-space:nowrap;
@@ -442,11 +449,6 @@
         </nav>
       </div>
 
-      <a class="wordmark-big" href="#top">Wander</a>
-      <svg class="wordmark-swash" viewBox="0 0 200 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M4 8c16-10 32-10 48 0s32 10 48 0 32-10 48 0 32 10 44 0" stroke="#FF6B4A" stroke-width="3" stroke-linecap="round"/>
-      </svg>
-
       <div class="doodle-tagline-row">
         <svg class="doodle" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#2A46E0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M8 66c10-14 22-14 30 0s20 14 28-2 20-16 28-2 18 12 26 0"/>
@@ -458,10 +460,6 @@
         <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
       </div>
 
-      <div class="ticker-wrap">
-        <div class="ticker" id="ticker"></div>
-      </div>
-
       <a class="featured-card" id="featured"></a>
     </div>
 
@@ -471,7 +469,13 @@
     </div>
   </aside>
 
+  <a class="wordmark-corner" href="#top">Wander</a>
+
   <main class="main" id="top">
+
+    <div class="ticker-wrap ticker-wrap--top">
+      <div class="ticker" id="ticker"></div>
+    </div>
 
     <header class="page-header">
       <div class="header-collage" id="header-collage" aria-hidden="true">
