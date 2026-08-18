@@ -9,295 +9,314 @@
 <link rel="icon" type="image/png" sizes="512x512" href="favicon-512.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600&family=Fraunces:ital@1&display=swap" rel="stylesheet">
 <style>
   :root{
-    --paper:#EDE3CC;
-    --card:#F6F0DF;
-    --navy:#1B2A4A;
-    --navy-deep:#0F1826;
-    --brass:#A9791F;
-    --oxblood:#7A2E2A;
-    --line: rgba(27,42,74,0.16);
-    --ink-soft: rgba(27,42,74,0.62);
+    --sky: #B9CBF3;
+    --blue: #2A46E0;
+    --cream: #F3ECDE;
+    --card: #FFFFFF;
+    --olive: #454F30;
+    --ink: #17140C;
+    --ink-soft: rgba(23,20,12,0.62);
+    --sidebar-w: 300px;
   }
-  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(ellipse at 15% -10%, rgba(27,42,74,0.05), transparent 45%),
-      var(--paper);
-    color:var(--navy);
-    font-family:'Courier Prime', monospace;
-    min-height:100vh;
-    overflow-x:hidden;
+    font-family:"Inter", sans-serif;
+    color:var(--ink);
+    background:var(--cream);
   }
-  body::before{
-    content:"";
-    position:fixed; inset:0; pointer-events:none; z-index:999;
-    opacity:.05; mix-blend-mode:multiply;
-    background-image:radial-gradient(var(--navy) 0.6px, transparent 0.6px);
-    background-size:3px 3px;
-  }
+  a{ color:inherit; }
 
-  header{
-    padding:26px 18px 22px;
-    border-bottom:2px solid var(--navy);
-    position:relative;
+  .layout{ display:flex; flex-direction:column; min-height:100vh; }
+  @media(min-width:1024px){ .layout{ flex-direction:row; } }
+
+  /* ---------- sidebar ---------- */
+  .sidebar{
+    background:var(--sky);
+    padding:1.6rem 1.5rem 1.4rem;
+    display:flex; flex-direction:column; gap:1.4rem;
   }
-  .header-mark{
-    position:absolute; top:24px; right:18px;
-    width:46px; height:46px; border-radius:50%;
-    display:flex; align-items:center; justify-content:center;
-    border:2px solid var(--navy);
-    background:var(--card);
-    font-family:'Fraunces', serif; font-weight:600; font-size:16px;
-    color:var(--navy);
+  @media(min-width:1024px){
+    .sidebar{
+      width:var(--sidebar-w); flex:none;
+      position:sticky; top:0; height:100vh;
+      justify-content:space-between;
+    }
   }
+  .pill-nav{ display:flex; gap:0.4rem; flex-wrap:wrap; }
+  .pill-nav a{
+    background:rgba(255,255,255,0.7); color:var(--ink); text-decoration:none;
+    font-size:0.72rem; font-weight:600; padding:0.35rem 0.8rem; border-radius:100px;
+  }
+  .pill-nav a:hover{ background:#fff; }
   .home-link{
-    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
-    font-size:14px; color:var(--navy); text-decoration:none;
-    border-bottom:1px solid var(--brass); padding-bottom:1px;
+    font-family:"Fraunces", serif; font-style:italic; font-size:0.85rem;
+    color:var(--blue); text-decoration:none; opacity:0.75;
   }
-  .home-link:hover{ color:var(--oxblood); border-bottom-color:var(--oxblood); }
-  .eyebrow{
-    font-size:11px; letter-spacing:0.22em; color:var(--ink-soft);
-    text-transform:uppercase; margin-bottom:10px;
+  .home-link:hover{ opacity:1; }
+
+  .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; }
+  .wordmark-big{
+    font-family:"Fredoka", sans-serif; font-weight:700;
+    font-size:clamp(2.1rem, 4vw, 2.5rem); line-height:0.98;
+    color:var(--blue); margin:0; text-decoration:none; display:block;
   }
-  h1{
-    font-family:'Fraunces', serif;
-    font-weight:600;
-    font-size:clamp(40px, 9vw, 66px);
-    letter-spacing:-0.01em;
-    margin:0;
-    line-height:0.94;
-    color:var(--navy);
-    padding-right:60px;
-  }
-  h1 em{ font-style:italic; font-weight:500; color:var(--brass); }
-  .intro{
-    color:var(--ink-soft); font-size:13.5px; line-height:1.7; font-style:italic;
-    max-width:54ch; margin-top:16px; padding-right:60px; font-family:'Fraunces', serif;
+  .doodle{ width:120px; height:auto; opacity:0.85; }
+  .tagline{
+    font-size:0.85rem; line-height:1.6; color:var(--blue); opacity:0.85;
+    max-width:26ch; margin:0;
   }
 
-  main{padding:34px 14px 80px; max-width:1150px; margin:0 auto;}
-  .wall{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:28px;
+  .ticker-wrap{
+    overflow:hidden; border-top:1px solid rgba(23,20,12,0.15);
+    padding-top:0.9rem; margin-top:0.4rem;
   }
-  @media(min-width:640px){
-    .wall{ grid-template-columns:1fr 1fr; }
+  .ticker{
+    display:flex; gap:0.5rem; white-space:nowrap;
+    font-size:0.7rem; font-weight:600; color:var(--blue);
+    animation:ticker 18s linear infinite;
+    width:max-content;
   }
-  @media(min-width:980px){
-    .wall{ grid-template-columns:1fr 1fr 1fr; }
+  .ticker span{ display:flex; align-items:center; gap:0.5rem; }
+  .ticker .dot{ opacity:0.5; }
+  @keyframes ticker{ from{transform:translateX(0);} to{transform:translateX(-50%);} }
+  @media (prefers-reduced-motion: reduce){ .ticker{ animation:none; } }
+
+  /* ---------- main ---------- */
+  .main{ flex:1; min-width:0; }
+
+  .hero{ position:relative; }
+  .hero-img{
+    width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
+  }
+  @media(min-width:640px){ .hero-img{ aspect-ratio:21/9; } }
+  .hero-card{
+    position:absolute; left:1.2rem; bottom:-2.2rem;
+    background:var(--card); padding:0.6rem 0.6rem 0.9rem;
+    box-shadow:0 14px 30px -14px rgba(23,20,12,0.4);
+    width:min(78vw, 260px);
+    text-decoration:none; color:inherit;
+  }
+  @media(min-width:640px){ .hero-card{ left:2.5rem; } }
+  .hero-card img{ width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+  .hero-card .label{
+    font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0.6rem 0 0.25rem;
+  }
+  .hero-card .name{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.05rem; margin:0;
   }
 
-  .card{
-    opacity:0; transform:translateY(18px) rotate(var(--r,0deg));
-    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.7,.3,1), box-shadow .2s ease;
-  }
-  .card.in{opacity:1; transform:translateY(0) rotate(var(--r,0deg));}
-  .card:nth-child(3n+1){--r:-0.35deg;}
-  .card:nth-child(3n+2){--r:0.3deg;}
-  .card:nth-child(3n+3){--r:-0.15deg;}
-
-  .card.is-live{cursor:pointer;}
-  @media(min-width:640px){
-    .card.is-live:hover{ z-index:5; transform:translateY(-4px) rotate(0deg); }
-    .card.is-live:hover .frame{ box-shadow:5px 7px 0 var(--navy), 0 16px 26px -14px rgba(15,24,38,0.5); }
+  .scroll-cue{
+    text-align:center; font-size:0.72rem; color:var(--ink-soft);
+    padding:3.2rem 1.5rem 1rem;
   }
 
-  .frame{
-    position:relative;
+  .section{ padding:1.5rem 1.5rem 3rem; max-width:900px; margin:0 auto; }
+  .section h2{
+    font-family:"Fredoka", sans-serif; font-weight:600;
+    font-size:clamp(1.5rem, 4vw, 1.9rem); margin:0 0 1.5rem;
+  }
+
+  .grid{ display:grid; grid-template-columns:1fr; gap:1.8rem; }
+  @media(min-width:640px){ .grid{ grid-template-columns:1fr 1fr; } }
+
+  .place-card{ text-decoration:none; color:inherit; display:block; }
+  .place-card .thumb{
+    width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
     background:var(--card);
-    border:1px solid var(--navy);
-    box-shadow:3px 4px 0 rgba(27,42,74,0.5);
-    transition:box-shadow .2s ease;
   }
-  .frame::before{
-    content:""; position:absolute; top:14px; left:14px;
-    width:9px; height:9px; border-radius:50%;
-    background:var(--paper); border:1.5px solid var(--navy);
-    z-index:2;
-  }
-  .card.is-draft .frame{ opacity:0.72; }
-
-  .tab{
-    position:absolute; top:-13px; left:32px;
-    background:var(--navy); color:var(--paper);
-    font-family:'Courier Prime', monospace; font-size:10px; letter-spacing:0.08em;
-    padding:3px 9px; z-index:2;
-  }
-
-  .thumb{
-    width:100%; aspect-ratio:4/3;
-    background:var(--paper);
-    position:relative; overflow:hidden;
+  .place-card .thumb.no-cover{
     display:flex; align-items:center; justify-content:center;
-    margin-top:8px;
+    color:var(--ink-soft); font-family:"Fraunces", serif; font-style:italic; font-size:0.85rem;
   }
-  .thumb.has-cover{
-    background-size:cover; background-position:center;
+  .place-card .meta-line{
+    font-size:0.72rem; color:var(--ink-soft); margin:0.7rem 0 0.2rem;
   }
-  .thumb .glyph{font-size:26px; opacity:0.35; color:var(--navy); font-family:'Fraunces', serif; font-style:italic;}
-  .corner{
-    position:absolute; width:16px; height:16px; z-index:2;
-    border-style:solid; border-color:var(--card); pointer-events:none;
+  .place-card .name{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.15rem; margin:0;
   }
-  .corner.tl{ top:6px; left:6px; border-width:2px 0 0 2px; }
-  .corner.br{ bottom:6px; right:6px; border-width:0 2px 2px 0; }
-
-  .status-badge{
-    position:absolute; bottom:8px; right:8px; z-index:2;
-    font-family:'Fraunces', serif; font-style:italic; font-weight:600;
-    font-size:10.5px; letter-spacing:0.03em;
-    padding:4px 10px; border-radius:100px;
-    transform:rotate(-3deg);
-  }
-  .status-badge.live{ background:var(--card); color:var(--brass); border:1.5px solid var(--brass); }
-  .status-badge.draft{ background:var(--card); color:var(--oxblood); border:1.5px solid var(--oxblood); }
-
-  .meta{padding:14px 16px 18px;}
-  .meta .place-name{
-    font-family:'Fraunces', serif; font-weight:600;
-    font-size:23px; letter-spacing:-0.005em; line-height:1.05;
-  }
-  .meta .rule{
-    border:none; border-top:1px solid var(--line); border-bottom:1px solid var(--line);
-    height:3px; margin:9px 0 10px;
-  }
-  .meta .blurb{
-    color:var(--ink-soft); font-size:12px; line-height:1.6;
-  }
-  .meta .blurb.tbd{ font-style:italic; }
-  .meta .count{
-    font-size:10px; letter-spacing:0.05em; text-transform:uppercase;
-    color:var(--navy); margin-top:10px; display:block; font-weight:700;
+  .place-card:hover .name{ color:var(--blue); }
+  .place-card .blurb{
+    font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0 0;
   }
 
-  .gift-shop{
-    margin-top:56px; padding-top:8px;
-    border-top:2px solid var(--navy);
+  /* ---------- gift shop ---------- */
+  .gift-shop{ background:var(--card); }
+  .gift-shop .eyebrow{
+    font-size:0.7rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--blue); margin:0 0 0.5rem; font-weight:700;
   }
-  .gift-shop .eyebrow{ margin-bottom:6px; }
-  .gift-shop h2{
-    font-family:'Fraunces', serif; font-weight:600; font-style:italic;
-    font-size:clamp(26px, 5vw, 36px); margin:0 0 10px; color:var(--navy);
-  }
-  .gift-shop h2 em{ color:var(--oxblood); font-style:italic; }
-  .gift-shop p{
-    color:var(--ink-soft); font-size:13.5px; line-height:1.7;
-    max-width:56ch; margin:0 0 22px;
-  }
+  .gift-shop p{ color:var(--ink-soft); font-size:0.88rem; line-height:1.7; max-width:56ch; margin:0 0 1.4rem; }
   .tour-btn{
-    display:inline-flex; align-items:center; gap:10px;
-    font-family:'Fraunces', serif; font-style:italic; font-weight:600;
-    font-size:14px; color:var(--ink-soft);
-    background:var(--card); border:1.5px dashed var(--navy);
-    padding:12px 20px; cursor:not-allowed; opacity:0.75;
+    display:inline-flex; align-items:center; gap:0.6rem;
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.9rem;
+    color:var(--ink-soft); background:var(--cream); border:1.5px dashed var(--blue);
+    padding:0.7rem 1.1rem; border-radius:100px; cursor:not-allowed; opacity:0.85;
   }
   .tour-btn .tag{
-    font-family:'Courier Prime', monospace; font-style:normal;
-    font-size:9.5px; letter-spacing:0.08em; text-transform:uppercase;
-    background:var(--navy); color:var(--paper); padding:3px 8px; border-radius:100px;
+    font-family:"Inter", sans-serif; font-weight:600;
+    font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase;
+    background:var(--blue); color:#fff; padding:3px 9px; border-radius:100px;
+  }
+
+  /* ---------- itinerary ---------- */
+  .itinerary{ background:var(--olive); color:var(--cream); }
+  .itinerary h2{ color:var(--cream); }
+  .itinerary p.lede{ color:rgba(243,236,222,0.7); font-size:0.85rem; margin:-1rem 0 1.6rem; max-width:52ch; }
+  .itin-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1rem; }
+  .itin-list li{
+    display:flex; align-items:baseline; gap:1rem;
+    border-top:1px solid rgba(243,236,222,0.18); padding-top:1rem;
+  }
+  .itin-list li:first-child{ border-top:none; padding-top:0; }
+  .itin-num{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.85rem;
+    color:rgba(243,236,222,0.5); flex:none; width:1.6rem;
+  }
+  .itin-name{ font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.05rem; }
+  .itin-note{ font-size:0.78rem; color:rgba(243,236,222,0.6); margin-top:0.2rem; }
+
+  /* ---------- signoff + footer ---------- */
+  .signoff{
+    text-align:center; padding:3.5rem 1.5rem 2.5rem;
+  }
+  .signoff h3{
+    font-family:"Fredoka", sans-serif; font-weight:700;
+    font-size:clamp(1.8rem, 6vw, 2.6rem); margin:0; line-height:1.05;
   }
 
   footer{
-    text-align:center; padding:34px 16px 60px; color:var(--ink-soft); font-size:11px;
-    letter-spacing:0.05em; font-family:'Fraunces', serif; font-style:italic;
+    text-align:center; padding:1.5rem 1.5rem 3rem;
+    color:var(--ink-soft); font-size:0.72rem;
   }
+  footer .foot-nav{ display:flex; justify-content:center; gap:1rem; margin-bottom:0.8rem; }
+  footer .foot-nav a{ text-decoration:none; color:var(--ink); font-weight:600; font-size:0.78rem; }
+  footer .foot-nav a:hover{ color:var(--blue); }
 </style>
 </head>
 <body>
 
-<header>
-  <a class="home-link" href="https://blog.varunagarwal.com">lucidité</a>
-  <span class="header-mark">VA</span>
-  <div class="eyebrow">wander / index</div>
-  <h1><em>Wander</em></h1>
-  <div class="intro">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</div>
-</header>
+<div class="layout">
 
-<main>
-  <div class="wall" id="wall"></div>
+  <aside class="sidebar">
+    <div class="sidebar-top">
+      <a class="home-link" href="https://blog.varunagarwal.com">lucidité</a>
+      <nav class="pill-nav">
+        <a href="https://books.varunagarwal.com">Books</a>
+        <a href="https://notes.varunagarwal.com">Notes</a>
+        <a href="https://contact.varunagarwal.com">Contact</a>
+      </nav>
+      <a class="wordmark-big" href="#top">Wander</a>
+      <svg class="doodle" viewBox="0 0 140 90" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#2A46E0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M8 66c10-14 22-14 30 0s20 14 28-2 20-16 28-2 18 12 26 0"/>
+        <circle cx="112" cy="20" r="11"/>
+        <path d="M112 9v5M112 26v5M101 20h5M118 20h5M104 12l3.5 3.5M116.5 24.5l3.5 3.5M104 28l3.5-3.5M116.5 15.5l3.5-3.5"/>
+        <path d="M20 46l6-10h8l6 10z"/>
+        <circle cx="30" cy="41" r="2.4"/>
+      </svg>
+      <p class="tagline">Stories and photos of long walks, wrong turns, and everyday discoveries.</p>
+    </div>
 
-  <section class="gift-shop">
-    <div class="eyebrow">wander / a closer look</div>
-    <h2>Exit through the <em>gift shop</em></h2>
-    <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Eventually a guided, story-style tour through them one at a time.</p>
-    <span class="tour-btn" aria-disabled="true"><span class="tag">Coming soon</span> Begin the tour →</span>
-  </section>
-</main>
+    <div class="ticker-wrap">
+      <div class="ticker" id="ticker"></div>
+    </div>
+  </aside>
 
-<footer>Wander, catalogued as I go</footer>
+  <main class="main" id="top">
+
+    <div class="hero" id="hero"></div>
+    <p class="scroll-cue">Scroll for more ↓</p>
+
+    <section class="section">
+      <h2>Latest travel stories</h2>
+      <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="section gift-shop">
+      <p class="eyebrow">wander / a closer look</p>
+      <h2>Exit through the gift shop</h2>
+      <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Eventually a guided, story-style tour through them one at a time.</p>
+      <span class="tour-btn" aria-disabled="true"><span class="tag">Coming soon</span> Begin the tour →</span>
+    </section>
+
+    <section class="section itinerary">
+      <h2>Upcoming itinerary</h2>
+      <p class="lede">Not filed yet, but on the map.</p>
+      <ul class="itin-list" id="itin-list"></ul>
+    </section>
+
+    <div class="signoff">
+      <h3>Fewer plans.<br>More detours.</h3>
+    </div>
+
+    <footer>
+      <nav class="foot-nav">
+        <a href="https://books.varunagarwal.com">Books</a>
+        <a href="https://notes.varunagarwal.com">Notes</a>
+        <a href="https://contact.varunagarwal.com">Contact</a>
+      </nav>
+      lucidité — wander, catalogued as I go
+    </footer>
+
+  </main>
+</div>
 
 <script>
 /* ============================================================
    PLACES — one card per city/location page.
-
-   name   — display name
-   slug   — folder name; also used to build the href (slug + "/")
-   status — "live" (clickable, links to slug/) or "draft" (placeholder,
-            not clickable yet — just shows on the homepage as a preview
-            of what's coming)
-   cover  — path to a cover image (e.g. "london/img/07-elephant-shutter.jpg"),
-            or null for a placeholder thumb
-   blurb  — one line under the name. Leave "" for a plain "notes coming
-            soon" placeholder.
-   count  — optional, e.g. "69 pieces" — shown as a small accent line
-
-   To add a new city: copy one of the draft entries below, fill in the
-   details, and flip status to "live" once that page actually exists.
+   status: "live" (clickable) or "draft" (upcoming, shown in the
+   itinerary section instead of the grid).
    ============================================================ */
 const PLACES = [
   {name:'London', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'69 pieces'},
   {name:'Khajuraho', slug:'khajuraho', status:'live', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
   {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
-  {name:'Glasgow', slug:'glasgow', status:'draft', cover:null, blurb:'', count:''},
-  {name:'Isle of Skye', slug:'skye', status:'draft', cover:null, blurb:'', count:''},
+  {name:'Glasgow', slug:'glasgow', status:'draft', count:''},
+  {name:'Isle of Skye', slug:'skye', status:'draft', count:''},
 ];
 
-function renderWall(){
-  const wall = document.getElementById('wall');
-  wall.innerHTML = PLACES.map((p, i) => {
-    const isLive = p.status === 'live';
-    const coverStyle = p.cover ? `background-image:url('${p.cover}');` : '';
-    const n = String(i + 1).padStart(2, '0');
-    return `
-    <div class="card ${isLive ? 'is-live' : 'is-draft'}" ${isLive ? `data-href="${p.slug}/"` : ''}>
-      <div class="frame">
-        <div class="tab">N° ${n}</div>
-        <div class="thumb ${p.cover ? 'has-cover' : ''}" style="${coverStyle}">
-          <div class="corner tl"></div>
-          <div class="corner br"></div>
-          <span class="status-badge ${isLive ? 'live' : 'draft'}">${isLive ? 'Filed' : 'Awaiting'}</span>
-          ${!p.cover ? '<span class="glyph">no plate filed</span>' : ''}
-        </div>
-        <div class="meta">
-          <div class="place-name">${p.name}</div>
-          <hr class="rule">
-          <div class="blurb ${p.blurb ? '' : 'tbd'}">${p.blurb || '— notes coming soon —'}</div>
-          ${p.count ? `<span class="count">${p.count}</span>` : ''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
+const live = PLACES.filter(p => p.status === 'live');
+const draft = PLACES.filter(p => p.status === 'draft');
 
-  wall.querySelectorAll('.card.is-live').forEach(el=>{
-    el.onclick = () => { window.location.href = el.dataset.href; };
-  });
+// hero — feature the first live place
+const featured = live[0];
+document.getElementById('hero').innerHTML = featured ? `
+  <img class="hero-img" src="${featured.cover}" alt="">
+  <a class="hero-card" href="${featured.slug}/">
+    <img src="${featured.cover}" alt="">
+    <p class="label">Featured</p>
+    <p class="name">${featured.name}</p>
+  </a>
+` : '';
 
-  requestAnimationFrame(()=>{
-    const obs = new IntersectionObserver((entries)=>{
-      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target);} });
-    }, {threshold:0.15});
-    wall.querySelectorAll('.card').forEach(c=>obs.observe(c));
-  });
-}
+// grid — remaining live places (skip the featured one, or show all incl. featured)
+document.getElementById('grid').innerHTML = live.map(p => `
+  <a class="place-card" href="${p.slug}/">
+    <img class="thumb" src="${p.cover}" alt="">
+    <p class="meta-line">${p.count}</p>
+    <p class="name">${p.name}</p>
+    <p class="blurb">${p.blurb}</p>
+  </a>
+`).join('');
 
-renderWall();
+// itinerary — draft places
+document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
+  <li>
+    <span class="itin-num">${String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <div class="itin-name">${p.name}</div>
+      <div class="itin-note">Not filed yet — notes coming soon.</div>
+    </div>
+  </li>
+`).join('');
+
+// ticker — real logged places, looped twice for seamless scroll
+const tickerItems = live.map(p => `<span>${p.name} <span class="dot">·</span></span>`).join('');
+document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
 </script>
 
 </body>
