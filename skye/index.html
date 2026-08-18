@@ -157,7 +157,8 @@
     color:var(--heather); margin:0 0 0.35rem; display:block;
   }
   .d-idea-txt{ font-size:0.84rem; line-height:1.6; color:var(--ink-soft); margin:0 0 0.7rem; }
-  .d-notes{ font-size:0.84rem; line-height:1.6; color:var(--ink-faint); font-style:italic; margin:0 0 0.7rem; }
+  .d-notes{ font-size:0.84rem; line-height:1.6; color:var(--ink); margin:0 0 0.7rem; white-space:pre-line; }
+  .d-notes.notes-empty{ color:var(--ink-faint); font-style:italic; }
   .d-tags{ display:flex; gap:0.4rem; flex-wrap:wrap; }
   .d-tags span{
     font-size:0.66rem; letter-spacing:0.03em; color:var(--moss);
@@ -178,7 +179,8 @@
   .coda .shot .mount{ border-color:rgba(251,250,245,0.18); background:rgba(251,250,245,0.06); }
   .coda .detail-inner{ background:rgba(251,250,245,0.08); border-color:rgba(251,250,245,0.18); }
   .coda .d-idea-txt{ color:rgba(251,250,245,0.78); }
-  .coda .d-notes{ color:rgba(251,250,245,0.5); }
+  .coda .d-notes{ color:rgba(251,250,245,0.9); }
+  .coda .d-notes.notes-empty{ color:rgba(251,250,245,0.5); }
 
   /* ---------- signoff + footer ---------- */
   .signoff{ text-align:center; padding:3.4rem 1.5rem 2rem; }
@@ -264,15 +266,14 @@
         <figure class="shot" data-id="12"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
         <figure class="shot" data-id="13"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       </div>
-      <p class="note">A stop at the Sligachan Hotel — the bar, and a bunkroom next door.</p>
-      <div class="shot-row">
-        <figure class="shot" data-id="14"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-        <figure class="shot" data-id="15"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-      </div>
+      <p class="note">A stop at the Sligachan Hotel for a pint at Seumas' Bar.</p>
+      <figure class="shot shot--small" data-id="14"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
     </div>
 
     <div class="scene">
       <p class="scene-label">Portree, evening</p>
+      <figure class="shot shot--small" data-id="15"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <p class="note">Checked into a colourful hostel in town before heading down toward the harbour.</p>
       <figure class="shot shot--wide" data-id="16"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <div class="shot-row">
         <figure class="shot" data-id="17"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
@@ -362,7 +363,7 @@
       </div>
     </div>
     <div class="scene">
-      <p class="note">Skye behind, the road and rail line home cut through Lochaber — past a viaduct that needs no introduction.</p>
+      <p class="note">Skye behind, the road and rail line home cut through Lochaber — past the Glenfinnan Viaduct, the "Harry Potter train" crossing it right on cue, and a stop at the roadside grave known locally as "Dumbledore's grave."</p>
       <figure class="shot shot--wide" data-id="34"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <figure class="shot shot--wide" data-id="35"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <figure class="shot shot--wide" data-id="36"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
@@ -421,8 +422,8 @@ const DATA = [
   {id:11, img:'img/d2-08-lichen-rock.jpg', type:'photo', category:'castle', title:'', location:'Eilean Donan Castle, Dornie', notes:"", claudeIdea:"Orange lichen on a shoreline rock, castle just out of frame — one of a few close-up details taken between the wide castle views.", tags:['lichen','macro','rock'], ratio:'1280/960', date:'2018-06-08T12:41:01', order:11},
   {id:12, img:'img/d2-09-sligachan-painter.jpg', type:'photo', category:'bridge', title:'', location:'Sligachan Old Bridge', notes:"", claudeIdea:"A painter working at an easel right by the old bridge, the Cuillins as the subject — caught mid-brushstroke.", tags:['sligachan','cuillins','painter'], ratio:'1280/960', date:'2018-06-08T14:15:18', order:12},
   {id:13, img:'img/d2-10-sligachan-bridge-cuillins.jpg', type:'photo', category:'bridge', title:'', location:'Sligachan Old Bridge', notes:"", claudeIdea:"The Old Bridge at Sligachan with the jagged Cuillin ridge behind — one of Skye's most-photographed viewpoints.", tags:['sligachan','cuillins','stone bridge'], ratio:'1280/960', date:'2018-06-08T14:17:44', order:13, colorFrame:'124,140,50'},
-  {id:14, img:'img/d2-11-seumas-bar-sign.jpg', type:'photo', category:'journey', title:'', location:'Sligachan Hotel', notes:"", claudeIdea:"Seumas' Bar, the pub at the Sligachan Hotel — established 1987, per the sign.", tags:['pub sign','sligachan hotel'], ratio:'960/1280', date:'2018-06-08T15:08:08', order:14},
-  {id:15, img:'img/d2-12-bunkroom.jpg', type:'photo', category:'journey', title:'', location:'Sligachan Hotel', notes:"", claudeIdea:"A bunk room, red and yellow paintwork — likely the bunkhouse attached to the Sligachan Hotel.", tags:['bunkhouse','room'], ratio:'960/1280', date:'2018-06-08T16:15:10', order:15, colorFrame:'156,63,41'},
+  {id:14, img:'img/d2-11-seumas-bar-sign.jpg', type:'photo', category:'journey', title:'', location:"Seumas' Bar, Sligachan Hotel", notes:"Met the owner here — such an interesting logo — in memory of Seumas, his dog, who he arrived with to the island.", claudeIdea:"The bar's sign, established 1987, with a paw-print worked into the crest.", tags:['pub sign','seumas bar'], ratio:'960/1280', date:'2018-06-08T15:08:08', order:14},
+  {id:15, img:'img/d2-12-bunkroom.jpg', type:'photo', category:'journey', title:'', location:'Colourful hostel, Portree', notes:"", claudeIdea:"A bunk room, red and yellow paintwork — a hostel in Portree, not the one at Sligachan.", tags:['hostel','room','portree'], ratio:'960/1280', date:'2018-06-08T16:15:10', order:15, colorFrame:'156,63,41'},
   {id:16, img:'img/d2-13-rhododendron-path.jpg', type:'photo', category:'coast', title:'', location:'Portree, Isle of Skye', notes:"", claudeIdea:"A gravel path through flowering rhododendron, evening light — walking down toward Portree harbour.", tags:['path','rhododendron','walk'], ratio:'960/1280', date:'2018-06-08T18:47:46', order:16, colorFrame:'96,140,22'},
   {id:17, img:'img/d2-14-portree-from-height.jpg', type:'photo', category:'coast', title:'', location:'Portree, Isle of Skye', notes:"", claudeIdea:"Portree's harbour and headland from up on the path, clear evening sky.", tags:['portree','harbour','viewpoint'], ratio:'1280/960', date:'2018-06-08T18:59:12', order:17},
   {id:18, img:'img/d2-15-fish-farm.jpg', type:'photo', category:'coast', title:'', location:'Portree Harbour, Isle of Skye', notes:"", claudeIdea:"Fishing boats moored by the salmon-farm cages in Portree harbour.", tags:['portree','fishing boats','fish farm'], ratio:'960/1280', date:'2018-06-08T19:12:18', order:18},
@@ -446,7 +447,7 @@ const DATA = [
 
   {id:34, img:'img/coda-01-highland-loch.jpg', type:'photo', category:'journey', title:'', location:'Lochaber, Scottish Highlands', notes:"", claudeIdea:"Back on the mainland, a highland loch along the route home — Skye already behind.", tags:['highlands','loch','return journey'], ratio:'960/1280', date:'2018-06-10T15:08:57', order:34},
   {id:35, img:'img/coda-02-glenfinnan-viaduct.jpg', type:'photo', category:'journey', title:'', location:'Glenfinnan Viaduct, Lochaber', notes:"", claudeIdea:"The Glenfinnan Viaduct — the 21-arch curve made famous by the Hogwarts Express shots in the Harry Potter films.", tags:['glenfinnan','viaduct','west highland line'], ratio:'1280/960', date:'2018-06-10T15:24:41', order:35, colorFrame:'110,140,47'},
-  {id:36, img:'img/coda-03-steam-train.jpg', type:'photo', category:'journey', title:'', location:'West Highland Line, Scotland', notes:"", claudeIdea:"Steam locomotive 62005 at the platform — one of the locomotives used on the Jacobite, the steam service that runs the West Highland Line and crosses the Glenfinnan Viaduct.", tags:['steam train','jacobite','locomotive'], ratio:'1280/960', date:'2018-06-10T16:01:51', order:36, colorFrame:'140,109,40'},
+  {id:36, img:'img/coda-03-steam-train.jpg', type:'photo', category:'journey', title:'', location:'West Highland Line, Scotland', notes:"", claudeIdea:"Steam locomotive 62005 at the platform — the Jacobite, better known as the \"Harry Potter train\" for crossing the Glenfinnan Viaduct on its way up the West Highland Line.", tags:['steam train','jacobite','harry potter train'], ratio:'1280/960', date:'2018-06-10T16:01:51', order:36, colorFrame:'140,109,40'},
 ];
 
 /* ============================================================
@@ -561,11 +562,12 @@ function hydrateShots(){
     const detail = el.querySelector('.detail');
     if(detail){
       const ideaBlock = item.claudeIdea ? `<span class="d-idea-lbl">Note from Claude</span><p class="d-idea-txt">${item.claudeIdea}</p>` : '';
-      const notesTxt = (item.notes && item.notes.trim()) ? item.notes : '— add your notes —';
+      const hasNotes = item.notes && item.notes.trim();
+      const notesTxt = hasNotes ? item.notes : '— add your notes —';
       detail.innerHTML = `
         <div class="detail-inner">
           ${ideaBlock}
-          <p class="d-notes">${notesTxt}</p>
+          <p class="d-notes${hasNotes ? '' : ' notes-empty'}">${notesTxt}</p>
           <div class="d-tags">${(item.tags||[]).map(t=>`<span>${t}</span>`).join('')}</div>
         </div>`;
       const toggle = () => detail.classList.toggle('open');
