@@ -95,19 +95,20 @@
   }
   @media(min-width:640px){ .hero-img{ aspect-ratio:21/9; } }
   .hero-card{
-    position:absolute; left:2rem; bottom:0;
-    background:var(--card); padding:0.7rem 1.1rem 0.8rem;
-    border-radius:14px;
+    position:absolute; left:1.2rem; right:1.2rem; bottom:0;
+    background:var(--card); padding:0.8rem 1.1rem 0.9rem;
+    border-radius:14px; max-width:420px;
     box-shadow:0 14px 30px -14px rgba(23,20,12,0.4);
     text-decoration:none; color:inherit;
   }
-  @media(min-width:640px){ .hero-card{ left:3.3rem; } }
+  @media(min-width:640px){ .hero-card{ left:3.3rem; right:auto; } }
   .hero-card .label{
-    font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase;
-    color:var(--ink-soft); margin:0 0 0.2rem;
+    font-size:0.64rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:700;
+    color:var(--blue); margin:0 0 0.3rem;
   }
-  .hero-card .name{
-    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.15rem; margin:0;
+  .hero-card .caption{
+    font-family:"Fraunces", serif; font-style:italic; font-size:0.95rem; line-height:1.4;
+    color:var(--ink); margin:0;
   }
 
   .scroll-cue{
@@ -282,13 +283,35 @@ const PLACES = [
 const live = PLACES.filter(p => p.status === 'live');
 const draft = PLACES.filter(p => p.status === 'draft');
 
-// hero — feature the first live place
-const featured = live[0];
+/* ============================================================
+   FEATURED_PHOTOS — individual pieces pulled straight from each
+   album's own DATA array, using only entries with real, hand-written
+   `notes` (never the claudeIdea guesses — those stay labelled "Note
+   from Claude" inside their own album, not surfaced unlabelled here).
+   One is picked at random on load; clicking it opens its album.
+   ============================================================ */
+const FEATURED_PHOTOS = [
+  {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'London', slug:'london'},
+  {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'London', slug:'london'},
+  {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/nothing-but-thieves.jpg', caption:'Nothing But Thieves — spotted their name on the big screen mid-set at Lollapalooza India.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/glass-beams.jpg', caption:'Glass Beams — Bangalore show.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/john-mayer.jpg', caption:'John Mayer — Mumbai show.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/jonita-gandhi.jpg', caption:'Jonita Gandhi — Lollapalooza India, Corona Sunsets stage.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/ben-howard.jpg', caption:'Ben Howard — Mumbai show.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/isabel-larosa.jpg', caption:'Isabel LaRosa — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/aurora.jpg', caption:'AURORA — Lollapalooza India, day two.', place:'Concerts', slug:'concerts'},
+  {img:'concerts/img/talwinder.jpg', caption:'Talwiinder — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
+];
+
+const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
 document.getElementById('hero').innerHTML = featured ? `
-  <img class="hero-img" src="${featured.cover}" alt="">
+  <img class="hero-img" src="${featured.img}" alt="">
   <a class="hero-card" href="${featured.slug}/">
-    <p class="label">Featured</p>
-    <p class="name">${featured.name}</p>
+    <p class="label">From ${featured.place}</p>
+    <p class="caption">${featured.caption}</p>
   </a>
 ` : '';
 
