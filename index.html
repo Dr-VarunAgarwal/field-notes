@@ -59,23 +59,19 @@
   .home-link:hover{ opacity:1; }
 
   .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; }
-  .upcoming-teaser{
+  .sidebar-stories{
     border-top:1px solid rgba(23,20,12,0.15); padding-top:1rem;
   }
-  .upcoming-teaser .label{
+  .sidebar-stories .label{
     font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
-    color:var(--blue); opacity:0.85; margin:0 0 0.7rem;
+    color:var(--blue); opacity:0.85; margin:0 0 0.8rem;
   }
-  .upcoming-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.6rem; }
-  .upcoming-list li{ display:flex; align-items:baseline; gap:0.5rem; }
-  .upcoming-list .num{
-    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.72rem;
-    color:var(--blue); opacity:0.55;
+  .sidebar-stories .stories-feed{
+    padding:0.2rem 0.1rem 0.5rem; gap:0.9rem;
   }
-  .upcoming-list .name{
-    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.85rem; color:var(--blue);
-  }
-  .upcoming-list .note{ font-size:0.68rem; color:var(--blue); opacity:0.6; display:block; }
+  .sidebar-stories .story-avatar{ width:52px; height:52px; border-width:2px; }
+  .sidebar-stories .story-username{ font-size:0.62rem; max-width:60px; color:var(--blue); }
+  .sidebar-stories .story-username.viewed{ color:var(--blue); opacity:0.5; }
   .wordmark-big{
     font-family:"Fredoka", sans-serif; font-weight:700;
     font-size:clamp(2.1rem, 4vw, 2.5rem); line-height:0.98;
@@ -244,11 +240,6 @@
      Real photos only; captions shown only where a piece has real,
      hand-written notes (same rule as the featured card above).
      ============================================================ */
-  .stories-section{ padding:0.5rem 1.5rem 0; max-width:900px; margin:0 auto; }
-  .stories-section h2{
-    font-family:"Fredoka", sans-serif; font-weight:600;
-    font-size:clamp(1.2rem, 3vw, 1.5rem); margin:0 0 1rem;
-  }
   .stories-feed{
     display:flex; gap:1.1rem; overflow-x:auto; padding:0.3rem 0.2rem 1rem;
     -ms-overflow-style:none; scrollbar-width:none;
@@ -382,9 +373,9 @@
       <p class="tagline">Stories and photos of long walks, wrong turns, and everyday discoveries.</p>
     </div>
 
-    <div class="upcoming-teaser">
-      <p class="label">Upcoming stories</p>
-      <ul class="upcoming-list" id="upcoming-list"></ul>
+    <div class="sidebar-stories">
+      <p class="label">Stories</p>
+      <div class="stories-feed" id="stories-feed"></div>
     </div>
 
     <div class="ticker-wrap">
@@ -404,12 +395,7 @@
       <a class="featured-card" id="featured"></a>
     </header>
 
-    <section class="stories-section" style="padding-top:2.5rem;">
-      <h2>Stories</h2>
-      <div class="stories-feed" id="stories-feed"></div>
-    </section>
-
-    <section class="section">
+    <section class="section" style="padding-top:2.5rem;">
       <h2>Travel stories</h2>
       <div class="grid" id="grid"></div>
     </section>
@@ -546,17 +532,6 @@ document.getElementById('grid').innerHTML = live.map(p => `
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>
   </a>
-`).join('');
-
-// sidebar teaser — same draft places, compact form
-document.getElementById('upcoming-list').innerHTML = draft.map((p, i) => `
-  <li>
-    <span class="num">${String(i + 1).padStart(2, '0')}</span>
-    <div>
-      <span class="name">${p.name}</span>
-      <span class="note">Not filed yet</span>
-    </div>
-  </li>
 `).join('');
 
 // itinerary — draft places
