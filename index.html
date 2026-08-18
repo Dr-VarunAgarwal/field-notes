@@ -59,6 +59,23 @@
   .home-link:hover{ opacity:1; }
 
   .sidebar-top{ display:flex; flex-direction:column; gap:1.2rem; }
+  .upcoming-teaser{
+    border-top:1px solid rgba(23,20,12,0.15); padding-top:1rem;
+  }
+  .upcoming-teaser .label{
+    font-size:0.66rem; letter-spacing:0.1em; text-transform:uppercase; font-weight:700;
+    color:var(--blue); opacity:0.85; margin:0 0 0.7rem;
+  }
+  .upcoming-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:0.6rem; }
+  .upcoming-list li{ display:flex; align-items:baseline; gap:0.5rem; }
+  .upcoming-list .num{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.72rem;
+    color:var(--blue); opacity:0.55;
+  }
+  .upcoming-list .name{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.85rem; color:var(--blue);
+  }
+  .upcoming-list .note{ font-size:0.68rem; color:var(--blue); opacity:0.6; display:block; }
   .wordmark-big{
     font-family:"Fredoka", sans-serif; font-weight:700;
     font-size:clamp(2.1rem, 4vw, 2.5rem); line-height:0.98;
@@ -88,32 +105,54 @@
   /* ---------- main ---------- */
   .main{ flex:1; min-width:0; }
 
-  .hero{ position:relative; padding:1.2rem 1.2rem 2.4rem; }
-  .hero-img{
-    width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
-    border-radius:18px;
+  /* ---------- page header (static banner photo) ---------- */
+  .page-header{ position:relative; overflow:hidden; }
+  .page-header-bg{
+    width:100%; height:240px; object-fit:cover; display:block;
+    filter:brightness(0.55);
   }
-  @media(min-width:640px){ .hero-img{ aspect-ratio:21/9; } }
-  .hero-card{
-    position:absolute; left:1.2rem; right:1.2rem; bottom:0;
-    background:var(--card); padding:0.8rem 1.1rem 0.9rem;
-    border-radius:14px; max-width:420px;
-    box-shadow:0 14px 30px -14px rgba(23,20,12,0.4);
-    text-decoration:none; color:inherit;
+  @media(min-width:640px){ .page-header-bg{ height:320px; } }
+  .page-header-inner{
+    position:absolute; inset:0; display:flex; flex-direction:column;
+    justify-content:flex-end; padding:1.5rem 1.5rem 1.8rem; color:#fff;
   }
-  @media(min-width:640px){ .hero-card{ left:3.3rem; right:auto; } }
-  .hero-card .label{
-    font-size:0.64rem; letter-spacing:0.08em; text-transform:uppercase; font-weight:700;
-    color:var(--blue); margin:0 0 0.3rem;
+  .page-header .eyebrow{
+    font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:rgba(255,255,255,0.75); margin:0 0 0.4rem;
   }
-  .hero-card .caption{
-    font-family:"Fraunces", serif; font-style:italic; font-size:0.95rem; line-height:1.4;
-    color:var(--ink); margin:0;
+  .page-title{
+    font-family:"Fredoka", sans-serif; font-weight:700;
+    font-size:clamp(2rem, 6vw, 2.8rem); margin:0 0 0.5rem; color:#fff; line-height:1;
+  }
+  .page-intro{
+    font-size:0.85rem; line-height:1.6; color:rgba(255,255,255,0.85);
+    max-width:56ch; margin:0;
   }
 
-  .scroll-cue{
-    text-align:center; font-size:0.72rem; color:var(--ink-soft);
-    padding:3.2rem 1.5rem 1rem;
+  /* ---------- featured (random) card ---------- */
+  .featured-wrap{ padding:1.6rem 1.5rem 0.5rem; }
+  .featured-card{
+    position:relative; display:block; width:100%; max-width:260px;
+    background:var(--card); padding:0.6rem 0.6rem 0.8rem;
+    border-radius:14px; text-decoration:none; color:inherit;
+    box-shadow:0 10px 24px -14px rgba(23,20,12,0.35);
+  }
+  .featured-tag{
+    position:absolute; top:-10px; left:14px;
+    background:var(--blue); color:#fff;
+    font-size:0.62rem; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+    padding:4px 10px; border-radius:100px;
+  }
+  .featured-card img{
+    width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; display:block;
+  }
+  .featured-card .place-label{
+    font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:700;
+    color:var(--ink-soft); margin:0.6rem 0 0.2rem;
+  }
+  .featured-card .caption{
+    font-family:"Fraunces", serif; font-style:italic; font-size:0.82rem; line-height:1.4;
+    color:var(--ink); margin:0;
   }
 
   .section{ padding:1.5rem 1.5rem 3rem; max-width:900px; margin:0 auto; }
@@ -221,6 +260,11 @@
       <p class="tagline">Stories and photos of long walks, wrong turns, and everyday discoveries.</p>
     </div>
 
+    <div class="upcoming-teaser">
+      <p class="label">Upcoming stories</p>
+      <ul class="upcoming-list" id="upcoming-list"></ul>
+    </div>
+
     <div class="ticker-wrap">
       <div class="ticker" id="ticker"></div>
     </div>
@@ -228,8 +272,18 @@
 
   <main class="main" id="top">
 
-    <div class="hero" id="hero"></div>
-    <p class="scroll-cue">Scroll for more ↓</p>
+    <header class="page-header">
+      <img class="page-header-bg" src="london/img/07-elephant-shutter.jpg" alt="">
+      <div class="page-header-inner">
+        <p class="eyebrow">wander / index</p>
+        <h1 class="page-title">Wander</h1>
+        <p class="page-intro">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
+      </div>
+    </header>
+
+    <div class="featured-wrap">
+      <a class="featured-card" id="featured"></a>
+    </div>
 
     <section class="section">
       <h2>Latest travel stories</h2>
@@ -307,13 +361,16 @@ const FEATURED_PHOTOS = [
 ];
 
 const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
-document.getElementById('hero').innerHTML = featured ? `
-  <img class="hero-img" src="${featured.img}" alt="">
-  <a class="hero-card" href="${featured.slug}/">
-    <p class="label">From ${featured.place}</p>
+if (featured) {
+  const card = document.getElementById('featured');
+  card.href = `${featured.slug}/`;
+  card.innerHTML = `
+    <span class="featured-tag">🎲 Random pick</span>
+    <img src="${featured.img}" alt="">
+    <p class="place-label">From ${featured.place}</p>
     <p class="caption">${featured.caption}</p>
-  </a>
-` : '';
+  `;
+}
 
 // grid — remaining live places (skip the featured one, or show all incl. featured)
 document.getElementById('grid').innerHTML = live.map(p => `
@@ -323,6 +380,17 @@ document.getElementById('grid').innerHTML = live.map(p => `
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>
   </a>
+`).join('');
+
+// sidebar teaser — same draft places, compact form
+document.getElementById('upcoming-list').innerHTML = draft.map((p, i) => `
+  <li>
+    <span class="num">${String(i + 1).padStart(2, '0')}</span>
+    <div>
+      <span class="name">${p.name}</span>
+      <span class="note">Not filed yet</span>
+    </div>
+  </li>
 `).join('');
 
 // itinerary — draft places
