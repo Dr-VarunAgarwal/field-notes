@@ -88,26 +88,26 @@
   /* ---------- main ---------- */
   .main{ flex:1; min-width:0; }
 
-  .hero{ position:relative; }
+  .hero{ position:relative; padding:1.2rem 1.2rem 2.4rem; }
   .hero-img{
     width:100%; aspect-ratio:16/10; object-fit:cover; display:block;
+    border-radius:18px;
   }
   @media(min-width:640px){ .hero-img{ aspect-ratio:21/9; } }
   .hero-card{
-    position:absolute; left:1.2rem; bottom:-2.2rem;
-    background:var(--card); padding:0.6rem 0.6rem 0.9rem;
+    position:absolute; left:2rem; bottom:0;
+    background:var(--card); padding:0.7rem 1.1rem 0.8rem;
+    border-radius:14px;
     box-shadow:0 14px 30px -14px rgba(23,20,12,0.4);
-    width:min(78vw, 260px);
     text-decoration:none; color:inherit;
   }
-  @media(min-width:640px){ .hero-card{ left:2.5rem; } }
-  .hero-card img{ width:100%; aspect-ratio:4/3; object-fit:cover; display:block; }
+  @media(min-width:640px){ .hero-card{ left:3.3rem; } }
   .hero-card .label{
     font-size:0.66rem; letter-spacing:0.06em; text-transform:uppercase;
-    color:var(--ink-soft); margin:0.6rem 0 0.25rem;
+    color:var(--ink-soft); margin:0 0 0.2rem;
   }
   .hero-card .name{
-    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.05rem; margin:0;
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.15rem; margin:0;
   }
 
   .scroll-cue{
@@ -127,7 +127,7 @@
   .place-card{ text-decoration:none; color:inherit; display:block; }
   .place-card .thumb{
     width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
-    background:var(--card);
+    background:var(--card); border-radius:14px;
   }
   .place-card .thumb.no-cover{
     display:flex; align-items:center; justify-content:center;
@@ -287,7 +287,6 @@ const featured = live[0];
 document.getElementById('hero').innerHTML = featured ? `
   <img class="hero-img" src="${featured.cover}" alt="">
   <a class="hero-card" href="${featured.slug}/">
-    <img src="${featured.cover}" alt="">
     <p class="label">Featured</p>
     <p class="name">${featured.name}</p>
   </a>
