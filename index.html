@@ -101,40 +101,41 @@
   /* ---------- main ---------- */
   .main{ flex:1; min-width:0; }
 
-  /* ---------- page header — editorial photo stack ---------- */
+  /* ---------- page header — full-bleed editorial photo stack ---------- */
   .page-header{
     position:relative; overflow:visible; padding-bottom:4.5rem;
-    background:var(--blue); isolation:isolate;
+    background:var(--cream); isolation:isolate;
   }
   .header-collage{
     position:relative; height:320px; overflow:hidden;
-    background:var(--blue);
+    background:#111; /* only visible at the extreme crop edges */
   }
   .header-collage::after{
     content:""; position:absolute; inset:0; z-index:5; pointer-events:none;
-    background:linear-gradient(180deg, rgba(17,22,38,0.04) 20%, rgba(17,22,38,0.46) 100%);
+    background:linear-gradient(180deg, rgba(17,22,38,0.02) 35%, rgba(17,22,38,0.38) 100%);
   }
   .header-photo{
     position:absolute; display:block; object-fit:cover;
-    border:1px solid rgba(255,255,255,0.58);
+    border:1px solid rgba(255,255,255,0.62);
     box-shadow:0 18px 34px -18px rgba(0,0,0,0.72);
     transform-origin:center;
   }
+  /* The first photograph is the full-bleed photographic ground, not a card. */
   .header-photo.one{
-    width:58%; height:78%; left:8%; top:8%; transform:rotate(-2deg);
-    z-index:2; object-position:center 52%;
+    width:100%; height:100%; left:0; top:0; transform:none;
+    z-index:1; object-position:center 52%;
+    border:0; box-shadow:none;
   }
   .header-photo.two{
-    width:47%; height:67%; right:8%; top:6%; transform:rotate(2.2deg);
+    width:45%; height:67%; right:7%; top:6%; transform:rotate(1.8deg);
     z-index:3; object-position:center;
   }
   .header-photo.three{
-    width:49%; height:58%; left:28%; bottom:-3%; transform:rotate(-0.8deg);
+    width:49%; height:58%; left:28%; bottom:-4%; transform:rotate(-0.9deg);
     z-index:4; object-position:center;
   }
   @media(max-width:639px){
     .header-collage{ height:285px; }
-    .header-photo.one{ width:67%; height:69%; left:2%; top:7%; }
     .header-photo.two{ width:48%; height:57%; right:1%; top:5%; }
     .header-photo.three{ width:58%; height:48%; left:23%; bottom:1%; }
   }
@@ -146,21 +147,17 @@
   }
   .page-header .eyebrow{
     font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
-    color:rgba(255,255,255,0.8); margin:0 0 0.4rem;
+    color:rgba(255,255,255,0.82); margin:0 0 0.4rem;
   }
   .page-title{
     font-family:"Fredoka", sans-serif; font-weight:700;
     font-size:clamp(2rem, 6vw, 2.8rem); margin:0 0 0.5rem; color:#fff; line-height:1;
-    text-shadow:0 3px 16px rgba(0,0,0,0.35);
-  }
-  .page-intro{
-    font-size:0.85rem; line-height:1.6; color:rgba(255,255,255,0.9);
-    max-width:56ch; margin:0; text-shadow:0 2px 10px rgba(0,0,0,0.35);
+    text-shadow:0 3px 16px rgba(0,0,0,0.38);
   }
 
   /* ---------- featured (random) card — overlaps the header photo ---------- */
   .featured-card{
-    position:absolute; left:1.5rem; bottom:0;
+    position:absolute; left:1.5rem; bottom:2rem; z-index:10;
     display:block; width:calc(100% - 3rem); max-width:260px;
     background:var(--card); padding:0.6rem 0.6rem 0.8rem;
     border-radius:14px; text-decoration:none; color:inherit;
@@ -434,7 +431,7 @@
         <path d="M20 46l6-10h8l6 10z"/>
         <circle cx="30" cy="41" r="2.4"/>
       </svg>
-      <p class="tagline">Stories and photos of long walks, wrong turns, and everyday discoveries.</p>
+      <p class="tagline">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
     </div>
 
     <div class="sidebar-stories">
@@ -458,8 +455,7 @@
       <div class="page-header-inner">
         <p class="eyebrow">wander / index</p>
         <h1 class="page-title">Wander</h1>
-        <p class="page-intro">Been clicking a long while now I guess? Lots of places and things looked at. street art. nature. architecture. browse and find what you find interesting.</p>
-      </div>
+              </div>
       <a class="featured-card" id="featured"></a>
     </header>
 
