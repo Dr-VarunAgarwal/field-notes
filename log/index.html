@@ -190,9 +190,35 @@ function addSlideRow(){
 }
 addSlideRow();
 
-/* ---------- image resize (client-side, no server) ---------- */
+/* ---------- image resize (client-side, no server) ----------
+   createImageBitmap() is the fast path but fails outright on some
+   real-world files Chrome's decoder chokes on (HEIC/HEIF from an
+   iPhone being the most common) with a bare "source image could not
+   be decoded" error. Falling back to a plain <img> element uses the
+   browser's general image-loading pipeline instead, which handles a
+   few of those cases createImageBitmap doesn't -- though HEIC itself
+   usually still won't decode either way without OS-level codec
+   support, hence the actionable error message if both fail. */
+function decodeViaImgElement(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error('img element decode failed')); };
+    img.src = url;
+  });
+}
 async function resizeImage(file, maxDim = 1280, quality = 0.75){
-  const bitmap = await createImageBitmap(file);
+  let bitmap;
+  try {
+    bitmap = await createImageBitmap(file);
+  } catch (err) {
+    try {
+      bitmap = await decodeViaImgElement(file);
+    } catch (err2) {
+      throw new Error(`Couldn't read "${file.name}" — your browser can't decode this photo's format (common with HEIC photos from an iPhone). Try re-selecting it, or convert it to JPEG first and retry.`);
+    }
+  }
   let { width, height } = bitmap;
   const scale = Math.min(1, maxDim / Math.max(width, height));
   width = Math.round(width * scale);
