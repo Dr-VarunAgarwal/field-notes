@@ -85,7 +85,36 @@ whether it should also be added to these arrays in `index.html`:
 - The ticker pulls from all of `PLACES` (live + draft) automatically —
   nothing to do there beyond adding the place.
 
-## 6. Adding stories from a phone — `log/index.html`
+## 6. Feeding a new place into `street-art/index.html`
+
+`street-art/` is a themed, cross-city page (same idea as `concerts/`) —
+it aggregates every street-art photo across place pages into one
+filterable gallery, rather than living under one city. It is **not**
+a live pull: there's no build step or shared data source anywhere on
+this site, so when a place's photos should count as street art, copy
+the relevant items into `street-art/index.html`'s own `DATA` array by
+hand, same as `index.html`'s `FEATURED_PHOTOS` already duplicates
+photos that live in each place's own `DATA`.
+
+- Only copy the photos that are actually street art (murals,
+  paste-ups, stencils, stickers, yarn bombs, sculptural pieces on the
+  street) — leave out museum/scenery/food shots from that place's
+  walk.
+- `img` path needs adjusting to point back at the source place's own
+  folder, e.g. `img/foo.jpg` becomes `../glasgow/img/foo.jpg`.
+- `id` needs a fresh offset per source so ids stay unique once merged
+  — check the top-of-DATA comment in `street-art/index.html` for the
+  next free hundred (e.g. Edinburgh would be +400).
+- Add `city` (display string) and `citySlug` (must match an entry in
+  the `CITIES` array in that file) to each copied item — that's what
+  drives the city filter chips.
+- Add the new city to `CITIES`, and give it a `.chip.city-<slug>` /
+  `.tag.city-<slug>` CSS rule with its own accent colour so its badge
+  reads distinctly from the others.
+- Update the hub's `street-art` entry in `PLACES` (`count`, `blurb`)
+  to reflect the new total.
+
+## 7. Adding stories from a phone — `log/index.html`
 
 Unlinked from the site nav and blocked from search engines via
 `robots.txt`, so it's only reachable if you know the URL. Bookmark it
