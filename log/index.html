@@ -55,6 +55,11 @@
   }
   #log.show{ display:block; }
   .log-ok{ color:#7ee787; } .log-err{ color:#ff7b72; } .log-mid{ color:#ffd580; }
+  .file-status{ font-size:0.76rem; margin:-0.6rem 0 0.9rem; }
+  .file-status.status-ok{ color:var(--green); }
+  .file-status.status-err{ color:var(--red); }
+  .file-status.status-mid{ color:var(--ink-soft); }
+  #log-actions{ margin-top:1rem; }
   a{ color:var(--blue); }
   hr{ border:none; border-top:1px solid var(--line); margin:1.5rem 0; }
 </style>
@@ -88,14 +93,16 @@
 
   <div class="card" id="existing-fields">
     <label for="place">Place</label>
-    <select id="place">
+    <select id="place" onchange="loadLocationSuggestions(this.selectedOptions[0].dataset.slug)">
       <option value="london" data-slug="london">Shoreditch (London)</option>
       <option value="khajuraho" data-slug="khajuraho">Khajuraho</option>
       <option value="concerts" data-slug="concerts">Concerts</option>
       <option value="udupi" data-slug="udupi">Udupi</option>
       <option value="skye" data-slug="skye">Isle of Skye</option>
     </select>
+    <p id="location-suggestions-status" style="font-size:0.7rem;color:var(--ink-soft);margin:-0.5rem 0 0;"></p>
   </div>
+  <datalist id="location-suggestions"></datalist>
 
   <div class="card" id="new-fields" style="display:none;">
     <label for="new-username">Story name</label>
@@ -103,6 +110,7 @@
     <p id="new-id-preview" style="font-size:0.72rem;color:var(--ink-soft);margin:-0.5rem 0 0.9rem;"></p>
     <label>Cover photo (shown as the ring's thumbnail)</label>
     <input type="file" accept="image/*" id="new-avatar">
+    <p id="new-avatar-status" class="file-status"></p>
   </div>
 
   <div id="slides"></div>
@@ -111,6 +119,9 @@
 
   <button type="submit" class="btn-primary" id="submit-btn">Publish to site</button>
 
+  <div id="log-actions" style="display:none;">
+    <button type="button" class="btn-secondary" onclick="copyLog()" id="copy-log-btn">Copy log</button>
+  </div>
   <div id="log"></div>
 </form>
 
@@ -141,6 +152,9 @@ async function saveToken(){
   try {
     await ghGet('index.html');
     statusEl.innerHTML = '<span style="color:var(--green);">✓ Token saved and verified — can read the repo.</span>';
+    if (document.getElementById('mode').value === 'existing'){
+      loadLocationSuggestions(document.getElementById('place').selectedOptions[0].dataset.slug);
+    }
   } catch (err) {
     statusEl.innerHTML = `<span style="color:var(--red);">✗ Saved, but can't read the repo yet: ${err.message}</span>`;
     log(`Token check failed: ${err.message}`, 'log-err');
@@ -158,6 +172,9 @@ function onModeChange(){
   const mode = document.getElementById('mode').value;
   document.getElementById('existing-fields').style.display = mode === 'existing' ? 'block' : 'none';
   document.getElementById('new-fields').style.display = mode === 'new' ? 'block' : 'none';
+  if (mode === 'existing' && localStorage.getItem(TOKEN_KEY)){
+    loadLocationSuggestions(document.getElementById('place').selectedOptions[0].dataset.slug);
+  }
 }
 function slugify(str){
   return str.toLowerCase().trim()
@@ -181,14 +198,85 @@ function addSlideRow(){
     <div class="slide-num">Photo ${slideCount}</div>
     <label>Photo</label>
     <input type="file" accept="image/*" class="slide-file" required>
+    <p class="file-status"></p>
     <label>Location</label>
-    <input type="text" class="slide-location" placeholder="e.g. Hanbury Street, London" required>
+    <input type="text" class="slide-location" list="location-suggestions" placeholder="e.g. Hanbury Street, London" required>
     <label>Caption (optional — leave blank if you don't have one)</label>
     <textarea class="slide-caption" placeholder=""></textarea>
   `;
   document.getElementById('slides').appendChild(row);
+  const fileInput = row.querySelector('.slide-file');
+  fileInput.addEventListener('change', () => processFileImmediately(fileInput));
 }
 addSlideRow();
+document.getElementById('new-avatar').addEventListener('change', function(){ processFileImmediately(this); });
+
+/* Read and resize a photo the moment it's picked, not at submit time.
+   Waiting until submit meant re-reading File objects that had gone
+   stale in between (mobile content-picker permissions can expire
+   between selection and use -- this is what "NotReadableError: The
+   requested file could not be read..." turned out to be). The result
+   is cached directly on the <input> element and reused at submit. */
+async function processFileImmediately(fileInput){
+  const statusEl = fileInput.nextElementSibling;
+  const file = fileInput.files[0];
+  fileInput._resizedBlob = null;
+  fileInput._processError = null;
+  if (!file){ statusEl.textContent = ''; statusEl.className = 'file-status'; return; }
+  statusEl.textContent = 'Processing...';
+  statusEl.className = 'file-status status-mid';
+  try {
+    const blob = await resizeImage(file);
+    fileInput._resizedBlob = blob;
+    statusEl.textContent = `✓ Ready (${(blob.size / 1024).toFixed(0)}KB)`;
+    statusEl.className = 'file-status status-ok';
+  } catch (err) {
+    fileInput._processError = err.message;
+    statusEl.textContent = `✗ ${err.message}`;
+    statusEl.className = 'file-status status-err';
+  }
+}
+
+/* ---------- location suggestions (per-place datalist) ----------
+   Pulled from that place's own DATA array in its city page -- london/
+   khajuraho/udupi/skye use a `location` field; concerts uses `venue`
+   instead (different schema entirely, ticket-stub style). Best-effort:
+   silently gives up if the fetch fails, since suggestions are a
+   convenience, not something that should block the form. */
+async function loadLocationSuggestions(slug){
+  const statusEl = document.getElementById('location-suggestions-status');
+  const datalist = document.getElementById('location-suggestions');
+  statusEl.textContent = 'Loading known locations...';
+  try {
+    const file = await ghGet(`${slug}/index.html`);
+    const content = base64ToUtf8(file.content);
+    const field = slug === 'concerts' ? 'venue' : 'location';
+    const matches = [...content.matchAll(new RegExp(`${field}:\\s*(['"])((?:(?!\\1)[\\s\\S])*)\\1`, 'g'))];
+    const values = [...new Set(matches.map(m => m[2]).filter(Boolean))].sort();
+    datalist.innerHTML = values.map(v => `<option value="${v.replace(/"/g, '&quot;')}">`).join('');
+    statusEl.textContent = values.length ? `${values.length} known locations loaded as suggestions.` : '';
+  } catch (err) {
+    datalist.innerHTML = '';
+    statusEl.textContent = '';
+  }
+}
+if (document.getElementById('mode').value === 'existing' && localStorage.getItem(TOKEN_KEY)){
+  loadLocationSuggestions('london');
+}
+
+/* ---------- copy log ---------- */
+function copyLog(){
+  const text = Array.from(document.getElementById('log').children).map(el => el.textContent).join('\n');
+  const btn = document.getElementById('copy-log-btn');
+  const original = btn.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => { btn.textContent = original; }, 1500);
+  }).catch(() => {
+    btn.textContent = "Couldn't copy — select manually";
+    setTimeout(() => { btn.textContent = original; }, 2000);
+  });
+}
 
 /* ---------- image resize (client-side, no server) ----------
    createImageBitmap() is the fast path but fails outright on some
@@ -332,6 +420,7 @@ function storyIdExists(content, id){
 const logEl = document.getElementById('log');
 function log(msg, cls){
   logEl.classList.add('show');
+  document.getElementById('log-actions').style.display = 'block';
   const line = document.createElement('div');
   if (cls) line.className = cls;
   line.textContent = msg;
@@ -349,19 +438,29 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
   const mode = document.getElementById('mode').value;
 
   const rows = Array.from(document.querySelectorAll('.slide-row'));
-  const slides = rows.map(row => ({
-    file: row.querySelector('.slide-file').files[0],
-    location: row.querySelector('.slide-location').value.trim(),
-    caption: row.querySelector('.slide-caption').value.trim(),
-  }));
+  const slides = rows.map((row, i) => {
+    const fileInput = row.querySelector('.slide-file');
+    return {
+      num: i + 1,
+      blob: fileInput._resizedBlob,
+      error: fileInput._processError,
+      hasFile: !!fileInput.files[0],
+      location: row.querySelector('.slide-location').value.trim(),
+      caption: row.querySelector('.slide-caption').value.trim(),
+    };
+  });
 
-  if (slides.some(s => !s.file || !s.location)){
-    log('Every photo needs a file and a location.', 'log-err');
+  const badSlide = slides.find(s => !s.hasFile || !s.blob || !s.location);
+  if (badSlide){
+    if (!badSlide.hasFile) log(`Photo ${badSlide.num} needs a file.`, 'log-err');
+    else if (badSlide.error) log(`Photo ${badSlide.num} isn't ready: ${badSlide.error}`, 'log-err');
+    else if (!badSlide.blob) log(`Photo ${badSlide.num} is still processing — wait a moment and try again.`, 'log-err');
+    else log(`Photo ${badSlide.num} needs a location.`, 'log-err');
     submitBtn.disabled = false;
     return;
   }
 
-  let placeId, folderSlug, newUsername, newAvatarFile, newId;
+  let placeId, folderSlug, newUsername, newId, avatarBlob;
 
   if (mode === 'existing'){
     const placeSelect = document.getElementById('place');
@@ -369,10 +468,18 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     folderSlug = placeSelect.selectedOptions[0].dataset.slug;
   } else {
     newUsername = document.getElementById('new-username').value.trim();
-    newAvatarFile = document.getElementById('new-avatar').files[0];
+    const avatarInput = document.getElementById('new-avatar');
+    avatarBlob = avatarInput._resizedBlob;
     newId = slugify(newUsername);
-    if (!newUsername || !newAvatarFile || !newId){
-      log('A new story needs a name and a cover photo.', 'log-err');
+    if (!newUsername || !newId){
+      log('A new story needs a name.', 'log-err');
+      submitBtn.disabled = false;
+      return;
+    }
+    if (!avatarInput.files[0] || !avatarBlob){
+      log(avatarInput._processError
+        ? `Cover photo isn't ready: ${avatarInput._processError}`
+        : 'A new story needs a cover photo (still processing? wait a moment and retry).', 'log-err');
       submitBtn.disabled = false;
       return;
     }
@@ -393,9 +500,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     const uploaded = [];
 
     if (mode === 'new'){
-      log('Resizing cover photo...', 'log-mid');
-      const avBlob = await resizeImage(newAvatarFile);
-      const avBase64 = await blobToBase64(avBlob);
+      const avBase64 = await blobToBase64(avatarBlob);
       const avPath = `${folderSlug}/img/avatar.jpg`;
       log('Uploading cover photo...', 'log-mid');
       await ghPut(avPath, { message: `Add story cover: ${avPath}`, content: avBase64 });
@@ -403,9 +508,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     }
 
     for (let i = 0; i < slides.length; i++){
-      log(`Resizing photo ${i + 1}/${slides.length}...`, 'log-mid');
-      const blob = await resizeImage(slides[i].file);
-      const base64 = await blobToBase64(blob);
+      const base64 = await blobToBase64(slides[i].blob);
       const filename = `log-${stamp}-${i + 1}.jpg`;
       const imgPath = `${folderSlug}/img/${filename}`;
       log(`Uploading ${filename}...`, 'log-mid');
