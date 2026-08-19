@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>CAMDEN — Field Notes</title>
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --asphalt:#150912;
+    --concrete:#271322;
+    --concrete-2:#1D0F1A;
+    --chalk:#F2E9EE;
+    --chalk-dim:#A488A0;
+    --acid:#FF2E63;
+    --hot:#7B2FF7;
+    --tape:#D8C9DE;
+    --line: rgba(255,46,99,0.16);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  img{ -webkit-touch-callout: none; }
+  html,body{margin:0;padding:0;}
+  body{
+    background-image:
+      radial-gradient(ellipse at 15% 0%, rgba(255,46,99,0.08), transparent 42%),
+      radial-gradient(ellipse at 90% 25%, rgba(123,47,247,0.08), transparent 45%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50' viewBox='0 0 50 50'%3E%3Cg fill='none' stroke='%23FF2E63' stroke-width='1' opacity='0.1'%3E%3Cpath d='M0 0 L50 50 M50 0 L0 50'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat, repeat;
+    background-size: auto, auto, 50px 50px;
+    background-color: var(--asphalt);
+    color:var(--chalk);
+    font-family:'Space Mono', monospace;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  /* grain overlay */
+  body::before{
+    content:"";
+    position:fixed; inset:0; pointer-events:none; z-index:999;
+    opacity:0.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  header{
+    background:linear-gradient(180deg, #150912 0%, #2B0F26 45%, #451A44 85%, #6B1F5F 100%);
+    padding:38px 18px 10px;
+    border-bottom:1px solid var(--line);
+  }
+  .header-top{
+    position:absolute; top:14px; right:18px; z-index:2;
+    display:flex; align-items:center; gap:8px;
+  }
+  .header-mark{
+    display:flex; align-items:center;
+    font-family:'Bebas Neue', sans-serif; font-weight:400; font-size:22px; letter-spacing:0.1em;
+    color:var(--acid);
+    text-shadow:1px 1px 0 rgba(0,0,0,0.5);
+    flex:0 0 auto;
+    transition:font-size .3s ease;
+  }
+  .mode-icon-btn{
+    width:34px; height:34px; border-radius:4px;
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--line); background:var(--concrete);
+    color:var(--chalk-dim); font-size:15px; cursor:pointer;
+    flex:0 0 auto; transition:color .2s ease, border-color .2s ease;
+  }
+  .mode-icon-btn.is-fun{ color:var(--acid); border-color:rgba(255,46,99,0.35); }
+  .header-inner{position:relative; padding-right:60px;}
+  .eyebrow{
+    font-size:12px; letter-spacing:0.2em; color:var(--chalk-dim);
+    text-align:center; margin-bottom:8px; opacity:0.9; text-transform:uppercase;
+    transition:opacity .3s ease;
+  }
+  .eyebrow a{color:var(--acid); text-decoration:none; border-bottom:1px dotted var(--acid);}
+  h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    font-size:clamp(64px, 22vw, 150px);
+    letter-spacing:0.04em;
+    margin:14px 0 6px;
+    line-height:0.9;
+    text-transform:uppercase;
+    position:relative;
+    display:block;
+    text-align:center;
+    -webkit-text-stroke:3px var(--asphalt);
+    paint-order:stroke fill;
+    text-shadow:3px 3px 0 rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.5);
+  }
+  h1 .h1a{color:var(--chalk);}
+  h1 .h1b{color:var(--acid);}
+  .sub{
+    color:var(--chalk-dim); font-size:13px; margin:0 auto 26px; max-width:46ch; line-height:1.6;
+    text-align:center;
+  }
+
+  /* filter bar */
+  .filters{
+    display:flex; gap:8px; justify-content:center; flex-wrap:wrap; overflow-x:auto; padding:14px 0 4px;
+    scrollbar-width:none;
+  }
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;
+    font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    padding:8px 16px;
+    border:1px solid var(--line);
+    border-radius:100px;
+    background:var(--concrete);
+    color:var(--chalk-dim);
+    cursor:pointer;
+    white-space:nowrap;
+    transition:all .15s ease;
+  }
+  .chip.active{
+    background:var(--acid); color:#1a0009; border-color:var(--acid);
+    font-weight:700;
+  }
+
+  .count{font-size:11px; color:var(--chalk-dim); padding:6px 0 2px; text-align:center;}
+  .count b{color:var(--chalk);}
+
+  /* gallery */
+  main{padding:6px 14px 80px; max-width:1150px; margin:0 auto;}
+  .wall{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:26px;
+    padding-top:18px;
+  }
+  @media(min-width:640px){
+    .wall{
+      display:block; column-count:2; column-gap:30px; padding-top:28px;
+    }
+    .card{ break-inside:avoid; width:100%; margin-bottom:34px; }
+  }
+  @media(min-width:980px){
+    .wall{ column-count:3; }
+  }
+
+  .card{
+    opacity:0; transform:translateY(calc(28px + var(--y,0px))) rotate(var(--r,0deg));
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease;
+    cursor:pointer;
+  }
+  .card.in{opacity:1; transform:translateY(var(--y,0px)) rotate(var(--r,0deg));}
+  .card:nth-child(6n+1){--r:-2.2deg; --y:6px;}
+  .card:nth-child(6n+2){--r:1.6deg;  --y:-10px;}
+  .card:nth-child(6n+3){--r:-0.8deg; --y:14px;}
+  .card:nth-child(6n+4){--r:2.4deg;  --y:-4px;}
+  .card:nth-child(6n+5){--r:-1.5deg; --y:8px;}
+  .card:nth-child(6n+6){--r:0.9deg;  --y:-12px;}
+  @media(min-width:640px){
+    .card:hover{ z-index:5; transform:translateY(calc(var(--y,0px) - 6px)) rotate(0deg) scale(1.025); }
+    .card:hover .frame{ box-shadow:0 24px 50px -18px rgba(0,0,0,0.8); }
+  }
+
+  .frame{
+    position:relative;
+    background:linear-gradient(180deg, #271322, #180D16);
+    border:1px solid var(--line);
+    padding:10px 10px 14px;
+    box-shadow:0 18px 40px -20px rgba(0,0,0,0.7);
+    transition:border-color .3s ease, box-shadow .3s ease;
+  }
+  .frame::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:4px;
+    background: var(--frame-color, var(--acid));
+  }
+  .card:active .frame{transform:scale(0.98); transition:transform .1s;}
+
+  .frame.color-framed .tape{ background: var(--frame-color, var(--tape)); opacity:0.85; }
+
+  /* fun / simple mode — toggled by the single icon button in header-top */
+  body.mode-simple .card{ --r:0deg !important; --y:0px !important; }
+  body.mode-simple .wall{
+    display:grid !important; column-count:unset !important;
+    grid-template-columns:1fr; gap:26px;
+  }
+  @media(min-width:640px){
+    body.mode-simple .wall{grid-template-columns:1fr 1fr; gap:34px 24px;}
+  }
+  @media(min-width:980px){
+    body.mode-simple .wall{grid-template-columns:1fr 1fr 1fr;}
+  }
+  body.mode-simple .frame::before{ background:var(--tape); }
+  body.mode-simple .frame.color-framed .tape{ background:rgba(216,210,189,0.85); opacity:1; }
+  body.mode-simple .card:hover{ transform:none; }
+
+  .tape{
+    position:absolute; top:-10px; left:50%; transform:translateX(-50%) rotate(-2deg);
+    width:64px; height:20px; background:rgba(216,210,189,0.85);
+    box-shadow:0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .thumb{
+    width:100%; min-height:80px;
+    background:var(--concrete-2);
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-user-select:none; user-select:none;
+    -webkit-user-drag:none;
+  }
+  .thumb.has-photo{
+    display:block;
+    background-size:contain;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .thumb.has-photo.crop{
+    background-size:cover;
+  }
+  .thumb .glyph{font-size:38px; opacity:0.85;}
+  .thumb .ph-note{
+    position:absolute; bottom:6px; left:6px; right:6px;
+    font-size:9px; letter-spacing:0.04em; color:rgba(242,233,238,0.35);
+    text-transform:uppercase;
+  }
+  .thumb::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(160deg, rgba(255,255,255,0.03), transparent 40%);
+  }
+  .wm-mark{
+    position:absolute; z-index:3; pointer-events:none;
+    bottom:10px; right:10px;
+    width:30px; height:30px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(21,9,18,0.5); backdrop-filter:blur(2px);
+    border:1px solid rgba(242,233,238,0.25);
+    font-family:'Bebas Neue', sans-serif; font-size:13px; letter-spacing:0.05em;
+    color:rgba(242,233,238,0.8);
+  }
+  .video-badge{
+    position:absolute; top:8px; right:8px;
+    background:rgba(0,0,0,0.55); color:var(--chalk);
+    font-size:9px; letter-spacing:0.08em; padding:3px 7px; border-radius:3px;
+    border:1px solid rgba(242,233,238,0.2);
+  }
+
+  .meta{padding-top:10px;}
+  .meta .loc{
+    font-size:10px; letter-spacing:0.08em; text-transform:uppercase; color:var(--chalk-dim);
+    display:flex; align-items:center; gap:5px; justify-content:space-between;
+  }
+  .meta .date{color:rgba(242,233,238,0.3); font-style:normal;}
+  .cat{
+    font-family:'Bebas Neue', sans-serif; font-size:12px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--acid); margin-top:8px;
+  }
+  .meta .title{
+    font-family:'Space Mono', monospace; font-weight:700; text-transform:none;
+    font-size:17px; letter-spacing:0.01em; margin:4px 0 4px; line-height:1.2;
+  }
+  .tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .tag{
+    font-size:9.5px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:3px 8px; border:1px solid var(--line); border-radius:3px; color:var(--chalk-dim);
+  }
+  .tag.t-artist{color:var(--acid); border-color:rgba(255,46,99,0.35);}
+
+  /* description drawer */
+  .scrim{
+    position:fixed; inset:0; background:rgba(8,4,7,0.75);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:100;
+    backdrop-filter: blur(2px);
+  }
+  .scrim.open{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; left:0; right:0; bottom:0; z-index:101;
+    background:var(--concrete);
+    border-top:1px solid var(--line);
+    border-radius:14px 14px 0 0;
+    padding:22px 20px 28px;
+    transform:translateY(100%);
+    transition:transform .32s cubic-bezier(.2,.8,.2,1);
+    max-height:78vh; overflow-y:auto;
+    box-shadow:0 -20px 50px rgba(0,0,0,0.5);
+  }
+  .drawer.open{transform:translateY(0);}
+  .drawer-handle{
+    width:36px; height:4px; background:var(--line); border-radius:4px; margin:0 auto 16px;
+  }
+  .drawer .thumb{margin-bottom:16px;}
+  .drawer-close{
+    position:absolute; top:16px; right:16px;
+    background:none; border:1px solid var(--line); color:var(--chalk-dim);
+    width:30px; height:30px; border-radius:100px; font-size:14px; cursor:pointer;
+  }
+  .d-loc{font-size:10.5px; letter-spacing:0.08em; text-transform:uppercase; color:var(--chalk-dim); display:flex; justify-content:space-between; align-items:center;}
+  .d-loc .date{color:rgba(242,233,238,0.35); font-style:normal; letter-spacing:0.06em;}
+  .d-title{font-family:'Bebas Neue',sans-serif; font-weight:400; font-size:32px; text-transform:uppercase; margin:6px 0 2px; line-height:1;}
+  .d-artist{color:var(--acid); font-size:13px; margin-bottom:14px; font-weight:700;}
+  .d-notes{font-size:13.5px; line-height:1.65; color:var(--chalk); white-space:pre-line;}
+  .d-notes.notes-empty{color:var(--chalk-dim); font-style:italic;}
+  .d-idea{
+    margin-top:14px; padding:12px 13px;
+    background:rgba(255,46,99,0.07);
+    border:1px dashed rgba(255,46,99,0.28);
+    border-radius:4px;
+  }
+  .d-idea .lbl{
+    font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--acid); margin-bottom:5px; display:block;
+  }
+  .d-idea .txt{font-size:12.5px; line-height:1.55; color:var(--chalk-dim);}
+  .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
+
+  footer{
+    text-align:center; padding:30px 16px 60px; color:var(--chalk-dim); font-size:10.5px;
+    letter-spacing:0.06em; text-transform:uppercase;
+  }
+  footer a{color:var(--acid); text-decoration:none;}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--chalk-dim); font-size:12px;
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="header-top">
+    <button class="mode-icon-btn is-fun" id="modeIconBtn" title="Toggle fun / simple mode" aria-label="Toggle fun or simple layout">✦</button>
+    <span class="header-mark">VA</span>
+  </div>
+  <div class="header-inner">
+    <div class="title-block">
+      <div class="eyebrow"><a href="../">← field notes</a> / camden</div>
+      <h1><span class="h1a">CAM</span><span class="h1b">DEN</span></h1>
+    </div>
+    <div class="sub">One evening around Camden Market and the backstreets off Hawley Street, May 2018 — murals, paste-ups and one very good rhino. Tap in to browse.</div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="count" id="count"></div>
+</header>
+
+<main>
+  <div class="wall" id="wall"></div>
+  <div class="empty" id="empty" style="display:none;">Nothing matches that combo yet. Clear a filter.</div>
+</main>
+
+<footer>
+  Camden, London
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <button class="drawer-close" id="drawerClose">✕</button>
+  <div class="thumb" id="dThumb"><span class="glyph" id="dGlyph"></span></div>
+  <div class="d-loc" id="dLoc"></div>
+  <div class="d-title" id="dTitle"></div>
+  <div class="d-artist" id="dArtist"></div>
+  <div class="d-notes" id="dNotes"></div>
+  <div class="d-idea" id="dIdea" style="display:none;">
+    <span class="lbl">Note from Claude</span>
+    <div class="txt" id="dIdeaText"></div>
+  </div>
+  <div class="d-tags" id="dTags"></div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — one object per photo/video.
+
+   img       — file path in img/
+   type      — "photo" | "video"
+   category  — one of the CATEGORIES below
+   artist    — optional, plain text, shown as a tag in the drawer
+   location  — plain text
+   notes     — YOUR words only. Leave "" and it'll show a placeholder
+               until you write something. Claude never edits this.
+   claudeIdea— optional. A guess/suggestion about what the piece is —
+               shown separately in the drawer, clearly labelled "Note
+               from Claude", never mixed into your notes.
+   tags      — short labels, freely organised
+   ratio     — "width/height" of the actual image file.
+   order     — controls display sequence, lowest first.
+   colorFrame— optional "r,g,b" string for a colour-sampled frame accent.
+   date      — optional ISO date/time string, pulled from EXIF.
+   ============================================================ */
+const CATEGORIES = [
+  {id:'mural',    label:'Mural'},
+  {id:'paste-up',  label:'Paste-up'},
+];
+
+const GLYPHS = {'mural':'🎨','paste-up':'📌'};
+
+const MONOGRAM_TEXT = 'VA';
+
+const DATA = [
+  {id:1, img:'img/01-owl-roof-garden-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:"Blue owl mural above the \"Buck's Head Roof Garden\" lettering, mushrooms and foliage painted in below it.", tags:['owl','lettering','colour'], ratio:'960/1280', date:'2018-05-07T12:12:55', order:1, colorFrame:'36,85,157'},
+  {id:2, img:'img/02-strange-burger-robot-pasteup.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Small robot/pig character paste-up next to a burger poster reading "...ICE THE STRANGE" — much smaller scale than everything else in this batch.', tags:['paste-up','character','small scale'], ratio:'960/1280', date:'2018-05-07T12:13:46', order:2},
+  {id:3, img:'img/03-zebra-striped-rhino-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Rhino painted in bold zebra-style black-and-white stripes with orange accents, tagged "CWOTY" in the corner.', tags:['rhino','black & white','animals'], ratio:'1280/960', date:'2018-05-07T18:28:13', order:3},
+  {id:4, img:'img/04-bat-wolf-creature-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Angular, fanged bat-or-wolf creature mural on a wooden gate, a small "Some Kids" gallery sign mounted beside it.', tags:['creature','geometric','fangs'], ratio:'1280/960', date:'2018-05-07T18:28:21', order:4},
+  {id:5, img:'img/05-geometric-hawley-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Purely abstract geometric mural in reds, greens and blues, painted right under the "Hawley Street NW1" sign.', tags:['geometric','abstract','colour'], ratio:'960/1280', date:'2018-05-07T18:28:36', order:5},
+  {id:6, img:'img/06-melting-heads-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Row of drippy, melting ice-cream-like character heads in candy colours — one of the most maximalist pieces in the set.', tags:['character','psychedelic','colour'], ratio:'960/1280', date:'2018-05-07T18:29:00', order:6, colorFrame:'17,106,161'},
+  {id:7, img:'img/07-woman-portrait-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Moody portrait of a woman in a leather jacket, pink and purple lighting across her face.', tags:['portrait','mural','moody'], ratio:'960/1280', date:'2018-05-07T18:29:18', order:7},
+  {id:8, img:'img/08-angel-devil-boat-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'An angel and a devil seated together rowing a boat, painted in warm gold light against a dark wall — surreal, storybook quality.', tags:['surreal','narrative','gold tones'], ratio:'1280/960', date:'2018-05-07T18:34:40', order:8, colorFrame:'182,134,72'},
+  {id:9, img:'img/09-tophat-character-hawley-mews.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Hawley Mews, Camden, London', notes:"", claudeIdea:'Green-toned mural of a top-hatted character among foliage, shot on Hawley Mews — busy wall with several layered elements.', tags:['character','top hat','green tones'], ratio:'960/1280', date:'2018-05-07T18:31:19', order:9},
+  {id:10, img:'img/10-blue-bird-hearts-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Fine-line blue bird (crow or magpie) on brick, a small stencilled figure reaching for a heart-shaped balloon beside it, tagged "Peixe Buenos Aires".', tags:['bird','line art','stencil'], ratio:'1280/960', date:'2018-05-07T18:33:21', order:10},
+  {id:11, img:'img/11-owl-butterfly-buck-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Buck Street, Camden, London', notes:"", claudeIdea:"Owl with a butterfly's wings and face patterning worked into the feathers, on the \"Buck Street NW1\" corner — bright, illustrative style, closing shot of the walk.", tags:['owl','butterfly','illustrative'], ratio:'960/1280', date:'2018-05-07T18:49:48', order:11, colorFrame:'147,103,37'},
+];
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+let activeCat = 'all';
+
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function renderFilters(){
+  const wrap = document.getElementById('filters');
+  const chips = [{id:'all', label:'All'}, ...CATEGORIES];
+  wrap.innerHTML = chips.map(c => `
+    <button class="chip ${activeCat===c.id?'active':''}" data-cat="${c.id}">${c.label}</button>
+  `).join('');
+  wrap.querySelectorAll('.chip').forEach(el=>{
+    el.onclick = () => { activeCat = el.dataset.cat; renderFilters(); renderWall(); };
+  });
+}
+
+function thumbHTML(item, opts){
+  opts = opts || {};
+  const g = GLYPHS[item.category] || '📍';
+  if(item.img){
+    const cropClass = opts.crop ? ' crop' : '';
+    const ratioStyle = item.ratio ? `aspect-ratio:${item.ratio};` : '';
+    return `
+      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
+        ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
+        <span class="wm-mark">${MONOGRAM_TEXT}</span>
+      </div>
+    `;
+  }
+  return `
+    <div class="thumb">
+      ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
+      <span class="glyph" style="font-size:${opts.size||38}px">${g}</span>
+      <div class="ph-note">placeholder — add photo url</div>
+    </div>
+  `;
+}
+
+function renderWall(){
+  const wall = document.getElementById('wall');
+  const empty = document.getElementById('empty');
+  const count = document.getElementById('count');
+  const items = DATA
+    .filter(d => activeCat==='all' || d.category===activeCat)
+    .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+
+  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCat!=='all' ? ' · ' + CATEGORIES.find(c=>c.id===activeCat).label : ''}`;
+
+  if(items.length===0){
+    wall.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+
+  wall.innerHTML = items.map(item => {
+    const frameClass = item.colorFrame ? ' color-framed' : '';
+    const frameStyle = item.colorFrame ? ` style="--frame-color:rgb(${item.colorFrame})"` : '';
+    return `
+    <div class="card" data-id="${item.id}">
+      <div class="frame${frameClass}"${frameStyle} ${item.colorFrame ? `data-color-frame="1" data-img="${item.img}"` : ''}>
+        <div class="tape"></div>
+        <div style="position:relative;">
+          ${thumbHTML(item)}
+        </div>
+        <div class="meta">
+          <div class="loc"><span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}</div>
+          <div class="cat">${CATEGORIES.find(c=>c.id===item.category).label}</div>
+          <div class="title">${item.title ? item.title : '— untitled —'}</div>
+          <div class="tags">
+            ${item.artist ? `<span class="tag t-artist">${item.artist}</span>` : ''}
+            ${item.tags.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  wall.querySelectorAll('.card').forEach(el=>{
+    el.onclick = () => openDrawer(parseInt(el.dataset.id));
+  });
+
+  applyColorFrames();
+
+  requestAnimationFrame(()=>{
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target);} });
+    }, {threshold:0.15});
+    wall.querySelectorAll('.card').forEach(c=>obs.observe(c));
+  });
+}
+
+/* ============================================================
+   Colour-sampled frames — refines each flagged card's frame colour by
+   re-reading the actual photo pixels in the browser (never uploads
+   anywhere). The DATA colorFrame value is already a real colour picked
+   from the image, so this only improves on it when it can.
+   ============================================================ */
+function rgbToHsv(r, g, b){
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d!==0){
+    if(mx===r) h = ((g-b)/d) % 6;
+    else if(mx===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60; if(h<0) h+=360;
+  }
+  return [h/360, mx===0?0:d/mx, mx];
+}
+function hsvToRgb(h,s,v){
+  const i = Math.floor(h*6), f = h*6-i;
+  const p=v*(1-s), q=v*(1-f*s), t=v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){
+    case 0: r=v;g=t;b=p; break; case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break; case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break; default: r=v;g=p;b=q;
+  }
+  return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+}
+function extractVividColor(url, callback){
+  const img = new Image();
+  img.onload = () => {
+    try{
+      const size = 48;
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      let cutoff = 0.45;
+      let best = null;
+      while(!best && cutoff > 0.1){
+        const bins = {};
+        for(let i=0; i<data.length; i+=4){
+          const [h,s,v] = rgbToHsv(data[i], data[i+1], data[i+2]);
+          if(s < cutoff || v < 0.2) continue;
+          const bi = Math.floor(h*24) % 24;
+          const w = s*v;
+          if(!bins[bi]) bins[bi] = {w:0, r:0, g:0, b:0};
+          bins[bi].w += w; bins[bi].r += data[i]*w; bins[bi].g += data[i+1]*w; bins[bi].b += data[i+2]*w;
+        }
+        const keys = Object.keys(bins);
+        if(keys.length){
+          best = keys.reduce((a,b)=> bins[a].w > bins[b].w ? a : b);
+          best = bins[best];
+        } else {
+          cutoff -= 0.1;
+        }
+      }
+      if(!best) return;
+      let r = best.r/best.w, g = best.g/best.w, b = best.b/best.w;
+      let [h,s,v] = rgbToHsv(r,g,b);
+      s = Math.min(1, s*1.2); v = Math.min(1, Math.max(v, 0.55));
+      const [fr,fg,fb] = hsvToRgb(h,s,v);
+      callback(`rgb(${fr},${fg},${fb})`);
+    } catch(e){ /* canvas blocked — baked-in colour stays */ }
+  };
+  img.src = url;
+}
+
+function applyColorFrames(){
+  document.querySelectorAll('[data-color-frame="1"]').forEach(frameEl => {
+    const url = frameEl.dataset.img;
+    if(!url || frameEl.dataset.colorApplied) return;
+    frameEl.dataset.colorApplied = '1';
+    extractVividColor(url, (color) => {
+      frameEl.style.setProperty('--frame-color', color);
+    });
+  });
+}
+
+function openDrawer(id){
+  const item = DATA.find(d=>d.id===id);
+  if(!item) return;
+  document.getElementById('dThumb').innerHTML = thumbHTML(item, {size:46});
+  document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
+  document.getElementById('dTitle').textContent = item.title ? item.title : '— untitled —';
+  document.getElementById('dArtist').textContent = item.artist ? '— ' + item.artist : '';
+  document.getElementById('dArtist').style.display = item.artist ? 'block':'none';
+
+  const notesEl = document.getElementById('dNotes');
+  if(item.notes && item.notes.trim()){
+    notesEl.textContent = item.notes;
+    notesEl.classList.remove('notes-empty');
+  } else {
+    notesEl.textContent = '— add your notes —';
+    notesEl.classList.add('notes-empty');
+  }
+
+  const ideaEl = document.getElementById('dIdea');
+  if(item.claudeIdea && item.claudeIdea.trim()){
+    ideaEl.style.display = 'block';
+    document.getElementById('dIdeaText').textContent = item.claudeIdea;
+  } else {
+    ideaEl.style.display = 'none';
+  }
+
+  document.getElementById('dTags').innerHTML = [
+    `<span class="tag">${CATEGORIES.find(c=>c.id===item.category).label}</span>`,
+    ...item.tags.map(t=>`<span class="tag">${t}</span>`)
+  ].join('');
+
+  document.getElementById('scrim').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer(){
+  document.getElementById('scrim').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+document.getElementById('scrim').onclick = closeDrawer;
+document.getElementById('drawerClose').onclick = closeDrawer;
+
+/* ============================================================
+   Fun / Simple mode — single icon button, cycles between the two.
+   ============================================================ */
+const MODE_ICONS = {fun:'✦', simple:'▦'};
+function setMode(mode){
+  document.body.classList.toggle('mode-simple', mode === 'simple');
+  const btn = document.getElementById('modeIconBtn');
+  btn.textContent = MODE_ICONS[mode];
+  btn.classList.toggle('is-fun', mode === 'fun');
+  btn.title = mode === 'fun' ? 'Fun layout — tap for simple' : 'Simple layout — tap for fun';
+  try{ localStorage.setItem('wanderMode', mode); }catch(e){}
+}
+document.getElementById('modeIconBtn').onclick = () => {
+  const next = document.body.classList.contains('mode-simple') ? 'fun' : 'simple';
+  setMode(next);
+};
+let savedMode = 'fun';
+try{ savedMode = localStorage.getItem('wanderMode') || 'fun'; }catch(e){}
+setMode(savedMode);
+
+renderFilters();
+renderWall();
+
+document.addEventListener('contextmenu', (e) => { if(e.target.closest('.thumb')) e.preventDefault(); });
+document.addEventListener('dragstart', (e) => { if(e.target.closest('.thumb')) e.preventDefault(); });
+
+</script>
+
+</body>
+</html>
