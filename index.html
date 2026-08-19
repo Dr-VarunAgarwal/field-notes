@@ -606,7 +606,7 @@ const PLACES = [
   {name:'Khajuraho', slug:'khajuraho', status:'live', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
   {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
-  {name:'Glasgow', slug:'glasgow', status:'draft', count:''},
+  {name:'Glasgow', slug:'glasgow', status:'live', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces'},
   {name:'Isle of Skye', slug:'skye', status:'live', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'42 pieces'},
   {name:'Rishikesh', slug:'rishikesh', status:'draft', count:''},
   {name:'Edinburgh', slug:'edinburgh', status:'draft', count:''},
@@ -636,6 +636,8 @@ const HEADER_PHOTOS = [
   {src:'london/img/32-heron-mural-gable.jpg', coords:'51.5229°N, 0.0777°W'},
   {src:'london/img/05-dank-cyberpunk-wide.jpg', coords:'51.5229°N, 0.0777°W'},
   {src:'london/img/43-xray-ribcage-mural.jpg', coords:'51.5229°N, 0.0777°W'},
+  {src:'glasgow/img/17-red-haired-woman-mural.jpg', coords:'55.8580°N, 4.2475°W'},
+  {src:'glasgow/img/12-necropolis-crosses-sunset.jpg', coords:'55.8625°N, 4.2316°W'},
 ];
 const headerPhotoEl = document.getElementById('header-photo');
 const headerCoordsEl = document.getElementById('header-coords');
@@ -697,6 +699,9 @@ const FEATURED_PHOTOS = [
   {img:'concerts/img/isabel-larosa.jpg', caption:'Isabel LaRosa — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/aurora.jpg', caption:'AURORA — Lollapalooza India, day two.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/talwinder.jpg', caption:'Talwiinder — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
+  {img:'glasgow/img/17-red-haired-woman-mural.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
+  {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
+  {img:'glasgow/img/14-goma-wellington-statue.jpg', caption:'The Duke of Wellington, cone intact, outside the Gallery of Modern Art.', place:'Glasgow', slug:'glasgow'},
 ];
 
 const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
@@ -789,6 +794,14 @@ const STORIES = [
     {img:'skye/img/d3-08-quiraing.jpg', location:'The Quiraing, Trotternish', caption:''},
     {img:'skye/img/d3-09-kilt-rock.jpg', location:'Kilt Rock, Trotternish', caption:''},
     {img:'skye/img/coda-02-glenfinnan-viaduct.jpg', location:'Glenfinnan Viaduct, Lochaber', caption:''},
+  ]},
+
+  { id:'glasgow', username:'Glasgow', avatar:'glasgow/img/17-red-haired-woman-mural.jpg', slug:'glasgow', slides:[
+    {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', location:'Glasgow Necropolis', caption:'', note:'Celtic crosses and obelisks catching the last light in the Necropolis, golden hour.'},
+    {img:'glasgow/img/04-museum-tiger-taxidermy.jpg', location:'Kelvingrove Art Gallery and Museum, Glasgow', caption:'', note:'A taxidermy tiger in a glass case, its own skull displayed on a stand beside it.'},
+    {img:'glasgow/img/17-red-haired-woman-mural.jpg', location:'Glasgow', caption:'', note:'A large-scale gable-end portrait — a woman with pink-red hair holding a candlestick and a martini, in an ornately patterned robe.'},
+    {img:'glasgow/img/14-goma-wellington-statue.jpg', location:'Royal Exchange Square, Glasgow', caption:'', note:'The Duke of Wellington statue outside the Gallery of Modern Art, topped with a traffic cone — a running, decades-old Glasgow in-joke the council has given up fighting.'},
+    {img:'glasgow/img/26-west-end-market-blackberries.jpg', location:'Glasgow West End', caption:'', note:'A carton of blackberries picked up at a West End fruit stall.'},
   ]},
 
   { id:"cat", username:"Cat", avatar:"stories/cat/img/avatar.jpg", slides:[
