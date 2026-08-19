@@ -265,14 +265,11 @@
   .tour-btn{
     display:inline-flex; align-items:center; gap:0.6rem;
     font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.9rem;
-    color:var(--ink-soft); background:var(--cream); border:1.5px dashed var(--blue);
-    padding:0.7rem 1.1rem; border-radius:100px; cursor:not-allowed; opacity:0.85;
+    color:var(--ink); background:var(--cream); border:1.5px solid var(--blue);
+    padding:0.7rem 1.1rem; border-radius:100px; text-decoration:none;
+    transition:background .15s ease, color .15s ease;
   }
-  .tour-btn .tag{
-    font-family:"Inter", sans-serif; font-weight:600;
-    font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase;
-    background:var(--blue); color:#fff; padding:3px 9px; border-radius:100px;
-  }
+  .tour-btn:hover{ background:var(--blue); color:#fff; }
 
   /* ---------- itinerary ---------- */
   .itinerary{ background:var(--olive); color:var(--cream); }
@@ -518,8 +515,8 @@
     <section class="section gift-shop">
       <p class="eyebrow">wander / a closer look</p>
       <h2>Exit through the gift shop</h2>
-      <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Eventually a guided, story-style tour through them one at a time.</p>
-      <span class="tour-btn" aria-disabled="true"><span class="tag">Coming soon</span> Begin the tour →</span>
+      <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. A curated set to start, with the full street-art compendium one tap away.</p>
+      <a class="tour-btn" href="street-art/">Begin the tour →</a>
     </section>
 
     <section class="section itinerary">
@@ -603,7 +600,6 @@
 const PLACES = [
   {name:'London — Shoreditch', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces'},
   {name:'Camden', slug:'camden', status:'live', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', blurb:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces'},
-  {name:'Street Art', slug:'street-art', status:'live', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'Every piece across every city, in one place — Shoreditch, Camden, Glasgow, and counting.', count:'93 pieces'},
   {name:'Khajuraho', slug:'khajuraho', status:'live', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
   {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
   {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},

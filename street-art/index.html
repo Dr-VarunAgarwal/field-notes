@@ -3,18 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>STREET ART — Wander</title>
-<meta name="description" content="Every piece of street art I've photographed, city by city — Shoreditch, Camden, Glasgow, and wherever I find it next.">
+<title>EXIT THROUGH THE GIFT SHOP — Wander</title>
+<meta name="description" content="Specific pieces of street art, singled out — a curated tour through Shoreditch, Camden, Glasgow and wherever comes next, with the full compendium one tap away.">
 <meta name="theme-color" content="#14100D">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Wander">
 <meta property="og:url" content="https://wander.varunagarwal.com/street-art/">
-<meta property="og:title" content="Street Art · Wander">
-<meta property="og:description" content="Every piece of street art I've photographed, city by city — Shoreditch, Camden, Glasgow, and wherever I find it next.">
+<meta property="og:title" content="Exit Through the Gift Shop · Wander">
+<meta property="og:description" content="Specific pieces of street art, singled out — a curated tour through Shoreditch, Camden, Glasgow and wherever comes next, with the full compendium one tap away.">
 <meta property="og:image" content="https://wander.varunagarwal.com/london/img/32-heron-mural-gable.jpg">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Street Art · Wander">
-<meta name="twitter:description" content="Every piece of street art I've photographed, city by city — Shoreditch, Camden, Glasgow, and wherever I find it next.">
+<meta name="twitter:title" content="Exit Through the Gift Shop · Wander">
+<meta name="twitter:description" content="Specific pieces of street art, singled out — a curated tour through Shoreditch, Camden, Glasgow and wherever comes next, with the full compendium one tap away.">
 <meta name="twitter:image" content="https://wander.varunagarwal.com/london/img/32-heron-mural-gable.jpg">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
@@ -123,6 +123,22 @@
   header.collapsed .eyebrow{ opacity:0; height:0; margin:0; overflow:hidden; }
   header.collapsed .sub{ opacity:0; max-height:0; margin:0; overflow:hidden; }
   header.collapsed .header-mark{ width:34px; height:34px; font-size:13px; }
+
+  .view-toggle{
+    display:inline-flex; gap:2px; padding:14px 0 0;
+    border-bottom:1px solid var(--line);
+  }
+  .vt-btn{
+    font-family:'Space Mono', monospace;
+    font-size:11px; letter-spacing:0.08em; text-transform:uppercase;
+    padding:8px 14px 10px;
+    border:none; border-bottom:2px solid transparent;
+    background:none;
+    color:var(--chalk-dim);
+    cursor:pointer;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  .vt-btn.active{ color:var(--acid); border-bottom-color:var(--acid); font-weight:700; }
 
   .filters{
     display:flex; gap:8px; overflow-x:auto; padding:14px 0 4px;
@@ -369,12 +385,16 @@
   </div>
   <div class="header-inner">
     <div class="title-block">
-      <div class="eyebrow"><a href="../">← field notes</a> / street art</div>
-      <h1>STREET<br><span>ART</span></h1>
+      <div class="eyebrow"><a href="../">← field notes</a> / exit through the gift shop</div>
+      <h1>EXIT THROUGH<br><span>THE GIFT SHOP</span></h1>
     </div>
-    <div class="sub">Every wall, sticker, stencil and paste-up I've photographed on foot — Shoreditch, Camden, Glasgow, and wherever the next city turns one up. Filter by city, tap to see the piece.</div>
+    <div class="sub">Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Flip the switch for the full compendium, city by city.</div>
   </div>
 
+  <div class="view-toggle" id="viewToggle">
+    <button class="vt-btn active" data-view="curated" id="vtCurated">Curated</button>
+    <button class="vt-btn" data-view="all" id="vtAll">All street art</button>
+  </div>
   <div class="filters" id="filters"></div>
   <div class="count" id="count"></div>
 </header>
@@ -385,7 +405,7 @@
 </main>
 
 <footer>
-  Street art, city by city — Shoreditch, Camden, Glasgow, and counting
+  Exit through the gift shop — a curated tour, or the full compendium, your call
 </footer>
 
 <div class="scrim" id="scrim"></div>
@@ -418,10 +438,14 @@
    copy the relevant items in here by hand, same as everywhere else
    on this site (no build step, no shared data source).
 
-   Fields match each source page's own DATA format, plus two added
-   here for cross-city filtering:
+   Fields match each source page's own DATA format, plus three added
+   here for this page's own filtering:
    city      — display string, e.g. 'Shoreditch, London'
    citySlug  — must match an id in CITIES below, drives the filter chips
+   curated   — true for the ~20-piece hand-picked set shown by default
+               (the "Curated" / "All street art" switch in the header).
+               This is an editorial pick, not a rule (e.g. "has notes") —
+               add/remove the flag by eye as the collection grows.
 
    id        — offset per source so ids stay unique once merged:
                Shoreditch keeps its original 1-76, Camden is +200,
@@ -462,19 +486,19 @@ const GLYPHS = {'street-art':'🎨','political':'✊','fun':'🌀','random':'�
 const MONOGRAM_TEXT = 'VA';
 
 const DATA = [
-  {id:1, img:'../london/img/01-bird-collage.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'Birdy on a book', location:'Shoreditch, London', notes:"Birdy.", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', date:'2018-06-14T14:03:55', order:1},
+  {id:1, img:'../london/img/01-bird-collage.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:null, title:'Birdy on a book', location:'Shoreditch, London', notes:"Birdy.", claudeIdea:"Layered paste-up wall — an inked bird drawn directly onto a torn book page, sitting over other collaged posters. Couldn't identify an artist tag.", tags:['paste-up','collage','ink'], ratio:'1050/1400', date:'2018-06-14T14:03:55', order:1},
   {id:5, img:'../london/img/07-elephant-shutter.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Pink/yellow/teal elephant across a roller shutter — one of the ones that only exists when the shop's closed. No visible signature.", tags:['shutter art','colour'], ratio:'1050/1400', date:'2018-06-14T13:58:44', order:2, colorFrame:'29,121,140'},
-  {id:69, img:'../london/img/69-designated-graffiti-area-stencil.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'Banksy', title:'The Guard Dog', location:'The former Cargo nightclub, Shoreditch, London', notes:"", claudeIdea:'The Guard Dog, by Banksy, at the former Cargo nightclub in Shoreditch.', tags:['stencil', 'black & white', 'satire'], ratio:'1280/960', date:'2018-06-14T17:31:57', order:3},
-  {id:47, img:'../london/img/47-obey-hifi-stereo-poster-close.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'Shepard Fairey (OBEY) + Ronzo', title:'Shepard Fairey with “Crunchy” — The Credit Crunch Monster', location:'Shoreditch, London', notes:"The Credit Crunch Monster, by artist Ronzo, the official mascot of the 2008 global recession.", claudeIdea:'Shepard Fairey with Crunchy — The Credit Crunch Monster by Ronzo, the official mascot of the 2008 global recession.', tags:['poster', 'propaganda', 'branded'], ratio:'960/1280', date:'2018-06-14T16:21:19', order:4},
+  {id:69, img:'../london/img/69-designated-graffiti-area-stencil.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Banksy', title:'The Guard Dog', location:'The former Cargo nightclub, Shoreditch, London', notes:"", claudeIdea:'The Guard Dog, by Banksy, at the former Cargo nightclub in Shoreditch.', tags:['stencil', 'black & white', 'satire'], ratio:'1280/960', date:'2018-06-14T17:31:57', order:3},
+  {id:47, img:'../london/img/47-obey-hifi-stereo-poster-close.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Shepard Fairey (OBEY) + Ronzo', title:'Shepard Fairey with “Crunchy” — The Credit Crunch Monster', location:'Shoreditch, London', notes:"The Credit Crunch Monster, by artist Ronzo, the official mascot of the 2008 global recession.", claudeIdea:'Shepard Fairey with Crunchy — The Credit Crunch Monster by Ronzo, the official mascot of the 2008 global recession.', tags:['poster', 'propaganda', 'branded'], ratio:'960/1280', date:'2018-06-14T16:21:19', order:4},
   {id:48, img:'../london/img/48-obey-hifi-stereo-poster-wide.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'Shepard Fairey (OBEY)', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Wide shot of the same OBEY "Hi-Fi Stereo" mural showing the full building — same artist tag as the close-up so the two link as one sighting rather than reading as unrelated pieces.', tags:['poster', 'propaganda', 'building'], ratio:'1280/960', date:'2018-06-14T16:27:06', order:5},
-  {id:4, img:'../london/img/03-nope-buddha.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'RIP', title:'', location:'Shoreditch, London', notes:"PEACE!", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', date:'2018-06-14T12:33:27', order:6, colorFrame:'0,120,174'},
+  {id:4, img:'../london/img/03-nope-buddha.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'RIP', title:'', location:'Shoreditch, London', notes:"PEACE!", claudeIdea:'Stencil on a blue-painted post — peace-sign Buddha, "NOPE" above, "PEACE COMES FROM WITHIN" stencilled along the arm, signed RIP.', tags:['stencil','peace sign'], ratio:'1050/1400', date:'2018-06-14T12:33:27', order:6, colorFrame:'0,120,174'},
   {id:38, img:'../london/img/38-buddha-baby-peace-within.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'RIP', title:'Peace comes from within!', location:'Shoreditch, London', notes:"", claudeIdea:'Pink Buddha-baby stencil, "peace comes from within" and a RIP tag — same artist and same line as the NOPE Buddha already in the gallery, a genuine second sighting rather than a duplicate photo.', tags:['stencil', 'buddha'], ratio:'960/1280', date:'2018-06-14T15:30:02', order:7},
-  {id:23, img:'../london/img/23-avoid-contact-skeleton-house.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'Skeleton Cardboard', title:'', location:'Shoreditch, London', notes:"Hackney-based anonymous artist.", claudeIdea:'"A Home For Our Bones / Avoid Contact" red-house paste-up with two skeleton figures — attributed to Skeleton Cardboard, a Hackney-based anonymous artist.', tags:['paste-up', 'skeletons'], ratio:'960/1280', date:'2018-06-14T14:46:41', order:8},
-  {id:32, img:'../london/img/32-heron-mural-gable.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'ROA', title:'Crane', location:'Hanbury Street, Brick Lane, London', notes:"", claudeIdea:'ROA\'s Hanbury Street work, Crane.', tags:['mural', 'animals', 'black & white'], ratio:'960/1280', date:'2018-06-14T15:18:34', order:9},
+  {id:23, img:'../london/img/23-avoid-contact-skeleton-house.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Skeleton Cardboard', title:'', location:'Shoreditch, London', notes:"Hackney-based anonymous artist.", claudeIdea:'"A Home For Our Bones / Avoid Contact" red-house paste-up with two skeleton figures — attributed to Skeleton Cardboard, a Hackney-based anonymous artist.', tags:['paste-up', 'skeletons'], ratio:'960/1280', date:'2018-06-14T14:46:41', order:8},
+  {id:32, img:'../london/img/32-heron-mural-gable.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'ROA', title:'Crane', location:'Hanbury Street, Brick Lane, London', notes:"", claudeIdea:'ROA\'s Hanbury Street work, Crane.', tags:['mural', 'animals', 'black & white'], ratio:'960/1280', date:'2018-06-14T15:18:34', order:9},
   {id:34, img:'../london/img/34-owl-woman-valentines-poster.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Owl-woman illustration under a "Happy Valentine\'s Day" poster — still up in June, which says something about how long paste-ups actually survive.', tags:['poster', 'portrait', 'seasonal'], ratio:'1280/960', date:'2018-06-14T15:24:30', order:10},
   {id:35, img:'../london/img/35-donnie-darko-rabbit-figure.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Rabbit-eared figure paste-up set inside a recessed doorway alcove — the framing feels deliberate, like the artist chose the alcove on purpose rather than just finding empty wall.', tags:['paste-up', 'alcove', 'dark'], ratio:'960/1280', date:'2018-06-14T15:25:12', order:11},
-  {id:43, img:'../london/img/43-xray-ribcage-mural.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'SHOK-1', title:'Stolen Heart', location:'Hanbury Street, Brick Lane, London', notes:"", claudeIdea:'Stolen Heart by SHOK-1, Hanbury Street, Brick Lane.', tags:['mural', 'large scale', 'anatomy'], ratio:'1280/960', date:'2018-06-14T16:00:51', order:12},
-  {id:2, img:'../london/img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'Dan Kitchener (DANK)', title:"Dan Kitchner's Mural", location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', date:'2018-06-14T12:39:55', order:13},
+  {id:43, img:'../london/img/43-xray-ribcage-mural.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'SHOK-1', title:'Stolen Heart', location:'Hanbury Street, Brick Lane, London', notes:"", claudeIdea:'Stolen Heart by SHOK-1, Hanbury Street, Brick Lane.', tags:['mural', 'large scale', 'anatomy'], ratio:'1280/960', date:'2018-06-14T16:00:51', order:12},
+  {id:2, img:'../london/img/05-dank-cyberpunk-wide.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Dan Kitchener (DANK)', title:"Dan Kitchner's Mural", location:'Shoreditch, London', notes:"", claudeIdea:"Wide black-and-white cyberpunk mural — geisha figure, robot samurai, neon Japanese signage. Signed dankitchener.com, so this one's confirmed as Dan Kitchener's work.", tags:['mural','black & white','cyberpunk'], ratio:'1400/583', date:'2018-06-14T12:39:55', order:13},
   {id:6, img:'../london/img/09-split-face.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Painted face dissolving into exposed brick, with a blue robotic hand and a pink tongue-out creature crowding in from the side. No signature spotted.", tags:['mural','surreal'], ratio:'1400/1050', date:'2018-06-14T12:41:35', order:14, colorFrame:'201,179,23'},
   {id:7, img:'../london/img/10-hnrx-snail.jpg', type:'photo', category:'random', city:'Shoreditch, London', citySlug:'london', artist:'HNRX', title:'', location:'Shoreditch, London', notes:"", claudeIdea:"Small red snail relief tile on rusted metal, with a blue HNRX tag plate above — easy to miss unless you're looking down.", tags:['tag','found object','small scale'], ratio:'1050/1400', date:'2018-06-14T13:45:32', order:15},
   {id:8, img:'../london/img/02-iron-finial.jpg', type:'photo', category:'random', city:'Shoreditch, London', citySlug:'london', artist:'Jonesy', title:'', location:'Shoreditch, London', notes:"Jonesy's brass artifact, tucked away in a hard-to-catch spot high up a pole.", claudeIdea:"Jonesy's brass artifact in a difficult-to-catch spot high up a pole.", tags:['architecture','detail'], ratio:'1050/1400', date:'2018-06-14T13:40:31', order:16},
@@ -520,47 +544,58 @@ const DATA = [
   {id:58, img:'../london/img/58-wheatpaste-wall-wide.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Wide establishing shot of the same wheatpaste wall as the "No Regrets" and "Computer Virus" close-ups either side of it — useful for location context, a little redundant as its own card.', tags:['wall', 'establishing shot'], ratio:'960/1280', date:'2018-06-14T16:41:42', order:56},
   {id:59, img:'../london/img/59-sticker-collage-goodchild.jpg', type:'photo', category:'random', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Dense sticker-bomb corner tagged repeatedly "Goodchild" — more about the accumulation than any single sticker, hard to caption individually.', tags:['sticker', 'collage', 'tag'], ratio:'1280/960', date:'2018-06-14T16:41:53', order:57},
   {id:60, img:'../london/img/60-possessions-poster-collage.jpg', type:'photo', category:'random', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Continuation of the same sticker-bomb corner — "Possessions... Prisoner of..." posters layered in with the Goodchild stickers, might be worth merging with the previous shot as one wall entry.', tags:['poster', 'collage', 'text'], ratio:'960/1280', date:'2018-06-14T16:41:57', order:58},
-  {id:61, img:'../london/img/61-speak-the-truth-portrait.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'Alo', title:'SPEAKTHETRUTH', location:'Shoreditch, London', notes:"Italian artist.", claudeIdea:'SPEAKTHETRUTH by Alo, Italian artist.', tags:['poster', 'portrait', 'text'], ratio:'960/1280', date:'2018-06-14T16:43:17', order:59},
+  {id:61, img:'../london/img/61-speak-the-truth-portrait.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Alo', title:'SPEAKTHETRUTH', location:'Shoreditch, London', notes:"Italian artist.", claudeIdea:'SPEAKTHETRUTH by Alo, Italian artist.', tags:['poster', 'portrait', 'text'], ratio:'960/1280', date:'2018-06-14T16:43:17', order:59},
   {id:62, img:'../london/img/62-sticker-bomb-avocado-batman.jpg', type:'photo', category:'fun', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Sticker bomb with an avocado, a Batman logo and a handful of others — no coherent theme, just a great pile of stickers.', tags:['sticker', 'collage'], ratio:'960/1280', date:'2018-06-14T16:43:40', order:60},
-  {id:63, img:'../london/img/63-blue-tiger-mural.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Snarling blue tiger mural with "START/CHILD" lettered underneath — the sharpest, most technically confident single mural in this whole batch, a strong candidate for a featured slot.', tags:['mural', 'animals', 'colour'], ratio:'960/1280', date:'2018-06-14T16:49:17', order:61, colorFrame:'85,86,114'},
+  {id:63, img:'../london/img/63-blue-tiger-mural.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Snarling blue tiger mural with "START/CHILD" lettered underneath — the sharpest, most technically confident single mural in this whole batch, a strong candidate for a featured slot.', tags:['mural', 'animals', 'colour'], ratio:'960/1280', date:'2018-06-14T16:49:17', order:61, colorFrame:'85,86,114'},
   {id:64, img:'../london/img/64-angel-stop-the-hate-pasteup.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Classical angel-statue paste-up captioned "Stop The Hate" against a dark blue background — a familiar street-art move (repurposed classical imagery) but well executed, the dark background makes it pop.', tags:['paste-up', 'statue', 'text'], ratio:'960/1280', date:'2018-06-14T16:56:16', order:62, colorFrame:'93,94,95'},
   {id:65, img:'../london/img/65-when-in-rome-arcturians-poster.jpg', type:'photo', category:'fun', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'"When In Rome... Do As The Arcturians" poster with a top-hatted bird illustration — genuinely strange joke, had to read it twice.', tags:['poster', 'text', 'illustration'], ratio:'960/1280', date:'2018-06-14T16:56:41', order:63},
   {id:66, img:'../london/img/66-peace-lettering-mural-pano.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'"PEACE" spelled out in big bubble lettering wrapping around a street corner — the only panorama in the set, shot wide because the piece genuinely needs the width.', tags:['mural', 'lettering', 'panorama'], ratio:'1280/488', date:'2018-06-14T17:13:55', order:64},
   {id:67, img:'../london/img/67-cycle-of-futility-mural.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Large mural titled "The Cycle of Futility" right in the paint itself — sun, mountains and figures in a circular motif; the visible title makes this one worth searching for a credited artist.', tags:['mural', 'large scale', 'symbolism'], ratio:'1280/960', date:'2018-06-14T17:17:28', order:65},
   {id:68, img:'../london/img/68-three-cartoon-heads-mural.jpg', type:'photo', category:'fun', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Three flat-colour cartoon heads in pink, blue and green on a red wall, with a 2018 World Cup poster visible in the same frame — incidental time-stamping for the date.', tags:['mural', 'character', 'colour'], ratio:'1280/960', date:'2018-06-14T17:29:28', order:66, colorFrame:'109,82,79'},
   {id:70, img:'../london/img/70-courtyard-mural-pink-creature.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Colourful courtyard mural with a large pink creature, shot in a semi-private courtyard rather than street-facing — different setting from everything else in this batch, and the last stop of the walk.', tags:['mural', 'courtyard', 'colour'], ratio:'1280/960', date:'2018-06-14T17:34:05', order:67, colorFrame:'89,90,87'},
-  {id:71, img:'../london/img/71-zabou-gas-mask-madonna.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'Zabou', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A Madonna-and-child pose reworked with a gas mask instead of a halo\'s usual serenity — hands clasped in prayer, gold radiating halo behind her, signed ZABOU in the corner.', tags:['mural', 'stencil', 'religious imagery'], ratio:'960/1280', date:'2018-06-14T12:37:31', order:68, colorFrame:'200,156,0'},
+  {id:71, img:'../london/img/71-zabou-gas-mask-madonna.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Zabou', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A Madonna-and-child pose reworked with a gas mask instead of a halo\'s usual serenity — hands clasped in prayer, gold radiating halo behind her, signed ZABOU in the corner.', tags:['mural', 'stencil', 'religious imagery'], ratio:'960/1280', date:'2018-06-14T12:37:31', order:68, colorFrame:'200,156,0'},
   {id:72, img:'../london/img/72-skeleton-cardboard-skull-poster.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:'Skeleton Cardboard', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A halftone skull print labelled like an anatomy diagram ("CRANIUM", "MANDIBLE"), surrounded by hand-drawn symbols and "NOT IN USE" lettered at the bottom, tagged DONK.', tags:['poster', 'skull', 'diagram'], ratio:'1280/960', date:'2018-06-14T13:59:16', order:69},
   {id:73, img:'../london/img/73-caliph-of-hate-eyeball-wide.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Wide shot of a wall layering a "Caliph of Hate" Al-Baghdadi poster against a cartoon eyeball-headed figure holding a "Fundamentalists get things fundamentally wrong" sign — kept both this and the tighter crop since the wide version shows more of the surrounding wall.', tags:['poster', 'collage', 'satire'], ratio:'1280/960', date:'2018-06-14T14:09:50', order:70},
   {id:74, img:'../london/img/74-caliph-of-hate-eyeball-close.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Tighter crop on the same "Caliph of Hate" / eyeball-figure wall, shot two minutes after the wide version — the "Doom Kebab" stickers at the bottom are clearer here.', tags:['poster', 'collage', 'satire'], ratio:'1280/960', date:'2018-06-14T14:11:33', order:71},
-  {id:75, img:'../london/img/75-jonesy-nuclear-waste-plaque.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', artist:'Jonesy', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Cast-metal plaque wrapped in a serpent, reading "NUCLEAR WASTE — 28,500 BARRELS — 1950/1960 — DUMPED AT SEA — ROCKALL HURD DEEP", signed JONESY 2013 — protest art disguised as a heritage marker.', tags:['sculpture', 'plaque', 'protest'], ratio:'960/1280', date:'2018-06-14T16:10:28', order:72, colorFrame:'140,109,46'},
+  {id:75, img:'../london/img/75-jonesy-nuclear-waste-plaque.jpg', type:'photo', category:'political', city:'Shoreditch, London', citySlug:'london', curated:true, artist:'Jonesy', title:'', location:'Shoreditch, London', notes:"", claudeIdea:'Cast-metal plaque wrapped in a serpent, reading "NUCLEAR WASTE — 28,500 BARRELS — 1950/1960 — DUMPED AT SEA — ROCKALL HURD DEEP", signed JONESY 2013 — protest art disguised as a heritage marker.', tags:['sculpture', 'plaque', 'protest'], ratio:'960/1280', date:'2018-06-14T16:10:28', order:72, colorFrame:'140,109,46'},
   {id:76, img:'../london/img/76-ufo-tiled-wall-oris.jpg', type:'photo', category:'street-art', city:'Shoreditch, London', citySlug:'london', artist:null, title:'', location:'Shoreditch, London', notes:"", claudeIdea:'A whole shopfront tiled wall covered in small chalk-drawn UFOs, with "ORIS" tagged in the middle of the swarm — the kind of piece that only reveals its full scale from across the street.', tags:['chalk', 'tiled wall', 'repeated motif'], ratio:'1280/960', date:'2018-06-14T16:48:07', order:73},
   {id:201, img:'../camden/img/01-owl-roof-garden-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:"Blue owl mural above the \"Buck's Head Roof Garden\" lettering, mushrooms and foliage painted in below it.", tags:['owl','lettering','colour'], ratio:'960/1280', date:'2018-05-07T12:12:55', order:74, colorFrame:'36,85,157'},
   {id:202, img:'../camden/img/02-strange-burger-robot-pasteup.jpg', type:'photo', category:'paste-up', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Small robot/pig character paste-up next to a burger poster reading "...ICE THE STRANGE" — much smaller scale than everything else in this batch.', tags:['paste-up','character','small scale'], ratio:'960/1280', date:'2018-05-07T12:13:46', order:75},
-  {id:203, img:'../camden/img/03-zebra-striped-rhino-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Rhino painted in bold zebra-style black-and-white stripes with orange accents, tagged "CWOTY" in the corner.', tags:['rhino','black & white','animals'], ratio:'1280/960', date:'2018-05-07T18:28:13', order:76},
+  {id:203, img:'../camden/img/03-zebra-striped-rhino-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', curated:true, artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Rhino painted in bold zebra-style black-and-white stripes with orange accents, tagged "CWOTY" in the corner.', tags:['rhino','black & white','animals'], ratio:'1280/960', date:'2018-05-07T18:28:13', order:76},
   {id:204, img:'../camden/img/04-bat-wolf-creature-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Angular, fanged bat-or-wolf creature mural on a wooden gate, a small "Some Kids" gallery sign mounted beside it.', tags:['creature','geometric','fangs'], ratio:'1280/960', date:'2018-05-07T18:28:21', order:77},
   {id:205, img:'../camden/img/05-geometric-hawley-street.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Purely abstract geometric mural in reds, greens and blues, painted right under the "Hawley Street NW1" sign.', tags:['geometric','abstract','colour'], ratio:'960/1280', date:'2018-05-07T18:28:36', order:78},
-  {id:206, img:'../camden/img/06-melting-heads-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Row of drippy, melting ice-cream-like character heads in candy colours — one of the most maximalist pieces in the set.', tags:['character','psychedelic','colour'], ratio:'960/1280', date:'2018-05-07T18:29:00', order:79, colorFrame:'17,106,161'},
+  {id:206, img:'../camden/img/06-melting-heads-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', curated:true, artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Row of drippy, melting ice-cream-like character heads in candy colours — one of the most maximalist pieces in the set.', tags:['character','psychedelic','colour'], ratio:'960/1280', date:'2018-05-07T18:29:00', order:79, colorFrame:'17,106,161'},
   {id:207, img:'../camden/img/07-woman-portrait-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Moody portrait of a woman in a leather jacket, pink and purple lighting across her face.', tags:['portrait','mural','moody'], ratio:'960/1280', date:'2018-05-07T18:29:18', order:80},
-  {id:208, img:'../camden/img/08-angel-devil-boat-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'An angel and a devil seated together rowing a boat, painted in warm gold light against a dark wall — surreal, storybook quality.', tags:['surreal','narrative','gold tones'], ratio:'1280/960', date:'2018-05-07T18:34:40', order:81, colorFrame:'182,134,72'},
+  {id:208, img:'../camden/img/08-angel-devil-boat-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', curated:true, artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'An angel and a devil seated together rowing a boat, painted in warm gold light against a dark wall — surreal, storybook quality.', tags:['surreal','narrative','gold tones'], ratio:'1280/960', date:'2018-05-07T18:34:40', order:81, colorFrame:'182,134,72'},
   {id:209, img:'../camden/img/09-tophat-character-hawley-mews.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Hawley Mews, Camden, London', notes:"", claudeIdea:'Green-toned mural of a top-hatted character among foliage, shot on Hawley Mews — busy wall with several layered elements.', tags:['character','top hat','green tones'], ratio:'960/1280', date:'2018-05-07T18:31:19', order:82},
   {id:210, img:'../camden/img/10-blue-bird-hearts-mural.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Fine-line blue bird (crow or magpie) on brick, a small stencilled figure reaching for a heart-shaped balloon beside it, tagged "Peixe Buenos Aires".', tags:['bird','line art','stencil'], ratio:'1280/960', date:'2018-05-07T18:33:21', order:83},
-  {id:211, img:'../camden/img/11-owl-butterfly-buck-street.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', artist:null, title:'', location:'Buck Street, Camden, London', notes:"", claudeIdea:"Owl with a butterfly's wings and face patterning worked into the feathers, on the \"Buck Street NW1\" corner — bright, illustrative style, closing shot of the walk.", tags:['owl','butterfly','illustrative'], ratio:'960/1280', date:'2018-05-07T18:49:48', order:84, colorFrame:'147,103,37'},
-  {id:315, img:'../glasgow/img/15-beanie-man-robin-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"Gable-end portrait mural of a bearded man in a red beanie with a robin perched on his finger, on a tenement end wall typical of the mural trail.", tags:['portrait','mural','robin'], ratio:'964/1280', date:'2025-10-27T11:05:41', order:85},
+  {id:211, img:'../camden/img/11-owl-butterfly-buck-street.jpg', type:'photo', category:'mural', city:'Camden, London', citySlug:'camden', curated:true, artist:null, title:'', location:'Buck Street, Camden, London', notes:"", claudeIdea:"Owl with a butterfly's wings and face patterning worked into the feathers, on the \"Buck Street NW1\" corner — bright, illustrative style, closing shot of the walk.", tags:['owl','butterfly','illustrative'], ratio:'960/1280', date:'2018-05-07T18:49:48', order:84, colorFrame:'147,103,37'},
+  {id:315, img:'../glasgow/img/15-beanie-man-robin-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', curated:true, title:'', location:'Glasgow', notes:"", claudeIdea:"Gable-end portrait mural of a bearded man in a red beanie with a robin perched on his finger, on a tenement end wall typical of the mural trail.", tags:['portrait','mural','robin'], ratio:'964/1280', date:'2025-10-27T11:05:41', order:85},
   {id:316, img:'../glasgow/img/16-boots-mushrooms-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"A trompe-l'oeil gable-end mural — a torn 'brick wall' revealing a hand reaching down past walking boots, fallen leaves and mushrooms.", tags:["trompe l'oeil",'mural','autumn'], ratio:'964/1280', date:'2025-10-27T12:05:07', order:86, colorFrame:'54,89,140'},
-  {id:317, img:'../glasgow/img/17-red-haired-woman-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"A large-scale gable-end portrait — a woman with pink-red hair holding a candlestick and a martini, in an ornately patterned robe.", tags:['portrait','mural','large scale'], ratio:'964/1280', date:'2025-10-27T12:17:54', order:87, colorFrame:'30,82,173'},
+  {id:317, img:'../glasgow/img/17-red-haired-woman-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', curated:true, title:'', location:'Glasgow', notes:"", claudeIdea:"A large-scale gable-end portrait — a woman with pink-red hair holding a candlestick and a martini, in an ornately patterned robe.", tags:['portrait','mural','large scale'], ratio:'964/1280', date:'2025-10-27T12:17:54', order:87, colorFrame:'30,82,173'},
   {id:319, img:'../glasgow/img/19-venomouse-cat-newspaper-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"One of a run of stencilled cat paste-ups tagged 'Venomouse', pasted directly over old newspaper flyposting.", tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T17:09:48', order:88, colorFrame:'140,94,28'},
   {id:320, img:'../glasgow/img/20-venomouse-astronaut-cat-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"A spray-painted astronaut stencil by the same 'Venomouse' hand, tucked into a doorway alcove.", tags:['paste-up','astronaut','venomouse'], ratio:'964/1280', date:'2025-10-27T17:21:30', order:89, colorFrame:'81,101,140'},
-  {id:321, img:'../glasgow/img/21-venomouse-cat-jacket-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"Another Venomouse cat stencil, this one in a bomber jacket, snarling.", tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T18:25:05', order:90},
+  {id:321, img:'../glasgow/img/21-venomouse-cat-jacket-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', curated:true, title:'', location:'Glasgow', notes:"", claudeIdea:"Another Venomouse cat stencil, this one in a bomber jacket, snarling.", tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T18:25:05', order:90},
   {id:322, img:'../glasgow/img/22-venomouse-cat-green-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"The same cat character restencilled in green, on white tile.", tags:['paste-up','cat','green'], ratio:'964/1280', date:'2025-10-27T18:25:10', order:91, colorFrame:'101,140,49'},
   {id:323, img:'../glasgow/img/23-venomouse-cat-pink-pasteup.jpg', type:'photo', artist:null, category:'paste-up', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"A pink-toned variant of the same stencilled cat, right next to the green one.", tags:['paste-up','cat','pink'], ratio:'964/1280', date:'2025-10-27T18:25:36', order:92, colorFrame:'140,48,50'},
-  {id:318, img:'../glasgow/img/18-walking-figures-hearts-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', title:'', location:'Glasgow', notes:"", claudeIdea:"Two silhouetted figures with heart motifs, painted on tile in the same stretch as the Venomouse stencils.", tags:['mural','silhouette','hearts'], ratio:'964/1280', date:'2025-10-27T18:25:49', order:93, colorFrame:'156,37,44'},
+  {id:318, img:'../glasgow/img/18-walking-figures-hearts-mural.jpg', type:'photo', artist:null, category:'mural', city:'Glasgow, Scotland', citySlug:'glasgow', curated:true, title:'', location:'Glasgow', notes:"", claudeIdea:"Two silhouetted figures with heart motifs, painted on tile in the same stretch as the Venomouse stencils.", tags:['mural','silhouette','hearts'], ratio:'964/1280', date:'2025-10-27T18:25:49', order:93, colorFrame:'156,37,44'},
 ];
 
 /* ============================================================
    Rendering
    ============================================================ */
 let activeCity = 'all';
+let curatedView = true;
+
+function setView(view){
+  curatedView = view === 'curated';
+  document.getElementById('vtCurated').classList.toggle('active', curatedView);
+  document.getElementById('vtAll').classList.toggle('active', !curatedView);
+  try{ localStorage.setItem('giftShopView', view); }catch(e){}
+  renderWall();
+}
+document.getElementById('vtCurated').onclick = () => setView('curated');
+document.getElementById('vtAll').onclick = () => setView('all');
 
 function relatedFor(item){
   if(!item.artist) return [];
@@ -611,13 +646,16 @@ function renderWall(){
   const empty = document.getElementById('empty');
   const count = document.getElementById('count');
   const items = DATA
+    .filter(d => !curatedView || d.curated)
     .filter(d => activeCity==='all' || d.citySlug===activeCity)
     .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
 
-  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCity!=='all' ? ' · ' + CITIES.find(c=>c.id===activeCity).label : ''}`;
+  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCity!=='all' ? ' · ' + CITIES.find(c=>c.id===activeCity).label : ''}${curatedView ? ' · curated' : ''}`;
 
   if(items.length===0){
-    wall.innerHTML=''; empty.style.display='block'; return;
+    wall.innerHTML='';
+    empty.textContent = curatedView ? "Nothing curated for that city yet — flip to \"All street art\" to see everything." : 'Nothing matches that combo yet. Clear a filter.';
+    empty.style.display='block'; return;
   }
   empty.style.display='none';
 
@@ -835,6 +873,12 @@ window.addEventListener('scroll', () => {
     collapseTicking = false;
   });
 }, {passive:true});
+
+let savedView = 'curated';
+try{ savedView = localStorage.getItem('giftShopView') || 'curated'; }catch(e){}
+curatedView = savedView === 'curated';
+document.getElementById('vtCurated').classList.toggle('active', curatedView);
+document.getElementById('vtAll').classList.toggle('active', !curatedView);
 
 renderFilters();
 renderWall();
