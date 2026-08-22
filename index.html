@@ -248,9 +248,10 @@
   }
   .place-card .kind-pill{
     position:absolute; top:0.7rem; left:0.7rem; z-index:2;
-    background:rgba(23,20,12,0.62); color:#fff; backdrop-filter:blur(2px);
+    background:var(--coral); color:#fff;
     font-family:"Fredoka", sans-serif; font-size:0.62rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
     padding:0.3rem 0.65rem; border-radius:100px;
+    box-shadow:0 3px 8px -2px rgba(23,20,12,0.35);
   }
   .place-card .meta-line{
     font-size:0.72rem; color:var(--ink-soft); margin:0.7rem 0 0.2rem;
@@ -262,6 +263,12 @@
   .place-card .blurb{
     font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0 0;
   }
+
+  /* ---------- albums / walks — tinted like every other section on this
+     page (sidebar sky, gift-shop white, itinerary olive), so the two
+     photo-format sections read as distinct at a glance ---------- */
+  .albums{ background:rgba(185,203,243,0.28); }
+  .walks{ background:rgba(255,107,74,0.10); }
 
   /* ---------- gift shop ---------- */
   .gift-shop{ background:var(--card); }
@@ -533,7 +540,7 @@
       </div>
     </header>
 
-    <section class="section" style="padding-top:2.5rem;">
+    <section class="section albums" style="padding-top:2.5rem;">
       <h2>Albums</h2>
       <p class="lede">Grid galleries — browse a place piece by piece.</p>
       <div class="grid" id="grid"></div>
@@ -651,7 +658,6 @@ const PLACES = [
   {name:'Kheerganga', slug:'manali', status:'story', count:''},
   {name:'Mauritius', slug:'mauritius', status:'story', count:''},
   {name:'Rishikesh', slug:'rishikesh', status:'draft', count:''},
-  {name:'Edinburgh', slug:'edinburgh', status:'story', count:''},
   {name:'Mussoorie', slug:'mussoorie', status:'draft', count:''},
   {name:'Dehradun', slug:'dehradun', status:'draft', count:''},
 ];
