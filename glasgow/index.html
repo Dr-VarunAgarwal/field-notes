@@ -253,7 +253,10 @@
   }
   .d-loc{font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--parchment-dim); display:flex; justify-content:space-between; align-items:center;}
   .d-loc .date{color:rgba(239,233,221,0.35); letter-spacing:0.06em;}
-  .d-title{font-family:'Spectral',serif; font-style:italic; font-weight:500; font-size:28px; margin:6px 0 12px; line-height:1.1;}
+  .d-title{font-family:'Spectral',serif; font-style:italic; font-weight:500; font-size:28px; margin:6px 0 4px; line-height:1.1;}
+  .d-artist{font-size:13px; color:var(--parchment-dim); margin:0 0 12px;}
+  .d-artist a{color:var(--rose); text-decoration:underline; text-decoration-color:rgba(184,92,116,0.4);}
+  .d-artist a:hover{text-decoration-color:var(--rose);}
   .d-notes{font-size:13.5px; line-height:1.65; color:var(--parchment); white-space:pre-line;}
   .d-notes.notes-empty{color:var(--parchment-dim); font-style:italic;}
   .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
@@ -301,6 +304,7 @@
   <div class="thumb" id="dThumb"><span class="glyph" id="dGlyph"></span></div>
   <div class="d-loc" id="dLoc"></div>
   <div class="d-title" id="dTitle"></div>
+  <div class="d-artist" id="dArtist"></div>
   <div class="d-notes" id="dNotes"></div>
   <div class="d-tags" id="dTags"></div>
 </div>
@@ -319,6 +323,10 @@
    altText   — optional, Claude's description of the piece. Used as
                the image's accessible name (aria-label) for screen
                readers — never shown as visible copy on the page.
+   artist    — optional, plain text, shown in the drawer as "by ___".
+   artistLink— optional, makes the artist name a link (e.g. their
+               Instagram) — only add a URL actually supplied/verified,
+               never guessed.
    tags      — short labels, freely organised
    ratio     — "width/height" of the actual image file.
    order     — controls display sequence, lowest first.
@@ -359,11 +367,11 @@ const DATA = [
   {id:14, img:'img/14-goma-wellington-statue.jpg', type:'photo', category:'street', title:'', location:'Royal Exchange Square, Glasgow', notes:"", altText:"The Duke of Wellington statue outside the Gallery of Modern Art, topped with a traffic cone — a running, decades-old Glasgow in-joke the council has given up fighting.", tags:['wellington statue','goma','traffic cone'], ratio:'964/1280', date:'2025-10-27T14:45:01', order:16, colorFrame:'90,142,215'},
   {id:12, img:'img/12-necropolis-crosses-sunset.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", altText:"Celtic crosses and obelisks catching the last light in the Necropolis, golden hour.", tags:['celtic crosses','golden hour','necropolis'], ratio:'1280/964', date:'2025-10-27T16:07:00', order:17, colorFrame:'164,111,47'},
   {id:13, img:'img/13-necropolis-path.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", altText:"A gravel path through the Necropolis lined with headstones, autumn leaves underfoot.", tags:['path','necropolis','autumn'], ratio:'964/1280', date:'2025-10-27T16:41:38', order:18},
-  {id:19, img:'img/19-venomouse-cat-newspaper-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"One of a run of stencilled cat paste-ups tagged 'Venomouse', pasted directly over old newspaper flyposting.", tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T17:09:48', order:19, colorFrame:'140,94,28'},
-  {id:20, img:'img/20-venomouse-astronaut-cat-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"A spray-painted astronaut stencil by the same 'Venomouse' hand, tucked into a doorway alcove.", tags:['paste-up','astronaut','venomouse'], ratio:'964/1280', date:'2025-10-27T17:21:30', order:20, colorFrame:'81,101,140'},
-  {id:21, img:'img/21-venomouse-cat-jacket-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"Another Venomouse cat stencil, this one in a bomber jacket, snarling.", tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T18:25:05', order:21},
-  {id:22, img:'img/22-venomouse-cat-green-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"The same cat character restencilled in green, on white tile.", tags:['paste-up','cat','green'], ratio:'964/1280', date:'2025-10-27T18:25:10', order:22, colorFrame:'101,140,49'},
-  {id:23, img:'img/23-venomouse-cat-pink-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"A pink-toned variant of the same stencilled cat, right next to the green one.", tags:['paste-up','cat','pink'], ratio:'964/1280', date:'2025-10-27T18:25:36', order:23, colorFrame:'140,48,50'},
+  {id:19, img:'img/19-venomouse-cat-newspaper-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"One of a run of stencilled cat paste-ups by Venomouse, pasted directly over old newspaper flyposting.", artist:'Venomouse', artistLink:'https://www.instagram.com/venomouseglasgow/', tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T17:09:48', order:19, colorFrame:'140,94,28'},
+  {id:20, img:'img/20-venomouse-astronaut-cat-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"A spray-painted astronaut stencil by the same Venomouse hand, tucked into a doorway alcove.", artist:'Venomouse', artistLink:'https://www.instagram.com/venomouseglasgow/', tags:['paste-up','astronaut','venomouse'], ratio:'964/1280', date:'2025-10-27T17:21:30', order:20, colorFrame:'81,101,140'},
+  {id:21, img:'img/21-venomouse-cat-jacket-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"Another Venomouse cat stencil, this one in a bomber jacket, snarling.", artist:'Venomouse', artistLink:'https://www.instagram.com/venomouseglasgow/', tags:['paste-up','cat','venomouse'], ratio:'964/1280', date:'2025-10-27T18:25:05', order:21},
+  {id:22, img:'img/22-venomouse-cat-green-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"The same cat character restencilled in green, on white tile.", artist:'Venomouse', artistLink:'https://www.instagram.com/venomouseglasgow/', tags:['paste-up','cat','green'], ratio:'964/1280', date:'2025-10-27T18:25:10', order:22, colorFrame:'101,140,49'},
+  {id:23, img:'img/23-venomouse-cat-pink-pasteup.jpg', type:'photo', category:'paste-up', title:'', location:'Glasgow', notes:"", altText:"A pink-toned variant of the same stencilled cat, right next to the green one.", artist:'Venomouse', artistLink:'https://www.instagram.com/venomouseglasgow/', tags:['paste-up','cat','pink'], ratio:'964/1280', date:'2025-10-27T18:25:36', order:23, colorFrame:'140,48,50'},
   {id:18, img:'img/18-walking-figures-hearts-mural.jpg', type:'photo', category:'mural', title:'', location:'Glasgow', notes:"", altText:"Two silhouetted figures with heart motifs, painted on tile in the same stretch as the Venomouse stencils.", tags:['mural','silhouette','hearts'], ratio:'964/1280', date:'2025-10-27T18:25:49', order:24, colorFrame:'156,37,44'},
 
   {id:24, img:'img/24-west-end-fuchsia-street.jpg', type:'photo', category:'market', title:'', location:'Glasgow West End', notes:"", altText:"Fuchsia still flowering into late October along a West End street, on the way to the market.", tags:['fuchsia','west end','street'], ratio:'964/1280', date:'2025-10-28T11:05:37', order:25},
@@ -559,6 +567,16 @@ function openDrawer(id){
   document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
   document.getElementById('dTitle').textContent = item.title || '';
   document.getElementById('dTitle').style.display = item.title ? 'block' : 'none';
+
+  const dArtist = document.getElementById('dArtist');
+  if(item.artist){
+    dArtist.innerHTML = item.artistLink
+      ? `by <a href="${item.artistLink}" target="_blank" rel="noopener">${item.artist}</a>`
+      : `by ${item.artist}`;
+    dArtist.style.display = 'block';
+  } else {
+    dArtist.style.display = 'none';
+  }
 
   const notesEl = document.getElementById('dNotes');
   if(item.notes && item.notes.trim()){
