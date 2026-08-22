@@ -149,3 +149,99 @@ on mobile for one-tap access.
   gate is the access token, not the page being hidden. If that's ever
   not private enough, the fix is switching Pages to a GitHub Actions
   deploy so the repo itself can go private.
+
+## 8. Batch-processing a new raw photo/video dump
+
+The repeatable workflow for turning a fresh raw batch (dropped somewhere
+under `field-notes/`, past ones named `assess`, `check` — look for a new
+folder, or ask if unclear) into a live section. Do this in small batches,
+committing after each logical chunk — never attempt the whole batch in one
+pass.
+
+**Current site shape** (check this hasn't drifted before trusting it):
+- Hub `index.html` — `PLACES` array. Live: London, Camden, Khajuraho,
+  Concerts, Udupi, Glasgow, Isle of Skye. Draft (not yet promoted):
+  Rishikesh, Edinburgh, Mussoorie, Dehradun.
+- City pages (`london/`, `camden/`, `khajuraho/`, `udupi/`, `glasgow/`,
+  `skye/`, each a standalone HTML file) — own theme (CSS custom
+  properties, fonts, category glyphs; don't reuse one city's exact
+  palette for another) and a `DATA` array: `id, img, type('photo'|'video'),
+  category, artist, title, location, notes` (Varun's own words, blank
+  `""` if none), `claudeIdea` (AI observation, kept separate from
+  `notes`), `tags, ratio('w/h'), date` (ISO, from EXIF), `order,
+  colorFrame` (optional `'r,g,b'`, only on the most vivid pieces). Each
+  such page also has its own `extractVividColor` JS function (in-browser
+  version of the same algorithm — mirror it in Python for the baked-in
+  `colorFrame` value).
+- `concerts/index.html` — different schema (ticket-stub style): `id,
+  artist, img, type, video, extras` (array of extra photo paths,
+  side-scrolling in the drawer — must include the cover photo itself in
+  that strip, not just the extras, or the scroll breaks one direction),
+  `venue, city, date, billing, notes, tags, order`. No `claudeIdea` field
+  — keep commentary out of `notes` here too, unless it's a plain fact
+  ("Lollapalooza India, day one").
+- `street-art/index.html` — themed cross-city aggregator (§6 above), own
+  `DATA` extending the city-page schema with `city, citySlug, curated`.
+  Not a live pull — when a place's new photos are genuinely street art
+  (murals, paste-ups, stencils, stickers, sculptural pieces), copy them
+  in by hand per §6's id-offset/city-chip rules. Leave out
+  museum/scenery/food shots.
+- `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
+  (§7 above) — the Stories ring feed. **Known rule (decided
+  2026-08-22):** Stories must be a curated, distinct edit — a handful of
+  the strongest shots, different framing/sequencing/captions than the
+  gallery, possibly material that never made the album — not a
+  copy-pasted subset of that place's own `DATA`. When a batch produces
+  or updates a live place, don't auto-populate `STORIES` by lifting
+  entries straight out of the new `DATA`; curate it as its own pass.
+- `fonts/` — custom TTFs via `@font-face` in a `<style>` block, never
+  inside a `data:` URI stylesheet (relative `url()` paths don't resolve
+  there).
+
+**Steps:**
+
+1. **Discover** — find the new folder. Get EXIF `DateTimeOriginal` for
+   photos (PIL) and `creation_time` for videos (`ffprobe`). Group by
+   timestamp proximity as a first guess at bursts — but never discard a
+   "duplicate" without actually looking at both images; most
+   same-timestamp photos turn out to be different subjects shot seconds
+   apart, not real bursts.
+2. **Visually review** — build contact-sheet grids (PIL, batches of 6)
+   and read them back rather than eyeballing files one at a time. For
+   video, pull identifying frames with
+   `ffmpeg -ss <t> -update 1 -q:v 2 -vframes 1`, trying a few timestamps
+   if the first is dark/blurry.
+3. **Identify carefully** — trust on-screen text (banners, jumbotrons,
+   stage names) over guessing from vibes. When identification is
+   genuinely ambiguous (which artist, which extra act, what a "burst"
+   resolves to), stop and ask rather than guessing. Never fabricate
+   venue/city for real events with no visual evidence — leave it blank
+   instead.
+4. **Process images** — PIL, `ImageOps.exif_transpose`, resize to
+   ~1280px max dimension, JPEG quality ~72-78. Video meant for playback
+   (not just a poster frame): transcode with ffmpeg to h264/aac +
+   `-movflags +faststart`, scaled to ~640-720px wide.
+5. **`colorFrame`** — for a handful of the most vivid photos per batch
+   (not all), compute a dominant vivid color via HSV-bin weighting,
+   mirroring that page's own `extractVividColor` JS function in Python.
+6. **Write `DATA` entries** — match the schema/style of whichever page
+   is being edited exactly (see shapes above). `notes` stays blank
+   unless it's Varun's own words; AI observations go in `claudeIdea`
+   (or get left out entirely on `concerts`, which has no such field).
+   If any pieces are street art, also feed them into
+   `street-art/index.html` per §6. If a draft place is being promoted to
+   live, also update `PLACES`, `FEATURED_PHOTOS`, `HEADER_PHOTOS` per §5
+   — and treat `STORIES` as its own curated pass, not a `DATA` copy.
+7. **Verify before committing:** (a) Node syntax-check the extracted
+   `<script>` block, (b) confirm every referenced img/video path exists
+   on disk, (c) load the page in a browser and click through — open a
+   drawer, confirm images render, exercise any new interactive feature
+   in both directions (e.g. the `extras` side-scroll must round-trip,
+   not just scroll one way).
+8. **Git** — raw source dumps (`assess/`, `check/`, or whatever the new
+   folder is named) never get committed, only the processed `img/`
+   outputs plus the edited `index.html`(s). Stage explicitly — don't
+   blind `git add -A`, since raw folders sit alongside processed output.
+   Write a commit message describing what was found/decided, not just
+   "update". Ask before pushing unless auto-push is already established
+   as fine for the current session.
