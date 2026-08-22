@@ -154,11 +154,13 @@
   .journey-list .j-icon{ font-size:1.1rem; flex:none; width:1.6rem; text-align:center; }
   .journey-list .j-text{ font-size:0.9rem; color:var(--ink-soft); line-height:1.5; }
   .journey-list .j-text strong{ color:var(--ink); font-weight:600; }
-  .journey-aside{
-    margin:1.3rem 0 0; padding-top:1rem; border-top:1px solid var(--line);
-    font-size:0.82rem; color:var(--ink-soft); line-height:1.6; font-style:italic;
+  .trip-aside{
+    max-width:440px; margin:0 auto; padding:0 1.5rem;
+    font-size:0.82rem; color:var(--ink-soft); line-height:1.6; font-style:italic; text-align:center;
   }
-  .journey-aside em{ color:var(--heather); font-style:italic; }
+  .trip-aside em{ color:var(--heather); font-style:italic; }
+  .trip-aside a{ color:var(--heather); text-decoration:underline; text-decoration-color:rgba(124,107,143,0.4); text-underline-offset:2px; }
+  .trip-aside a:hover{ text-decoration-color:var(--heather); }
 
   /* ---------- day sections ---------- */
   #days{ background:#E9E4D3; padding:0.5rem 0 2.8rem; }
@@ -226,10 +228,13 @@
      little room beside it and squeezes whatever follows into an
      unreadably narrow strip, so it just stacks full-width there. */
   .shot--small{
-    max-width:280px; margin:0 0 1rem auto;
+    width:100vw; max-width:1320px; margin-left:50%; transform:translateX(-50%); clear:both;
   }
   @media(min-width:600px){
-    .shot--small{ float:right; margin:0 0 1rem 1.2rem; }
+    .shot--small{
+      width:auto; max-width:280px; margin-left:0; transform:none;
+      float:right; margin:0 0 1rem 1.2rem;
+    }
   }
   .shot--small::after{ content:""; display:table; clear:both; }
   .scene::after{ content:""; display:table; clear:both; }
@@ -335,9 +340,8 @@
     <li><span class="j-icon">👍</span><span class="j-text"><strong>Hitchhiked</strong> on to Portree</span></li>
     <li><span class="j-icon">🚕</span><span class="j-text"><strong>Taxi</strong> on the way out</span></li>
     <li><span class="j-icon">⛴️</span><span class="j-text"><strong>Ferry</strong> off the island</span></li>
+    <li><span class="j-icon">🚂</span><span class="j-text"><strong>Train</strong> onward — the Jacobite, the "Harry Potter train," over the Glenfinnan Viaduct</span></li>
   </ol>
-
-  <p class="journey-aside">Honourable mention: the music discovered along the way — Martyn Bennett's <em>Blackbird</em> and <em>Liberation</em>, both a real find on this trip.</p>
 </figure>
 
 <main id="days">
@@ -499,6 +503,8 @@
 <div class="signoff">
   <h3>Slower than planned.<br>Better for it.</h3>
 </div>
+
+<p class="trip-aside">Honourable mention: the music discovered along the way — Martyn Bennett's <a href="https://www.youtube.com/watch?v=jSRHpA2giUk" target="_blank" rel="noopener"><em>Blackbird</em></a> and <a href="https://www.youtube.com/watch?v=-7blRCnjFDE" target="_blank" rel="noopener"><em>Liberation</em></a>, both a real find on this trip.</p>
 
 <footer>
   <nav class="foot-nav">

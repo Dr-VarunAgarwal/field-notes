@@ -182,7 +182,7 @@ pass.
 - Hub `index.html` — `PLACES` array, split by `kind` (§5) into Albums
   and Photo Walks. Live albums: Shoreditch, Camden, Khajuraho, Concerts,
   Udupi, Glasgow. Live walks: Isle of Skye, Glasgow & Edinburgh. Story-only
-  (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Kheerganga,
+  (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Parvati Valley,
   Mauritius. Draft (not yet promoted): Rishikesh, Mussoorie, Dehradun.
 - Album pages (`london/`, `camden/`, `khajuraho/`, `udupi/`, `glasgow/`,
   each a standalone HTML file) — own theme (CSS custom
