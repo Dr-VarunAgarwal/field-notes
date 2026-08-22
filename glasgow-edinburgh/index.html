@@ -198,15 +198,10 @@
   .shot .cap-loc .pin{ opacity:0.6; margin-right:0.3rem; }
   .shot .cap-date{ font-size:0.68rem; color:var(--ink-faint); white-space:nowrap; }
 
-  .shot-row{ display:flex; flex-direction:column; gap:0.9rem; margin-bottom:0.9rem; }
-  @media(min-width:600px){
-    .shot-row{ flex-direction:row; }
-    .shot-row .shot{ flex:1; margin-bottom:0; min-width:0; }
-  }
-
   .shot--wide.breakout{
-    max-width:1040px; margin-left:50%; transform:translateX(-50%);
+    width:100vw; max-width:1320px; margin-left:50%; transform:translateX(-50%);
   }
+  .shot--medium{ max-width:600px; margin-left:auto; margin-right:auto; }
   .scene::after{ content:""; display:table; clear:both; }
 
   .detail{
@@ -264,12 +259,12 @@
 </header>
 
 <div class="intro">
-  <p>A camera-only walk, no phone snapshots — a first pass through Glasgow's Necropolis and Kelvingrove, then a return trip a few days later for one long circuit round Calton Hill, looking down over all of Edinburgh at once.</p>
+  <p>Walking around Glasgow's Necropolis and Kelvingrove and Edinburgh's Calton Hill - beautiful views of the city.</p>
 </div>
 
 <figure class="route-map">
   <p class="rm-eyebrow">wander / photo walk</p>
-  <h2 class="rm-title">The Route</h2>
+  <h2 class="rm-title">The Stops</h2>
   <p class="rm-dates">Two outings, six days apart &nbsp;·&nbsp; Glasgow's east end, then one hilltop over Edinburgh</p>
 
   <div id="cb-map"></div>
@@ -299,10 +294,8 @@
 
     <div class="scene">
       <p class="scene-label">Glasgow Necropolis</p>
-      <div class="shot-row">
-        <figure class="shot" data-id="2"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-        <figure class="shot" data-id="3"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-      </div>
+      <figure class="shot shot--wide breakout" data-id="2"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <figure class="shot shot--medium" data-id="3"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <p class="note">The graveyard sits right on a hill over the city — its own tree-lined avenues, then a clear drop down to the rooftops and steam below.</p>
       <figure class="shot shot--wide breakout" data-id="4"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
     </div>
@@ -330,10 +323,8 @@
 
     <div class="scene">
       <p class="scene-label">Turning north, then south</p>
-      <div class="shot-row">
-        <figure class="shot" data-id="7"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-        <figure class="shot" data-id="8"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-      </div>
+      <figure class="shot shot--wide breakout" data-id="7"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <figure class="shot shot--wide breakout" data-id="8"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <p class="note">The same hilltop turns a full circle — the Firth of Forth and Leith's docks one way, Arthur's Seat and the Parliament's tented roof the other.</p>
     </div>
 
@@ -343,15 +334,13 @@
     </div>
 
     <div class="scene">
-      <div class="shot-row">
-        <figure class="shot" data-id="10"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-        <figure class="shot" data-id="11"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
-      </div>
+      <figure class="shot shot--medium" data-id="10"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <figure class="shot shot--wide breakout" data-id="11"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
     </div>
 
     <div class="scene">
       <p class="scene-label">Down into town</p>
-      <figure class="shot" data-id="12" style="max-width:420px; margin:0 auto;"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <figure class="shot shot--medium" data-id="12"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
       <p class="note">Off the hill and back into the crowds on Princes Street, the Scott Monument closing the walk the way the National Monument opened it.</p>
     </div>
   </section>
@@ -372,12 +361,12 @@
 </footer>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
 <script>
 /* ============================================================
-   THE ROUTE — a real map (CARTO tiles over OpenStreetMap data)
-   with the two-stop route drawn over it. Independent of the
-   photo DATA below; place changes here if the itinerary changes.
+   THE STOPS — a real map (CARTO tiles over OpenStreetMap data)
+   with pins for where the photos were taken. No route line drawn —
+   the two outings weren't a single walked path, just stops. Independent
+   of the photo DATA below; place changes here if the itinerary changes.
    ============================================================ */
 (function(){
   const COLORS = { I:'#B98A55', II:'#5C86A8' };
@@ -412,23 +401,6 @@
       html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FBF8F2;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`
     });
   }
-
-  const dayIPath  = [[55.8687,-4.2907], [55.8621,-4.2317]];
-  const dayIIPath = [[55.9550,-3.1828], [55.9533,-3.1957]];
-  const linkPath  = [[55.8621,-4.2317], [55.9550,-3.1828]];
-
-  const link = L.polyline(linkPath, { color:'#8A8478', weight:2, opacity:0.7, dashArray:'2 8', lineJoin:'round' }).addTo(map);
-  L.polylineDecorator(link, {
-    patterns: [{ offset:'50%', repeat:0, symbol: L.Symbol.arrowHead({
-      pixelSize: 9, pathOptions: { color:'#8A8478', fillOpacity:1, weight:0 }
-    })}]
-  }).addTo(map);
-
-  [[dayIPath,'I'], [dayIIPath,'II']].forEach(([path, day]) => {
-    L.polyline(path, {
-      color: COLORS[day], weight: 2.6, opacity: 0.9, lineJoin:'round', lineCap:'round'
-    }).addTo(map);
-  });
 
   STOPS.forEach(s => {
     const marker = L.marker([s.lat, s.lng], { icon: pinIcon(COLORS[s.day], s.big) }).addTo(map);
