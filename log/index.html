@@ -69,6 +69,16 @@
   .reorder-btns{ display:flex; gap:0.3rem; }
   .reorder-btns button{ padding:0.35rem 0.6rem; font-size:0.85rem; line-height:1; }
   .reorder-btns button:disabled{ opacity:0.3; cursor:not-allowed; }
+  .mode-buttons{ display:flex; flex-direction:column; gap:0.5rem; }
+  .mode-btn{
+    width:100%; text-align:left; font-family:"Inter", sans-serif; font-weight:600;
+    font-size:0.85rem; padding:0.7rem 0.9rem; border-radius:10px;
+    border:1px solid var(--line); background:#fff; color:var(--ink); cursor:pointer;
+  }
+  .mode-btn.active{ background:var(--blue); color:#fff; border-color:var(--blue); }
+  #deploy-status{ margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid var(--line); }
+  #deploy-status p{ font-size:0.72rem; color:var(--ink-soft); line-height:1.5; margin:0 0 0.6rem; }
+  #deploy-status-text{ font-weight:600; }
 </style>
 </head>
 <body>
@@ -91,12 +101,13 @@
 
 <form id="story-form" style="display:none;">
   <div class="card">
-    <label for="mode">What are you doing?</label>
-    <select id="mode" onchange="onModeChange()">
-      <option value="existing">Add photos to an existing story</option>
-      <option value="new">Create a brand new standalone story</option>
-      <option value="reorder">Rearrange story order</option>
-    </select>
+    <label>What are you doing?</label>
+    <div class="mode-buttons" role="group" aria-label="What are you doing?">
+      <button type="button" class="mode-btn active" data-mode="existing" onclick="setMode('existing')">Add photos to an existing story</button>
+      <button type="button" class="mode-btn" data-mode="new" onclick="setMode('new')">Create a brand new standalone story</button>
+      <button type="button" class="mode-btn" data-mode="reorder" onclick="setMode('reorder')">Rearrange story order</button>
+    </div>
+    <input type="hidden" id="mode" value="existing">
   </div>
 
   <div class="card" id="existing-fields">
@@ -135,6 +146,7 @@
     <button type="button" class="btn-secondary" onclick="copyLog()" id="copy-log-btn">Copy log</button>
   </div>
   <div id="log"></div>
+  <div id="deploy-status" style="display:none;"></div>
 </form>
 
 <hr>
@@ -181,8 +193,15 @@ function forgetToken(){
 renderTokenStatus();
 
 /* ---------- mode toggle ---------- */
+function setMode(mode){
+  document.getElementById('mode').value = mode;
+  onModeChange();
+}
 function onModeChange(){
   const mode = document.getElementById('mode').value;
+  document.querySelectorAll('.mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
   document.getElementById('existing-fields').style.display = mode === 'existing' ? 'block' : 'none';
   document.getElementById('new-fields').style.display = mode === 'new' ? 'block' : 'none';
   document.getElementById('reorder-fields').style.display = mode === 'reorder' ? 'block' : 'none';
@@ -249,10 +268,133 @@ async function processFileImmediately(fileInput){
     fileInput._resizedBlob = blob;
     statusEl.textContent = `✓ Ready (${(blob.size / 1024).toFixed(0)}KB)`;
     statusEl.className = 'file-status status-ok';
+    if (fileInput.classList.contains('slide-file')){
+      fillLocationFromExif(fileInput, file, statusEl); // best-effort, not awaited -- shouldn't hold up "ready"
+    }
   } catch (err) {
     fileInput._processError = err.message;
     statusEl.textContent = `✗ ${err.message}`;
     statusEl.className = 'file-status status-err';
+  }
+}
+
+/* ---------- EXIF GPS auto-fill (client-side, JPEG only) ----------
+   Hand-rolled rather than a library: this only needs the GPS IFD, not
+   the dozens of tags a general EXIF reader supports, and staying
+   dependency-free means it still works from a spotty connection --
+   the exact situation this tool exists for. Must read from the ORIGINAL
+   file, before resizeImage's canvas round-trip, since canvas.toBlob()
+   strips all EXIF. HEIC/HEIF stores metadata in a different (ISO-BMFF
+   box) container entirely, not JPEG APP1 segments, so this silently
+   finds nothing on those -- same graceful no-op as "no GPS tag present". */
+function readIfdEntries(view, ifdOffset, little){
+  const count = view.getUint16(ifdOffset, little);
+  const entries = [];
+  for (let i = 0; i < count; i++){
+    const entryOffset = ifdOffset + 2 + i * 12;
+    entries.push({
+      tag: view.getUint16(entryOffset, little),
+      numValues: view.getUint32(entryOffset + 4, little),
+      valueOffset: entryOffset + 8,
+    });
+  }
+  return entries;
+}
+function entryAscii(view, tiffStart, entry, little){
+  const byteLen = entry.numValues;
+  const dataOffset = byteLen <= 4 ? entry.valueOffset : tiffStart + view.getUint32(entry.valueOffset, little);
+  let str = '';
+  for (let i = 0; i < byteLen; i++){
+    const c = view.getUint8(dataOffset + i);
+    if (c === 0) break;
+    str += String.fromCharCode(c);
+  }
+  return str;
+}
+function entryRationals(view, tiffStart, entry, little){
+  const dataOffset = tiffStart + view.getUint32(entry.valueOffset, little);
+  const vals = [];
+  for (let i = 0; i < entry.numValues; i++){
+    const num = view.getUint32(dataOffset + i * 8, little);
+    const den = view.getUint32(dataOffset + i * 8 + 4, little);
+    vals.push(den === 0 ? 0 : num / den);
+  }
+  return vals;
+}
+function dmsToDecimal(d, m, s, ref){
+  let dec = d + m / 60 + s / 3600;
+  if (ref === 'S' || ref === 'W') dec = -dec;
+  return dec;
+}
+function parseExifGps(view, tiffStart){
+  const byteOrderMark = view.getUint16(tiffStart, false);
+  const little = byteOrderMark === 0x4949; // 'II'
+  if (byteOrderMark !== 0x4949 && byteOrderMark !== 0x4D4D) return null; // 'MM'
+  if (view.getUint16(tiffStart + 2, little) !== 42) return null;
+  const ifd0Offset = tiffStart + view.getUint32(tiffStart + 4, little);
+  const gpsEntry = readIfdEntries(view, ifd0Offset, little).find(e => e.tag === 0x8825); // GPSInfo pointer
+  if (!gpsEntry) return null;
+  const gpsIfdOffset = tiffStart + view.getUint32(gpsEntry.valueOffset, little);
+  const byTag = Object.fromEntries(readIfdEntries(view, gpsIfdOffset, little).map(e => [e.tag, e]));
+  if (!byTag[1] || !byTag[2] || !byTag[3] || !byTag[4]) return null; // lat ref/val, lon ref/val
+  const lat = entryRationals(view, tiffStart, byTag[2], little);
+  const lon = entryRationals(view, tiffStart, byTag[4], little);
+  if (lat.length < 3 || lon.length < 3) return null;
+  return {
+    lat: dmsToDecimal(lat[0], lat[1], lat[2], entryAscii(view, tiffStart, byTag[1], little)),
+    lon: dmsToDecimal(lon[0], lon[1], lon[2], entryAscii(view, tiffStart, byTag[3], little)),
+  };
+}
+async function readGpsFromFile(file){
+  try {
+    const buf = await file.slice(0, 256 * 1024).arrayBuffer();
+    const view = new DataView(buf);
+    if (view.getUint16(0) !== 0xFFD8) return null; // not a JPEG
+    let offset = 2;
+    while (offset + 4 <= view.byteLength){
+      const marker = view.getUint16(offset);
+      if ((marker & 0xFF00) !== 0xFF00) break;
+      if (marker === 0xFFD8 || marker === 0xFFD9){ offset += 2; continue; }
+      const segLength = view.getUint16(offset + 2);
+      if (marker === 0xFFE1 && offset + 4 + 4 <= view.byteLength){
+        const tag = String.fromCharCode(view.getUint8(offset+4), view.getUint8(offset+5), view.getUint8(offset+6), view.getUint8(offset+7));
+        if (tag === 'Exif') return parseExifGps(view, offset + 4 + 6);
+      }
+      if (marker === 0xFFDA) break; // start of scan -- image data follows, nothing more to read
+      offset += 2 + segLength;
+    }
+    return null;
+  } catch (err) {
+    return null; // best-effort -- absence of GPS data is normal, not an error
+  }
+}
+async function reverseGeocode(lat, lon){
+  const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&zoom=16&addressdetails=1`);
+  if (!res.ok) throw new Error(`reverse geocode failed (${res.status})`);
+  const data = await res.json();
+  const a = data.address || {};
+  const specific = a.attraction || a.tourism || a.building || a.road || a.suburb || a.neighbourhood;
+  const place = a.city || a.town || a.village || a.county || a.state;
+  const parts = [specific, place].filter(Boolean);
+  return parts.length ? parts.join(', ') : (data.display_name || `${lat.toFixed(5)}, ${lon.toFixed(5)}`);
+}
+async function fillLocationFromExif(fileInput, file, statusEl){
+  const row = fileInput.closest('.slide-row');
+  const locationInput = row && row.querySelector('.slide-location');
+  if (!locationInput || locationInput.value.trim()) return; // don't clobber manual input
+  const gps = await readGpsFromFile(file);
+  if (!gps || locationInput.value.trim()) return; // re-check: user may have typed while we were reading the file
+  try {
+    const place = await reverseGeocode(gps.lat, gps.lon);
+    if (!locationInput.value.trim()){
+      locationInput.value = place;
+      statusEl.textContent += ' · 📍 location auto-filled from photo';
+    }
+  } catch (err) {
+    if (!locationInput.value.trim()){
+      locationInput.value = `${gps.lat.toFixed(5)}, ${gps.lon.toFixed(5)}`;
+      statusEl.textContent += ' · 📍 GPS found, place lookup failed (raw coordinates filled in)';
+    }
   }
 }
 
@@ -420,7 +562,63 @@ async function rebuildStoriesOrder(orderedIds){
   for (const id of freshIds) if (!finalOrder.includes(id)) finalOrder.push(id);
   const rebuilt = '[\n  ' + finalOrder.map(id => byId.get(id)).join(',\n\n  ') + ',\n]';
   const updated = content.slice(0, openBracketPos) + rebuilt + content.slice(closeBracketPos + 1);
-  return { updated, sha: file.sha, missingIds: orderedIds.filter(id => !byId.has(id)) };
+  return { updated, sha: file.sha, finalOrder, missingIds: orderedIds.filter(id => !byId.has(id)) };
+}
+
+/* ---------- deploy status (is it live yet?) ----------
+   GitHub Pages rebuilds the whole site on every push -- there's no
+   per-file deploy -- so once ONE thing we just changed shows up on the
+   live public site, the whole build is done. These fetches never need
+   the token: Pages content is public regardless of the repo's own
+   visibility. cache:'no-store' only bypasses the browser's own cache;
+   GitHub's CDN can still hold a slightly stale copy for a bit, hence
+   the wording below rather than a promise of an exact number. */
+let lastPublish = null; // { kind:'image', payload:imgPath } | { kind:'order', payload:idsInOrder }
+
+function showDeployStatus(){
+  const box = document.getElementById('deploy-status');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <p>GitHub Pages usually redeploys within 30–90 seconds (occasionally a few minutes if its CDN is holding an older cached copy).</p>
+    <button type="button" class="btn-secondary" onclick="checkDeployStatus()">Check if live</button>
+    <p id="deploy-status-text"></p>
+  `;
+}
+async function checkImageLive(imgPath){
+  const res = await fetch(`https://wander.varunagarwal.com/${imgPath}?_=${Date.now()}`, { cache: 'no-store', method: 'HEAD' });
+  return res.ok;
+}
+async function fetchLiveStoryOrder(){
+  const res = await fetch(`https://wander.varunagarwal.com/index.html?_=${Date.now()}`, { cache: 'no-store' });
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  const text = await res.text();
+  const marker = 'const STORIES = [';
+  const start = text.indexOf(marker);
+  if (start === -1) return null;
+  const openBracketPos = start + marker.length - 1;
+  const closeBracketPos = findMatchingBracket(text, openBracketPos);
+  const span = text.slice(openBracketPos, closeBracketPos + 1);
+  return [...span.matchAll(/id:\s*(['"])((?:(?!\1)[\s\S])*)\1/g)].map(m => m[2]);
+}
+async function checkDeployStatus(){
+  const textEl = document.getElementById('deploy-status-text');
+  if (!lastPublish || !textEl) return;
+  textEl.textContent = 'Checking the live site...';
+  textEl.style.color = 'var(--ink-soft)';
+  try {
+    let isLive;
+    if (lastPublish.kind === 'image'){
+      isLive = await checkImageLive(lastPublish.payload);
+    } else {
+      const liveOrder = await fetchLiveStoryOrder();
+      isLive = !!liveOrder && JSON.stringify(liveOrder) === JSON.stringify(lastPublish.payload);
+    }
+    textEl.textContent = isLive ? '✓ Confirmed live on the real site.' : '⏳ Not live yet — still deploying, try again in a bit.';
+    textEl.style.color = isLive ? 'var(--green)' : 'var(--ink-soft)';
+  } catch (err) {
+    textEl.textContent = `Couldn't check: ${err.message}`;
+    textEl.style.color = 'var(--red)';
+  }
 }
 
 /* ---------- copy log ---------- */
@@ -610,14 +808,16 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     }
     try {
       log('Fetching current index.html...', 'log-mid');
-      const { updated, sha, missingIds } = await rebuildStoriesOrder(reorderIds);
+      const { updated, sha, finalOrder, missingIds } = await rebuildStoriesOrder(reorderIds);
       if (missingIds.length) log(`Note: ${missingIds.join(', ')} no longer in STORIES — skipped.`, 'log-mid');
       log('Publishing new story order...', 'log-mid');
       await ghPut('index.html', { message: 'Reorder Stories ring', content: utf8ToBase64(updated), sha });
       log('✓ Done — new story order published.', 'log-ok');
-      log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
       setStoriesCache(updated);
       populateReorderList();
+      lastPublish = { kind: 'order', payload: finalOrder };
+      showDeployStatus();
+      setTimeout(checkDeployStatus, 20000);
     } catch (err){
       log(`✗ ${err.message}`, 'log-err');
       log('Nothing further was changed after this error — safe to fix and retry.', 'log-err');
@@ -741,8 +941,10 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
     log(mode === 'existing'
       ? `✓ Done — ${uploaded.length} photo(s) added to ${placeId}'s story.`
       : `✓ Done — new story "${newUsername}" created.`, 'log-ok');
-    log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
     setStoriesCache(updated);
+    lastPublish = { kind: 'image', payload: uploaded[0].imgPath };
+    showDeployStatus();
+    setTimeout(checkDeployStatus, 20000);
     document.getElementById('story-form').reset();
     onModeChange();
     document.getElementById('new-id-preview').textContent = '';

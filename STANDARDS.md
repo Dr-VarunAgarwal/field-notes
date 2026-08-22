@@ -146,6 +146,24 @@ on mobile for one-tap access.
 - Resizing happens client-side (Canvas, same ~1280px/quality 0.75
   treatment as everywhere else); uploads go through the GitHub Contents
   API — no server involved.
+- "What are you doing?" is three tap-buttons (not a `<select>` — long
+  labels read better as a stacked list of full-width buttons on a phone
+  than as dropdown option text), backed by a hidden `#mode` input so the
+  rest of the script's `document.getElementById('mode').value` reads
+  didn't need to change.
+- If a picked photo has GPS EXIF (JPEG only — HEIC stores it in a
+  different, non-APP1 container this tool doesn't parse), the location
+  field auto-fills via reverse geocoding (OpenStreetMap Nominatim, no
+  key needed) once the field is empty — never overwrites something
+  already typed. Falls back to raw decimal coordinates if the lookup
+  fails; silently leaves the field blank if there's no GPS tag at all
+  (very common for photos that have been through WhatsApp/Instagram).
+- After any publish, a "Check if live" control appears: GitHub Pages
+  rebuilds the whole site per push (no per-file deploy), so confirming
+  one thing we just changed is visible on the public site (the new
+  image's URL, or — for a reorder — the live `STORIES` id order) means
+  the whole build finished. Needs no token, since Pages content is
+  public regardless of repo visibility.
 - Three modes:
   - **Add photos to an existing story** — the place dropdown is
     populated live from the hub's own `STORIES` array (fetched once,
