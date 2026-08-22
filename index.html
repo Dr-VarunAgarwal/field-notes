@@ -232,11 +232,12 @@
     font-family:"Fredoka", sans-serif; font-weight:600;
     font-size:clamp(1.5rem, 4vw, 1.9rem); margin:0 0 1.5rem;
   }
+  .section p.lede{ color:var(--ink-soft); font-size:0.85rem; margin:-1rem 0 1.6rem; max-width:52ch; }
 
   .grid{ display:grid; grid-template-columns:1fr; gap:1.8rem; }
   @media(min-width:640px){ .grid{ grid-template-columns:1fr 1fr; } }
 
-  .place-card{ text-decoration:none; color:inherit; display:block; }
+  .place-card{ text-decoration:none; color:inherit; display:block; position:relative; }
   .place-card .thumb{
     width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
     background:var(--card); border-radius:14px;
@@ -244,6 +245,12 @@
   .place-card .thumb.no-cover{
     display:flex; align-items:center; justify-content:center;
     color:var(--ink-soft); font-family:"Fraunces", serif; font-style:italic; font-size:0.85rem;
+  }
+  .place-card .kind-pill{
+    position:absolute; top:0.7rem; left:0.7rem; z-index:2;
+    background:rgba(23,20,12,0.62); color:#fff; backdrop-filter:blur(2px);
+    font-family:"Fredoka", sans-serif; font-size:0.62rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+    padding:0.3rem 0.65rem; border-radius:100px;
   }
   .place-card .meta-line{
     font-size:0.72rem; color:var(--ink-soft); margin:0.7rem 0 0.2rem;
@@ -527,8 +534,15 @@
     </header>
 
     <section class="section" style="padding-top:2.5rem;">
-      <h2>Travel stories</h2>
+      <h2>Albums</h2>
+      <p class="lede">Grid galleries — browse a place piece by piece.</p>
       <div class="grid" id="grid"></div>
+    </section>
+
+    <section class="section walks">
+      <h2>Photo Walks</h2>
+      <p class="lede">Day-by-day journals with a real route map — fewer photos, more story.</p>
+      <div class="grid" id="walks-grid"></div>
     </section>
 
     <section class="section gift-shop">
@@ -624,13 +638,14 @@
    the ones with a full album.
    ============================================================ */
 const PLACES = [
-  {name:'London — Shoreditch', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces'},
-  {name:'Camden', slug:'camden', status:'live', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', blurb:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces'},
-  {name:'Khajuraho', slug:'khajuraho', status:'live', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
-  {name:'Concerts', slug:'concerts', status:'live', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
-  {name:'Udupi', slug:'udupi', status:'live', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
-  {name:'Glasgow', slug:'glasgow', status:'live', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces'},
-  {name:'Isle of Skye', slug:'skye', status:'live', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'42 pieces'},
+  {name:'London — Shoreditch', slug:'london', status:'live', kind:'album', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces'},
+  {name:'Camden', slug:'camden', status:'live', kind:'album', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', blurb:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces'},
+  {name:'Khajuraho', slug:'khajuraho', status:'live', kind:'album', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
+  {name:'Concerts', slug:'concerts', status:'live', kind:'album', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
+  {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
+  {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces'},
+  {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos'},
+  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos'},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Kheerganga', slug:'manali', status:'story', count:''},
@@ -642,6 +657,8 @@ const PLACES = [
 ];
 
 const live = PLACES.filter(p => p.status === 'live');
+const liveAlbums = live.filter(p => p.kind !== 'walk');
+const liveWalks = live.filter(p => p.kind === 'walk');
 const draft = PLACES.filter(p => p.status === 'draft');
 
 /* ============================================================
@@ -665,6 +682,8 @@ const HEADER_PHOTOS = [
   {src:'london/img/43-xray-ribcage-mural.jpg', coords:'51.5229°N, 0.0777°W'},
   {src:'glasgow/img/17-red-haired-woman-mural.jpg', coords:'55.8580°N, 4.2475°W'},
   {src:'glasgow/img/12-necropolis-crosses-sunset.jpg', coords:'55.8625°N, 4.2316°W'},
+  {src:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', coords:'55.9529°N, 3.1719°W'},
+  {src:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', coords:'55.9550°N, 3.1828°W'},
 ];
 const headerPhotoEl = document.getElementById('header-photo');
 const headerCoordsEl = document.getElementById('header-coords');
@@ -729,6 +748,9 @@ const FEATURED_PHOTOS = [
   {img:'glasgow/img/17-red-haired-woman-mural.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
   {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
   {img:'glasgow/img/14-goma-wellington-statue.jpg', caption:'The Duke of Wellington, cone intact, outside the Gallery of Modern Art.', place:'Glasgow', slug:'glasgow'},
+  {img:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', caption:'The Palace of Holyroodhouse and the ruin of Holyrood Abbey, shot long from Calton Hill.', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
+  {img:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
+  {img:'glasgow-edinburgh/img/d1-04-necropolis-city-view.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
 ];
 
 const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
@@ -743,9 +765,20 @@ if (featured) {
   `;
 }
 
-// grid — remaining live places (skip the featured one, or show all incl. featured)
-document.getElementById('grid').innerHTML = live.map(p => `
+// albums grid — live places shown as grid galleries (skip the featured one, or show all incl. featured)
+document.getElementById('grid').innerHTML = liveAlbums.map(p => `
   <a class="place-card" href="${p.slug}/">
+    <img class="thumb" src="${p.cover}" alt="">
+    <p class="meta-line">${p.count}</p>
+    <p class="name">${p.name}</p>
+    <p class="blurb">${p.blurb}</p>
+  </a>
+`).join('');
+
+// walks grid — live places built as day-journal/route-map photo walks
+document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
+  <a class="place-card" href="${p.slug}/">
+    <span class="kind-pill">Walk</span>
     <img class="thumb" src="${p.cover}" alt="">
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
@@ -815,6 +848,14 @@ const STORIES = [
     {img:'concerts/img/aurora.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'AURORA — Lollapalooza India, day two.'},
     {img:'concerts/img/isabel-larosa.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
     {img:'concerts/img/talwinder.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Talwiinder — Lollapalooza India, day one.'},
+  ]},
+
+  { id:'glasgow-edinburgh', username:'Central Belt', avatar:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', slug:'glasgow-edinburgh', slides:[
+    {img:'glasgow-edinburgh/img/d1-04-necropolis-city-view.jpg', location:'Glasgow Necropolis', date:'2025-10-27', caption:'', note:'The proper camera came out for this one — smoke on the skyline below the graves, caught right at dusk.'},
+    {img:'glasgow-edinburgh/img/d2-02-national-monument.jpg', location:'Calton Hill, Edinburgh', date:'2025-11-01', caption:'', note:"Edinburgh's unfinished Parthenon, started 1826, abandoned half-built — 'Edinburgh's Disgrace' ever since."},
+    {img:'glasgow-edinburgh/img/d2-03-firth-of-forth.jpg', location:'Calton Hill, Edinburgh', date:'2025-11-01', caption:'', note:'A ship loaded with wind turbine blades sitting in Leith harbour, Fife hazy across the water.'},
+    {img:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', location:'Holyrood, Edinburgh', date:'2025-11-01', caption:'', note:'Same hilltop, telephoto this time — the Palace, the roofless Abbey beside it, Salisbury Crags behind both.'},
+    {img:'glasgow-edinburgh/img/d2-08-scott-monument.jpg', location:'Princes Street, Edinburgh', date:'2025-11-01', caption:'', note:'Off the hill and straight into the crowds — closing frame of the walk.'},
   ]},
 
   { id:'edinburgh', username:'Edinburgh', avatar:'stories/edinburgh/img/03-greyfriars-bobby-statue.jpg', slug:'edinburgh', slides:[

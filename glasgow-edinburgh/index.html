@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>GLASGOW &amp; EDINBURGH — Wander</title>
+<meta name="description" content="A camera-only photo walk across Scotland's central belt — the Necropolis and Kelvingrove in Glasgow, then a Calton Hill circuit over Edinburgh, October–November 2025.">
+<meta name="theme-color" content="#17140F">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/glasgow-edinburgh/">
+<meta property="og:title" content="Glasgow &amp; Edinburgh · Wander">
+<meta property="og:description" content="A camera-only photo walk across Scotland's central belt — the Necropolis and Kelvingrove in Glasgow, then a Calton Hill circuit over Edinburgh, October–November 2025.">
+<meta property="og:image" content="https://wander.varunagarwal.com/glasgow-edinburgh/img/d2-05-holyrood-palace.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Glasgow &amp; Edinburgh · Wander">
+<meta name="twitter:description" content="A camera-only photo walk across Scotland's central belt — the Necropolis and Kelvingrove in Glasgow, then a Calton Hill circuit over Edinburgh, October–November 2025.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/glasgow-edinburgh/img/d2-05-holyrood-palace.jpg">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Archivo:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  :root{
+    --paper:#17140F;
+    --paper-2:#1E1A14;
+    --ink:#F0EBE0;
+    --ink-soft:rgba(240,235,224,0.64);
+    --ink-faint:rgba(240,235,224,0.38);
+    --day1:#B98A55;
+    --day2:#5C86A8;
+    --line:rgba(240,235,224,0.14);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  img{ -webkit-touch-callout:none; }
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Archivo', sans-serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+
+  .top-nav{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:1.1rem 1.5rem; font-size:0.78rem; letter-spacing:0.04em;
+  }
+  .top-nav a{ text-decoration:none; color:var(--ink-soft); }
+  .top-nav a:hover{ color:var(--ink); }
+  .top-nav .mark{ font-family:'Newsreader', serif; font-style:italic; font-size:1rem; color:var(--ink-soft); }
+
+  /* ---------- masthead ---------- */
+  .masthead{ position:relative; height:64vh; min-height:420px; overflow:hidden; }
+  .masthead img{
+    width:100%; height:100%; object-fit:cover; display:block;
+  }
+  .masthead::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(10,9,7,0.1) 0%, rgba(10,9,7,0.18) 45%, rgba(10,9,7,0.82) 100%);
+  }
+  .masthead-inner{
+    position:absolute; left:0; right:0; bottom:0; z-index:2;
+    padding:2.2rem 1.5rem 2.6rem; max-width:900px; margin:0 auto;
+  }
+  .masthead .eyebrow{
+    font-size:0.72rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:rgba(240,235,224,0.75); margin:0 0 0.6rem;
+  }
+  .masthead h1{
+    font-family:'Newsreader', serif; font-weight:500; font-style:italic;
+    font-size:clamp(2.4rem, 7.4vw, 4.2rem); line-height:0.98; margin:0 0 0.6rem; color:#FBF8F2;
+  }
+  .masthead .dates{
+    font-size:0.85rem; color:rgba(240,235,224,0.82); letter-spacing:0.02em;
+  }
+
+  /* ---------- intro ---------- */
+  .intro{
+    max-width:640px; margin:0 auto; padding:3rem 1.5rem 1rem;
+  }
+  .intro p{
+    font-family:'Newsreader', serif; font-size:1.3rem; font-style:italic;
+    line-height:1.55; color:var(--ink); margin:0;
+  }
+
+  /* ---------- route map ---------- */
+  .route-map{
+    max-width:820px; margin:2.4rem auto 0;
+    background:var(--paper-2);
+    border:1px solid var(--line);
+    border-radius:2px;
+    box-shadow:0 20px 50px -30px rgba(0,0,0,0.6);
+    padding:1.8rem 1.6rem 1.5rem;
+  }
+  .route-map .rm-eyebrow{
+    font-size:0.7rem; letter-spacing:0.16em; text-transform:uppercase;
+    color:var(--ink-faint); margin:0 0 0.3rem;
+  }
+  .route-map .rm-title{
+    font-family:'Newsreader', serif; font-weight:500; font-style:italic;
+    font-size:clamp(1.6rem, 4vw, 2.1rem); margin:0 0 0.15rem; color:var(--ink); line-height:1;
+  }
+  .route-map .rm-dates{ font-size:0.78rem; color:var(--ink-soft); margin:0 0 1.2rem; }
+  #cb-map{
+    width:100%; height:420px; border:1px solid var(--line); border-radius:2px;
+    background:var(--paper-2);
+    filter: saturate(65%) brightness(0.92) invert(1) hue-rotate(180deg) contrast(0.92);
+  }
+  .leaflet-container{ font-family:'Archivo', sans-serif; background:var(--paper-2) !important; }
+  .leaflet-popup-content-wrapper{
+    background:var(--paper-2); color:var(--ink); border-radius:2px;
+    box-shadow:0 10px 26px -18px rgba(0,0,0,0.6);
+  }
+  .leaflet-popup-tip{ background:var(--paper-2); }
+  .rm-pop-day{ font-family:'Newsreader', serif; font-style:italic; font-weight:600; font-size:0.8rem; margin:0 0 0.15rem; }
+  .rm-pop-title{ font-family:'Newsreader', serif; font-style:italic; font-size:1.05rem; margin:0; color:var(--ink); }
+  .rm-pin-label-wrap{
+    background:none; border:none; box-shadow:none;
+    font-family:'Newsreader', serif; font-style:italic; font-size:13px; color:var(--ink);
+    text-shadow:0 1px 0 var(--paper-2),0 -1px 0 var(--paper-2),1px 0 0 var(--paper-2),-1px 0 0 var(--paper-2),0 0 5px var(--paper-2),0 0 5px var(--paper-2);
+    padding:0 2px;
+  }
+  .rm-pin-label-wrap::before{ display:none; }
+  .rm-legend{
+    display:flex; flex-wrap:wrap; gap:0.5rem 1.4rem;
+    margin-top:1.3rem; padding-top:1.1rem; border-top:1px solid var(--line);
+  }
+  .rm-legend .rm-item{
+    display:flex; align-items:baseline; gap:0.5rem;
+    font-size:0.8rem; color:var(--ink-soft); line-height:1.4; flex:1 1 100%;
+  }
+  @media(min-width:600px){ .rm-legend .rm-item{ flex:1 1 calc(50% - 0.7rem); } }
+  .rm-legend .rm-num{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:600;
+    font-size:1.05rem; flex:none; width:1.3em;
+  }
+  .rm-legend .rm-i .rm-num{ color:var(--day1); }
+  .rm-legend .rm-ii .rm-num{ color:var(--day2); }
+  .rm-attrib{ font-size:0.65rem; color:var(--ink-faint); text-align:right; margin-top:0.4rem; }
+  .rm-attrib a{ color:var(--ink-faint); }
+
+  /* ---------- day sections ---------- */
+  #days{ background:var(--paper-2); padding:0.5rem 0 2.8rem; }
+  .day{ max-width:760px; margin:0 auto; padding:3.2rem 1.5rem 0; }
+  .day-head{
+    display:flex; align-items:baseline; gap:1rem;
+    border-top:1px solid var(--line); padding-top:1.4rem; margin-bottom:1.8rem;
+  }
+  .day-num{
+    font-family:'Newsreader', serif; font-style:italic; font-weight:500;
+    font-size:2.4rem; line-height:1; flex:none;
+  }
+  .day--i .day-num{ color:var(--day1); }
+  .day--ii .day-num{ color:var(--day2); }
+  .day-head-text .day-date{
+    font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint);
+    margin:0 0 0.2rem;
+  }
+  .day-head-text .day-route{
+    font-size:0.92rem; color:var(--ink-soft); margin:0;
+  }
+
+  .scene{ margin-bottom:2.4rem; }
+  .scene-label{
+    font-family:'Newsreader', serif; font-weight:600; font-size:1.3rem;
+    margin:0 0 0.6rem;
+  }
+  .day--i .scene-label{ color:var(--day1); }
+  .day--ii .scene-label{ color:var(--day2); }
+  .scene p.note{
+    font-size:0.92rem; line-height:1.7; color:var(--ink-soft); margin:0 0 1rem;
+  }
+
+  /* ---------- photo blocks — the photography is the point, so give it room ---------- */
+  .shot{ margin:0 0 1.1rem; }
+  .shot .mount{
+    position:relative; background:var(--paper);
+    border:1px solid var(--line); border-radius:2px;
+    overflow:hidden; cursor:pointer;
+    box-shadow:0 14px 34px -20px rgba(0,0,0,0.5);
+  }
+  .shot .mount::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+    background:var(--frame-color, var(--day1)); opacity:0.9;
+  }
+  .shot img{ width:100%; height:auto; display:block; }
+  .shot figcaption{
+    display:flex; justify-content:space-between; align-items:baseline; gap:0.6rem;
+    padding:0.55rem 0.1rem 0; cursor:pointer;
+  }
+  .shot .cap-loc{
+    font-size:0.76rem; letter-spacing:0.03em; color:var(--ink-soft);
+  }
+  .shot .cap-loc .pin{ opacity:0.6; margin-right:0.3rem; }
+  .shot .cap-date{ font-size:0.68rem; color:var(--ink-faint); white-space:nowrap; }
+
+  .shot-row{ display:flex; flex-direction:column; gap:0.9rem; margin-bottom:0.9rem; }
+  @media(min-width:600px){
+    .shot-row{ flex-direction:row; }
+    .shot-row .shot{ flex:1; margin-bottom:0; min-width:0; }
+  }
+
+  .shot--wide.breakout{
+    max-width:1040px; margin-left:50%; transform:translateX(-50%);
+  }
+  .scene::after{ content:""; display:table; clear:both; }
+
+  .detail{
+    max-height:0; overflow:hidden; opacity:0;
+    transition:max-height .35s ease, opacity .3s ease, margin .35s ease;
+  }
+  .detail.open{
+    max-height:280px; opacity:1; margin-top:0.6rem;
+  }
+  .detail-inner{
+    background:var(--paper); border:1px solid var(--line); border-radius:2px;
+    padding:0.9rem 1rem;
+  }
+  .d-idea-lbl{
+    font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
+    margin:0 0 0.35rem; display:block;
+  }
+  .day--i .d-idea-lbl{ color:var(--day1); }
+  .day--ii .d-idea-lbl{ color:var(--day2); }
+  .d-idea-txt{ font-size:0.84rem; line-height:1.6; color:var(--ink-soft); margin:0 0 0.7rem; }
+  .d-notes{ font-size:0.84rem; line-height:1.6; color:var(--ink); margin:0 0 0.7rem; white-space:pre-line; }
+  .d-notes.notes-empty{ color:var(--ink-faint); font-style:italic; }
+  .d-tags{ display:flex; gap:0.4rem; flex-wrap:wrap; }
+  .d-tags span{
+    font-size:0.66rem; letter-spacing:0.03em; color:var(--ink-soft);
+    border:1px solid var(--line); border-radius:100px; padding:0.2rem 0.6rem;
+  }
+
+  /* ---------- signoff + footer ---------- */
+  .signoff{ text-align:center; padding:3.4rem 1.5rem 2rem; }
+  .signoff h3{
+    font-family:'Newsreader', serif; font-weight:500; font-style:italic;
+    font-size:clamp(1.7rem, 5vw, 2.4rem); margin:0; line-height:1.15; color:var(--ink);
+  }
+  footer{ text-align:center; padding:1.2rem 1.5rem 3rem; color:var(--ink-faint); font-size:0.72rem; }
+  footer .foot-nav{ display:flex; justify-content:center; gap:1rem; margin-bottom:0.8rem; }
+  footer .foot-nav a{ text-decoration:none; color:var(--ink-soft); font-weight:600; font-size:0.78rem; }
+  footer .foot-nav a:hover{ color:var(--ink); }
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="../">← field notes</a>
+  <span class="mark">Glasgow &amp; Edinburgh</span>
+</nav>
+
+<header class="masthead">
+  <img id="masthead-img" src="" alt="">
+  <div class="masthead-inner">
+    <p class="eyebrow">wander / photo walk</p>
+    <h1>Glasgow &amp; Edinburgh</h1>
+    <p class="dates">26–27 October, then 1 November 2025</p>
+  </div>
+</header>
+
+<div class="intro">
+  <p>A camera-only walk, no phone snapshots — a first pass through Glasgow's Necropolis and Kelvingrove, then a return trip a few days later for one long circuit round Calton Hill, looking down over all of Edinburgh at once.</p>
+</div>
+
+<figure class="route-map">
+  <p class="rm-eyebrow">wander / photo walk</p>
+  <h2 class="rm-title">The Route</h2>
+  <p class="rm-dates">Two outings, six days apart &nbsp;·&nbsp; Glasgow's east end, then one hilltop over Edinburgh</p>
+
+  <div id="cb-map"></div>
+  <p class="rm-attrib">Map tiles &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>, data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</p>
+
+  <div class="rm-legend">
+    <p class="rm-item rm-i"><span class="rm-num">I</span> Kelvingrove, then up to the Necropolis — Glasgow's east end</p>
+    <p class="rm-item rm-ii"><span class="rm-num">II</span> One long stop on Calton Hill — the whole of Edinburgh from a single spot</p>
+  </div>
+</figure>
+
+<main id="days">
+
+  <section class="day day--i">
+    <div class="day-head">
+      <span class="day-num">I</span>
+      <div class="day-head-text">
+        <p class="day-date">26–27 October</p>
+        <p class="day-route">Kelvingrove, then the Necropolis</p>
+      </div>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Kelvingrove Park</p>
+      <figure class="shot shot--wide breakout" data-id="1"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Glasgow Necropolis</p>
+      <div class="shot-row">
+        <figure class="shot" data-id="2"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+        <figure class="shot" data-id="3"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      </div>
+      <p class="note">The graveyard sits right on a hill over the city — its own tree-lined avenues, then a clear drop down to the rooftops and steam below.</p>
+      <figure class="shot shot--wide breakout" data-id="4"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+    </div>
+  </section>
+
+  <section class="day day--ii">
+    <div class="day-head">
+      <span class="day-num">II</span>
+      <div class="day-head-text">
+        <p class="day-date">1 November</p>
+        <p class="day-route">One long stop on Calton Hill</p>
+      </div>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Looking west, over the Old Town</p>
+      <figure class="shot shot--wide breakout" data-id="5"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <p class="note">The Balmoral's clock tower, the Castle on its ridge, the Scott Monument's spire and the curved silver roofline of the W Edinburgh, all in one frame.</p>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">The National Monument</p>
+      <figure class="shot shot--wide breakout" data-id="6"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Turning north, then south</p>
+      <div class="shot-row">
+        <figure class="shot" data-id="7"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+        <figure class="shot" data-id="8"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      </div>
+      <p class="note">The same hilltop turns a full circle — the Firth of Forth and Leith's docks one way, Arthur's Seat and the Parliament's tented roof the other.</p>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Holyrood</p>
+      <figure class="shot shot--wide breakout" data-id="9"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+    </div>
+
+    <div class="scene">
+      <div class="shot-row">
+        <figure class="shot" data-id="10"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+        <figure class="shot" data-id="11"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      </div>
+    </div>
+
+    <div class="scene">
+      <p class="scene-label">Down into town</p>
+      <figure class="shot" data-id="12" style="max-width:420px; margin:0 auto;"><div class="mount"><img src="" alt=""></div><figcaption><span class="cap-loc"></span><span class="cap-date"></span></figcaption><div class="detail"></div></figure>
+      <p class="note">Off the hill and back into the crowds on Princes Street, the Scott Monument closing the walk the way the National Monument opened it.</p>
+    </div>
+  </section>
+
+</main>
+
+<div class="signoff">
+  <h3>Two cities,<br>one roll apart.</h3>
+</div>
+
+<footer>
+  <nav class="foot-nav">
+    <a href="https://books.varunagarwal.com">Books</a>
+    <a href="https://notes.varunagarwal.com">Notes</a>
+    <a href="https://contact.varunagarwal.com">Contact</a>
+  </nav>
+  lucidité — wander, catalogued as I go
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
+<script>
+/* ============================================================
+   THE ROUTE — a real map (CARTO tiles over OpenStreetMap data)
+   with the two-stop route drawn over it. Independent of the
+   photo DATA below; place changes here if the itinerary changes.
+   ============================================================ */
+(function(){
+  const COLORS = { I:'#B98A55', II:'#5C86A8' };
+
+  const STOPS = [
+    {day:'I',  name:'Kelvingrove', lat:55.8687, lng:-4.2907, note:'Art Gallery and Museum, across the park.'},
+    {day:'I',  name:'Glasgow Necropolis', lat:55.8621, lng:-4.2317, note:"The city's Victorian hilltop graveyard.", big:true},
+    {day:'II', name:'Calton Hill', lat:55.9550, lng:-3.1828, note:'One stop, every direction — the whole walk happened from here.', big:true},
+    {day:'II', name:'Scott Monument', lat:55.9533, lng:-3.1957, note:'Back down into the crowds on Princes Street.'},
+  ];
+
+  const map = L.map('cb-map', { scrollWheelZoom:false, zoomControl:true });
+
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
+    attribution:'', subdomains:'abcd', maxZoom:19
+  }).addTo(map);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
+    attribution:'', subdomains:'abcd', maxZoom:19, opacity:0.85
+  }).addTo(map);
+
+  const bounds = L.latLngBounds(STOPS.map(s => [s.lat, s.lng]));
+  map.fitBounds(bounds, { padding:[36,36] });
+  window.addEventListener('load', () => {
+    map.invalidateSize();
+    map.fitBounds(bounds, { padding:[36,36] });
+  });
+
+  function pinIcon(color, big){
+    const size = big ? 26 : 18;
+    return L.divIcon({
+      className:'', iconSize:[size,size], iconAnchor:[size/2,size/2],
+      html:`<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2.5px solid #FBF8F2;box-shadow:0 2px 6px rgba(0,0,0,0.4);"></div>`
+    });
+  }
+
+  const dayIPath  = [[55.8687,-4.2907], [55.8621,-4.2317]];
+  const dayIIPath = [[55.9550,-3.1828], [55.9533,-3.1957]];
+  const linkPath  = [[55.8621,-4.2317], [55.9550,-3.1828]];
+
+  const link = L.polyline(linkPath, { color:'#8A8478', weight:2, opacity:0.7, dashArray:'2 8', lineJoin:'round' }).addTo(map);
+  L.polylineDecorator(link, {
+    patterns: [{ offset:'50%', repeat:0, symbol: L.Symbol.arrowHead({
+      pixelSize: 9, pathOptions: { color:'#8A8478', fillOpacity:1, weight:0 }
+    })}]
+  }).addTo(map);
+
+  [[dayIPath,'I'], [dayIIPath,'II']].forEach(([path, day]) => {
+    L.polyline(path, {
+      color: COLORS[day], weight: 2.6, opacity: 0.9, lineJoin:'round', lineCap:'round'
+    }).addTo(map);
+  });
+
+  STOPS.forEach(s => {
+    const marker = L.marker([s.lat, s.lng], { icon: pinIcon(COLORS[s.day], s.big) }).addTo(map);
+    marker.bindTooltip(s.name, { permanent:true, direction: s.big ? 'right' : 'top', offset: s.big ? [12,0] : [0,-10], className:'rm-pin-label-wrap' });
+    marker.bindPopup(`<p class="rm-pop-day" style="color:${COLORS[s.day]}">Day ${s.day}</p><p class="rm-pop-title">${s.name}</p><p style="font-size:0.78rem;color:var(--ink-soft);margin:0.3rem 0 0;">${s.note}</p>`);
+  });
+})();
+</script>
+
+<script>
+/* ============================================================
+   DATA — one object per photo. Same schema as the other place
+   pages (id, img, type, category, title, location, notes,
+   claudeIdea, tags, ratio, date, order, colorFrame) — but this
+   page's HTML is hand-placed rather than generated into a grid,
+   so DATA is read by id to populate each figure's caption and
+   its click-to-expand detail panel, not to build the layout.
+
+   notes      — YOUR words only, left blank until you write them.
+   claudeIdea — my observations, always shown separately/labelled.
+   ============================================================ */
+const DATA = [
+  {id:1, img:'img/d1-01-kelvingrove-park.jpg', type:'photo', category:'architecture', title:'', location:'Kelvingrove Park, Glasgow', notes:"", claudeIdea:"Kelvingrove Art Gallery and Museum's red sandstone towers seen across the park — the wider, cleaner daylight version of the phone shot from the same trip.", tags:['kelvingrove','park','architecture'], ratio:'1280/720', date:'2025-10-26', order:1, colorFrame:'35,140,26'},
+  {id:2, img:'img/d1-02-necropolis-monuments.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"Celtic crosses and obelisks among the Necropolis's autumn trees, low golden-hour light.", tags:['necropolis','celtic crosses','autumn'], ratio:'1280/720', date:'2025-10-27', order:2, colorFrame:'140,121,26'},
+  {id:3, img:'img/d1-03-necropolis-path.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"A tree-lined avenue within the Necropolis grounds, autumn leaves scattered across the gravel.", tags:['necropolis','path','autumn'], ratio:'720/1280', date:'2025-10-27', order:3},
+  {id:4, img:'img/d1-04-necropolis-city-view.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"Looking out from among the monuments toward the city below, dusk light and a couple of steam plumes on the skyline.", tags:['necropolis','cityscape','dusk'], ratio:'1280/720', date:'2025-10-27', order:4, colorFrame:'82,140,46'},
+
+  {id:5, img:'img/d2-01-calton-hill-skyline.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"The Old Town skyline from Calton Hill — the Balmoral's clock tower, Edinburgh Castle on its ridge, the Scott Monument's spire, and the curved silver roof of the W Edinburgh hotel.", tags:['old town','skyline','calton hill'], ratio:'1280/720', date:'2025-11-01', order:5, colorFrame:'56,71,140'},
+  {id:6, img:'img/d2-02-national-monument.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"The National Monument — Edinburgh's unfinished Parthenon replica, begun in 1826 and abandoned half-built; long nicknamed 'Edinburgh's Disgrace'.", tags:['national monument','columns','calton hill'], ratio:'1280/720', date:'2025-11-01', order:6, colorFrame:'58,84,140'},
+  {id:7, img:'img/d2-03-firth-of-forth.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"Looking north to the Firth of Forth and Leith's docks — a ship carrying wind turbine blades moored in the harbour, the Fife coast hazy across the water.", tags:['firth of forth','leith','coast'], ratio:'1280/720', date:'2025-11-01', order:7, colorFrame:'70,109,157'},
+  {id:8, img:'img/d2-04-arthurs-seat.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"Arthur's Seat and Salisbury Crags to the south, the Scottish Parliament's tented roofline visible at their foot.", tags:["arthur's seat",'salisbury crags','parliament'], ratio:'1280/720', date:'2025-11-01', order:8, colorFrame:'131,140,58'},
+  {id:9, img:'img/d2-05-holyrood-palace.jpg', type:'photo', category:'architecture', title:'', location:'Holyrood, Edinburgh', notes:"", claudeIdea:"The Palace of Holyroodhouse and the roofless ruin of Holyrood Abbey beside it, Salisbury Crags rising behind — shot long from up on the hill.", tags:['holyrood palace','abbey ruin','crags'], ratio:'1280/720', date:'2025-11-01', order:9, colorFrame:'140,135,57'},
+  {id:10, img:'img/d2-06-crow-calton-hill.jpg', type:'photo', category:'wildlife', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"A crow working the grass on the hilltop — one quiet frame between the wide monument and skyline shots.", tags:['crow','grass','calton hill'], ratio:'1280/720', date:'2025-11-01', order:10, colorFrame:'124,140,41'},
+  {id:11, img:'img/d2-07-city-observatory.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"One of the old observatory buildings on Calton Hill, its round tower framed through autumn branches and tall grass.", tags:['observatory','tower','calton hill'], ratio:'1280/720', date:'2025-11-01', order:11, colorFrame:'140,124,41'},
+  {id:12, img:'img/d2-08-scott-monument.jpg', type:'photo', category:'architecture', title:'', location:'Princes Street, Edinburgh', notes:"", claudeIdea:"The Scott Monument's gothic spire from street level, a ferris wheel behind it and crowds crossing at its foot — the walk's closing frame, back down among people after two hilltops of empty views.", tags:['scott monument','princes street','crowds'], ratio:'720/1280', date:'2025-11-01', order:12, colorFrame:'143,99,13'},
+];
+
+/* ============================================================
+   Colour-sampled frames — identical algorithm to the other pages'
+   extractVividColor, mirrored in Python for the baked-in DATA value.
+   ============================================================ */
+function rgbToHsv(r, g, b){
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d!==0){
+    if(mx===r) h = ((g-b)/d) % 6;
+    else if(mx===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60; if(h<0) h+=360;
+  }
+  return [h/360, mx===0?0:d/mx, mx];
+}
+function hsvToRgb(h,s,v){
+  const i = Math.floor(h*6), f = h*6-i;
+  const p=v*(1-s), q=v*(1-f*s), t=v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){
+    case 0: r=v;g=t;b=p; break; case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break; case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break; default: r=v;g=p;b=q;
+  }
+  return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+}
+function extractVividColor(url, callback){
+  const img = new Image();
+  img.onload = () => {
+    try{
+      const size = 48;
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      let cutoff = 0.45;
+      let best = null;
+      while(!best && cutoff > 0.1){
+        const bins = {};
+        for(let i=0; i<data.length; i+=4){
+          const [h,s,v] = rgbToHsv(data[i], data[i+1], data[i+2]);
+          if(s < cutoff || v < 0.2) continue;
+          const bi = Math.floor(h*24) % 24;
+          const w = s*v;
+          if(!bins[bi]) bins[bi] = {w:0, r:0, g:0, b:0};
+          bins[bi].w += w; bins[bi].r += data[i]*w; bins[bi].g += data[i+1]*w; bins[bi].b += data[i+2]*w;
+        }
+        const keys = Object.keys(bins);
+        if(keys.length){
+          best = keys.reduce((a,b)=> bins[a].w > bins[b].w ? a : b);
+          best = bins[best];
+        } else {
+          cutoff -= 0.1;
+        }
+      }
+      if(!best) return;
+      let r = best.r/best.w, g = best.g/best.w, b = best.b/best.w;
+      let [h,s,v] = rgbToHsv(r,g,b);
+      s = Math.min(1, s*1.2); v = Math.min(1, Math.max(v, 0.55));
+      const [fr,fg,fb] = hsvToRgb(h,s,v);
+      callback(`rgb(${fr},${fg},${fb})`);
+    } catch(e){ /* canvas blocked — baked-in colour stays */ }
+  };
+  img.src = url;
+}
+function applyColorFrames(){
+  document.querySelectorAll('[data-color-frame="1"]').forEach(mountEl => {
+    const url = mountEl.dataset.img;
+    if(!url || mountEl.dataset.colorApplied) return;
+    mountEl.dataset.colorApplied = '1';
+    extractVividColor(url, (color) => { mountEl.style.setProperty('--frame-color', color); });
+  });
+}
+
+/* ============================================================
+   Wire up every [data-id] figure already in the HTML: load its
+   image, fill the caption line, and wire the click-to-expand
+   detail panel from DATA.
+   ============================================================ */
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function hydrateShots(){
+  document.querySelectorAll('.shot[data-id]').forEach(el => {
+    const item = DATA.find(d => d.id === parseInt(el.dataset.id, 10));
+    if(!item) return;
+
+    const mount = el.querySelector('.mount');
+    const img = el.querySelector('img');
+    img.src = item.img;
+    img.alt = item.title || item.location || '';
+    if(item.ratio) mount.style.aspectRatio = item.ratio;
+    if(item.colorFrame){
+      mount.style.setProperty('--frame-color', `rgb(${item.colorFrame})`);
+      mount.dataset.colorFrame = '1';
+      mount.dataset.img = item.img;
+    }
+
+    const locEl = el.querySelector('.cap-loc');
+    if(locEl) locEl.innerHTML = `<span class="pin">📍</span>${item.location}`;
+    const dateEl = el.querySelector('.cap-date');
+    if(dateEl) dateEl.textContent = formatDate(item.date);
+
+    const detail = el.querySelector('.detail');
+    if(detail){
+      const ideaBlock = item.claudeIdea ? `<span class="d-idea-lbl">Note from Claude</span><p class="d-idea-txt">${item.claudeIdea}</p>` : '';
+      const hasNotes = item.notes && item.notes.trim();
+      const notesTxt = hasNotes ? item.notes : '— add your notes —';
+      detail.innerHTML = `
+        <div class="detail-inner">
+          ${ideaBlock}
+          <p class="d-notes${hasNotes ? '' : ' notes-empty'}">${notesTxt}</p>
+          <div class="d-tags">${(item.tags||[]).map(t=>`<span>${t}</span>`).join('')}</div>
+        </div>`;
+      const toggle = () => detail.classList.toggle('open');
+      el.querySelector('.mount').addEventListener('click', toggle);
+      el.querySelector('figcaption').addEventListener('click', toggle);
+    }
+  });
+
+  applyColorFrames();
+
+  // masthead — use the Holyrood shot if present, else first photo
+  const heroItem = DATA.find(d => d.id === 9) || DATA[0];
+  if(heroItem) document.getElementById('masthead-img').src = heroItem.img;
+}
+
+hydrateShots();
+</script>
+
+</body>
+</html>

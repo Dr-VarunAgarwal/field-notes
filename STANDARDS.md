@@ -77,13 +77,33 @@ iOS Safari's handling has been inconsistent across versions.
 When a place goes from draft to live (e.g. Skye's promotion), check
 whether it should also be added to these arrays in `index.html`:
 
-- `PLACES` — flip `status` to `'live'`, fill in `cover`/`blurb`/`count`.
+- `PLACES` — flip `status` to `'live'`, fill in `cover`/`blurb`/`count`,
+  and set `kind` (see below).
 - `FEATURED_PHOTOS` — a couple of strong shots, captions optional.
 - `HEADER_PHOTOS` — if it has a photo that earns the rare full-bleed
   header treatment.
-- `STORIES` — a story user/slide set for the ring feed.
+- `STORIES` — a story user/slide set for the ring feed. Insert it in
+  array position by its latest slide date, newest first (the feed
+  renders in array order, it isn't sorted at runtime).
 - The ticker pulls from all of `PLACES` (live + draft) automatically —
   nothing to do there beyond adding the place.
+
+**`kind` — `'album'` vs `'walk'`** (decided 2026-08-22): every live
+place is one of two formats, and the hub splits them into separate
+"Albums" / "Photo Walks" grid sections accordingly.
+- `kind:'album'` (the default — most places) — a grid gallery page
+  (filter chips, click-to-open drawer), like `london/`, `camden/`,
+  `khajuraho/`, `udupi/`, `glasgow/`, `concerts/`. Built by copying an
+  existing album page's structure.
+- `kind:'walk'` — a day-journal page with prose, hand-placed photos,
+  and a real Leaflet route map, like `skye/` or `glasgow-edinburgh/`.
+  Reserve this format for a trip with a genuine day-by-day arc and a
+  real route worth mapping — most batches are still albums. Built by
+  copying `skye/index.html`'s structure (masthead, intro, route-map
+  figure, `.day` sections, DATA-by-id hydration script) rather than a
+  grid album's.
+- The walk's `count` field reads as `'N days · M photos'` instead of
+  an album's `'M pieces'`, since a walk isn't really counted by piece.
 
 ## 6. Feeding a new place into `street-art/index.html`
 
@@ -159,11 +179,13 @@ committing after each logical chunk — never attempt the whole batch in one
 pass.
 
 **Current site shape** (check this hasn't drifted before trusting it):
-- Hub `index.html` — `PLACES` array. Live: London, Camden, Khajuraho,
-  Concerts, Udupi, Glasgow, Isle of Skye. Draft (not yet promoted):
-  Rishikesh, Edinburgh, Mussoorie, Dehradun.
-- City pages (`london/`, `camden/`, `khajuraho/`, `udupi/`, `glasgow/`,
-  `skye/`, each a standalone HTML file) — own theme (CSS custom
+- Hub `index.html` — `PLACES` array, split by `kind` (§5) into Albums
+  and Photo Walks. Live albums: London, Camden, Khajuraho, Concerts,
+  Udupi, Glasgow. Live walks: Isle of Skye, Glasgow & Edinburgh. Story-only
+  (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Kheerganga,
+  Mauritius. Draft (not yet promoted): Rishikesh, Mussoorie, Dehradun.
+- Album pages (`london/`, `camden/`, `khajuraho/`, `udupi/`, `glasgow/`,
+  each a standalone HTML file) — own theme (CSS custom
   properties, fonts, category glyphs; don't reuse one city's exact
   palette for another) and a `DATA` array: `id, img, type('photo'|'video'),
   category, artist, title, location, notes` (Varun's own words, blank
@@ -173,6 +195,13 @@ pass.
   such page also has its own `extractVividColor` JS function (in-browser
   version of the same algorithm — mirror it in Python for the baked-in
   `colorFrame` value).
+- Walk pages (`skye/`, `glasgow-edinburgh/`) — same `DATA` fields as an
+  album page, but HTML is hand-placed into `.day` sections rather than
+  generated into a grid, and DATA is read by `id` to hydrate each
+  hand-placed `<figure data-id="N">` rather than to build the layout.
+  Adds a real Leaflet route map (`STOPS`/`COLORS`, own script block,
+  independent of DATA) — reuse the two-tileLayer CARTO setup and swap
+  in that trip's own coordinates.
 - `concerts/index.html` — different schema (ticket-stub style): `id,
   artist, img, type, video, extras` (array of extra photo paths,
   side-scrolling in the drawer — must include the cover photo itself in
