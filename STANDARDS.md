@@ -147,9 +147,17 @@ on mobile for one-tap access.
   treatment as everywhere else); uploads go through the GitHub Contents
   API — no server involved.
 - Two modes:
-  - **Add photos to an existing story** — pick one of the 5 places,
-    add photo(s) with a location and optional caption. Splices new
-    slide entries into that place's existing `STORIES` block.
+  - **Add photos to an existing story** — the place dropdown is
+    populated live from the hub's own `STORIES` array (fetched once,
+    cached for the session), not a hardcoded list, so it can't drift
+    out of sync with the site again. Add photo(s) with a location
+    (autosuggested from that story's own existing slides) and optional
+    caption; each gets a `date` stamped as the upload time. Splices new
+    slide entries into that place's existing `STORIES` block. Images
+    always upload to `stories/<id>/img/`, even for places that also
+    have their own full album page (khajuraho/skye/glasgow/...) —
+    Stories are meant to be a separate curated edit (§8), not mixed
+    into that page's own numbered batch files.
   - **Create a brand new standalone story** — a story doesn't have to
     correspond to one of the "Travel stories" cards (the ring feed and
     `PLACES` grid are independent arrays; a `STORIES` entry's `slug`

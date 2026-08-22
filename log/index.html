@@ -67,7 +67,7 @@
 <body>
 
 <h1>Add a story</h1>
-<p class="lede">Quick photo drops from anywhere, no laptop needed — either onto an existing city's story ring, or as a brand new standalone story that isn't tied to any of the main "Travel stories" cards. A whole new <em>city page</em> (cover, blurb, full gallery) still goes through a full pass separately.</p>
+<p class="lede">Quick photo drops from anywhere, no laptop needed — either onto an existing story ring, or as a brand new standalone story that isn't tied to any of the main "Travel stories" cards. A whole new <em>city page</em> (cover, blurb, full gallery) still goes through a full pass separately.</p>
 
 <div id="token-gate">
   <div class="card">
@@ -93,12 +93,8 @@
 
   <div class="card" id="existing-fields">
     <label for="place">Place</label>
-    <select id="place" onchange="loadLocationSuggestions(this.selectedOptions[0].dataset.slug)">
-      <option value="london" data-slug="london">Shoreditch (London)</option>
-      <option value="khajuraho" data-slug="khajuraho">Khajuraho</option>
-      <option value="concerts" data-slug="concerts">Concerts</option>
-      <option value="udupi" data-slug="udupi">Udupi</option>
-      <option value="skye" data-slug="skye">Isle of Skye</option>
+    <select id="place" onchange="loadLocationSuggestionsFor(this.value)">
+      <option value="">Loading current stories…</option>
     </select>
     <p id="location-suggestions-status" style="font-size:0.7rem;color:var(--ink-soft);margin:-0.5rem 0 0;"></p>
   </div>
@@ -150,10 +146,11 @@ async function saveToken(){
   const statusEl = document.getElementById('token-status');
   statusEl.innerHTML = '<span>Checking access to the repo...</span>';
   try {
-    await ghGet('index.html');
+    const file = await ghGet('index.html');
+    setStoriesCache(base64ToUtf8(file.content));
     statusEl.innerHTML = '<span style="color:var(--green);">✓ Token saved and verified — can read the repo.</span>';
     if (document.getElementById('mode').value === 'existing'){
-      loadLocationSuggestions(document.getElementById('place').selectedOptions[0].dataset.slug);
+      renderPlaceDropdown();
     }
   } catch (err) {
     statusEl.innerHTML = `<span style="color:var(--red);">✗ Saved, but can't read the repo yet: ${err.message}</span>`;
@@ -173,7 +170,7 @@ function onModeChange(){
   document.getElementById('existing-fields').style.display = mode === 'existing' ? 'block' : 'none';
   document.getElementById('new-fields').style.display = mode === 'new' ? 'block' : 'none';
   if (mode === 'existing' && localStorage.getItem(TOKEN_KEY)){
-    loadLocationSuggestions(document.getElementById('place').selectedOptions[0].dataset.slug);
+    populatePlaceDropdown();
   }
 }
 function slugify(str){
@@ -237,21 +234,63 @@ async function processFileImmediately(fileInput){
   }
 }
 
-/* ---------- location suggestions (per-place datalist) ----------
-   Pulled from that place's own DATA array in its city page -- london/
-   khajuraho/udupi/skye use a `location` field; concerts uses `venue`
-   instead (different schema entirely, ticket-stub style). Best-effort:
-   silently gives up if the fetch fails, since suggestions are a
-   convenience, not something that should block the form. */
-async function loadLocationSuggestions(slug){
+/* ---------- current stories (place dropdown + location suggestions) ----------
+   Places used to each have their own city-page index.html to scan for a
+   `location`/`venue` field, but the site's since been consolidated into one
+   root index.html (khajuraho/udupi/skye/glasgow etc. still have their own
+   full album pages, but story-only entries like Edinburgh/Pushkar/Mauritius
+   never did). So both the dropdown and its suggestions now read straight
+   from the root STORIES array -- the same place new slides get spliced
+   into -- fetched once and cached, not re-fetched per dropdown change. */
+let storiesCache = null; // { content, entries:[{id, username}] }
+
+function parseStoriesEntries(content){
+  const marker = 'const STORIES = [';
+  const start = content.indexOf(marker);
+  if (start === -1) throw new Error("Couldn't find the STORIES array — has the file structure changed?");
+  const openBracketPos = start + marker.length - 1;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  const span = content.slice(openBracketPos, closeBracketPos + 1);
+  const entries = [];
+  const re = /\{\s*id:\s*(['"])((?:(?!\1)[\s\S])*)\1\s*,\s*username:\s*(['"])((?:(?!\3)[\s\S])*)\3/g;
+  let m;
+  while ((m = re.exec(span))) entries.push({ id: m[2], username: m[4] });
+  return entries;
+}
+function setStoriesCache(content){
+  storiesCache = { content, entries: parseStoriesEntries(content) };
+}
+async function ensureStoriesCache(){
+  if (storiesCache) return storiesCache;
+  const file = await ghGet('index.html');
+  setStoriesCache(base64ToUtf8(file.content));
+  return storiesCache;
+}
+function renderPlaceDropdown(){
+  const select = document.getElementById('place');
+  if (!storiesCache){ select.innerHTML = '<option value="">Loading current stories…</option>'; return; }
+  const sorted = [...storiesCache.entries].sort((a, b) => a.username.localeCompare(b.username));
+  select.innerHTML = sorted.map(e => `<option value="${e.id}">${e.username}</option>`).join('');
+  loadLocationSuggestionsFor(select.value);
+}
+async function populatePlaceDropdown(){
+  const statusEl = document.getElementById('location-suggestions-status');
+  statusEl.textContent = 'Loading current stories...';
+  try {
+    await ensureStoriesCache();
+    renderPlaceDropdown();
+  } catch (err) {
+    statusEl.textContent = `Couldn't load story list: ${err.message}`;
+  }
+}
+function loadLocationSuggestionsFor(placeId){
   const statusEl = document.getElementById('location-suggestions-status');
   const datalist = document.getElementById('location-suggestions');
-  statusEl.textContent = 'Loading known locations...';
+  if (!storiesCache || !placeId){ datalist.innerHTML = ''; statusEl.textContent = ''; return; }
   try {
-    const file = await ghGet(`${slug}/index.html`);
-    const content = base64ToUtf8(file.content);
-    const field = slug === 'concerts' ? 'venue' : 'location';
-    const matches = [...content.matchAll(new RegExp(`${field}:\\s*(['"])((?:(?!\\1)[\\s\\S])*)\\1`, 'g'))];
+    const { closeBracketPos, openBracketPos } = getStorySlidesSpan(storiesCache.content, placeId);
+    const span = storiesCache.content.slice(openBracketPos, closeBracketPos + 1);
+    const matches = [...span.matchAll(/location:\s*(['"])((?:(?!\1)[\s\S])*)\1/g)];
     const values = [...new Set(matches.map(m => m[2]).filter(Boolean))].sort();
     datalist.innerHTML = values.map(v => `<option value="${v.replace(/"/g, '&quot;')}">`).join('');
     statusEl.textContent = values.length ? `${values.length} known locations loaded as suggestions.` : '';
@@ -261,7 +300,7 @@ async function loadLocationSuggestions(slug){
   }
 }
 if (document.getElementById('mode').value === 'existing' && localStorage.getItem(TOKEN_KEY)){
-  loadLocationSuggestions('london');
+  populatePlaceDropdown();
 }
 
 /* ---------- copy log ---------- */
@@ -383,19 +422,25 @@ function findMatchingBracket(str, openIdx){
   }
   throw new Error('Could not find the end of this place\'s slides array — file structure may have changed.');
 }
-function appendSlides(content, placeId, newSlideLiterals){
-  const idMarker = `id:'${placeId}'`;
-  const idPos = content.indexOf(idMarker);
-  if (idPos === -1) throw new Error(`Couldn't find id:'${placeId}' in STORIES — has the file structure changed?`);
-  const slidesKeyPos = content.indexOf('slides:[', idPos);
+function getStorySlidesSpan(content, placeId){
+  // id quoting isn't consistent across entries (some use "double", some 'single'
+  // quotes) -- match either, rather than assuming one style like this used to.
+  const idRe = new RegExp(`id:\\s*['"]${escapeRegex(placeId)}['"]`);
+  const idMatch = idRe.exec(content);
+  if (!idMatch) throw new Error(`Couldn't find id:'${placeId}' in STORIES — has the file structure changed?`);
+  const slidesKeyPos = content.indexOf('slides:[', idMatch.index);
   if (slidesKeyPos === -1) throw new Error(`Couldn't find slides:[ for "${placeId}".`);
   const openBracketPos = slidesKeyPos + 'slides:'.length;
   const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  return { openBracketPos, closeBracketPos };
+}
+function appendSlides(content, placeId, newSlideLiterals){
+  const { closeBracketPos } = getStorySlidesSpan(content, placeId);
   const insertion = newSlideLiterals.map(s => `\n    ${s},`).join('');
   return content.slice(0, closeBracketPos) + insertion + '\n  ' + content.slice(closeBracketPos);
 }
-function slideLiteral(imgPath, location, caption){
-  return `{img:${JSON.stringify(imgPath)}, location:${JSON.stringify(location)}, caption:${JSON.stringify(caption || '')}}`;
+function slideLiteral(imgPath, location, caption, dateIso){
+  return `{img:${JSON.stringify(imgPath)}, location:${JSON.stringify(location)}, date:${JSON.stringify(dateIso)}, caption:${JSON.stringify(caption || '')}}`;
 }
 
 /* ---------- insert a whole new STORIES entry (standalone story) ---------- */
@@ -465,7 +510,17 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
   if (mode === 'existing'){
     const placeSelect = document.getElementById('place');
     placeId = placeSelect.value;
-    folderSlug = placeSelect.selectedOptions[0].dataset.slug;
+    // Some places (khajuraho/skye/glasgow/...) also have their own full album
+    // page using the same img/ folder -- but Stories are meant to be a
+    // separate curated edit (see STANDARDS.md §7/§8), not mixed in with that
+    // folder's numbered batch files, so quick phone adds always land under
+    // stories/<id>/img/ regardless of whether the place has its own page too.
+    folderSlug = `stories/${placeId}`;
+    if (!placeId){
+      log('Pick a place first.', 'log-err');
+      submitBtn.disabled = false;
+      return;
+    }
   } else {
     newUsername = document.getElementById('new-username').value.trim();
     const avatarInput = document.getElementById('new-avatar');
@@ -496,7 +551,9 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
       throw new Error(`A story with id "${newId}" already exists — pick a different name.`);
     }
 
-    const stamp = new Date().toISOString().replace(/[-:T]/g, '').slice(0, 14);
+    const now = new Date();
+    const stamp = now.toISOString().replace(/[-:T]/g, '').slice(0, 14);
+    const isoDate = now.toISOString().replace(/\.\d{3}Z$/, '');
     const uploaded = [];
 
     if (mode === 'new'){
@@ -517,7 +574,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
       log(`✓ ${filename} uploaded`, 'log-ok');
     }
 
-    const literals = uploaded.map(s => slideLiteral(s.imgPath, s.location, s.caption));
+    const literals = uploaded.map(s => slideLiteral(s.imgPath, s.location, s.caption, isoDate));
     let updated;
     if (mode === 'existing'){
       updated = appendSlides(content, placeId, literals);
@@ -540,6 +597,7 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
       ? `✓ Done — ${uploaded.length} photo(s) added to ${placeId}'s story.`
       : `✓ Done — new story "${newUsername}" created.`, 'log-ok');
     log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
+    setStoriesCache(updated);
     document.getElementById('story-form').reset();
     onModeChange();
     document.getElementById('new-id-preview').textContent = '';
