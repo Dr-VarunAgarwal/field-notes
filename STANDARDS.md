@@ -325,3 +325,44 @@ pass.
    Write a commit message describing what was found/decided, not just
    "update". Ask before pushing unless auto-push is already established
    as fine for the current session.
+
+## 9. Fixing existing captions/tags from a phone — `edit/index.html`
+
+Same hidden-URL pattern as `log/` (§7): unlinked, blocked in
+`robots.txt`, shares the same GitHub token (same repo scope, so saving
+one also authorizes the other). For quick text-content fixes — a
+caption, a street-art artist, a description — not for adding photos or
+building new pages.
+
+- **Which page** — the dropdown is derived from the hub's own live
+  `PLACES` entries (same anti-staleness reasoning as `log/`'s place
+  dropdown), plus `street-art/` added on top since it's a themed
+  aggregator with no `PLACES` entry of its own.
+- **Browsing** — every entry on the chosen page, thumbnail + a short
+  preview (first of title/caption/artist/location that isn't blank),
+  with a text search box across those same fields plus id — needed once
+  a page has 75+ pieces.
+- **Editing** — every text-ish field an entry actually has (caption,
+  artist, title, location, notes, altText, note, tags, venue, billing,
+  blurb — whatever's present) renders as an editable input, generically,
+  not from a per-page-type schema list. Structural/positional/enum-like
+  fields never render as editable: `id, img, type, category, citySlug,
+  ratio, order, colorFrame, date, slug, extras, curated, video` — a
+  free-text edit on any of those could silently break rendering (a
+  category not matching its CSS class, a slug not matching a filter
+  chip) without the tool having any way to catch it.
+- `tags` (an array field) edits as a comma-separated string, split back
+  into an array on save. `artist:null` edits as an empty text field;
+  clearing it back to empty writes `null` again rather than `''`, since
+  the two aren't treated the same elsewhere on the site (see `khajuraho`
+  album's own `artist:null` convention, per §8's DATA fields list).
+- **Saving** — re-fetches and re-splits the page's `DATA` array fresh at
+  save time (same reasoning as `log/`'s reorder mode), rewrites only the
+  edited fields on the one target entry (matched by `id`, not by array
+  position), and leaves every other entry — and every other field on the
+  edited entry — byte-for-byte untouched. Preserves each string's
+  original quote character (`'` vs `"`, both used across this codebase)
+  rather than normalizing it, so an edit's diff is just the edit.
+- Not covered yet (basics-first): `STORIES` slides (still edited only
+  by re-adding through `log/`, not fixed in place), bulk/multi-entry
+  edits, and new fields beyond what an entry already has.

@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Edit captions &amp; tags</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#2A46E0; --cream:#F3ECDE; --card:#FFFFFF; --ink:#17140C;
+    --ink-soft:rgba(23,20,12,0.62); --line:rgba(23,20,12,0.14); --red:#C0392B; --green:#2E7D32;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter", sans-serif; color:var(--ink); background:var(--cream);
+    padding:1.5rem 1.2rem 4rem; max-width:520px; margin:0 auto;
+  }
+  h1{
+    font-family:"Fredoka", sans-serif; font-weight:700; font-size:1.7rem;
+    color:var(--blue); margin:0 0 0.3rem;
+  }
+  p.lede{ font-size:0.85rem; color:var(--ink-soft); line-height:1.5; margin:0 0 1.6rem; }
+  .card{
+    background:var(--card); border-radius:14px; padding:1.1rem 1.1rem 1.3rem;
+    margin-bottom:1.2rem; box-shadow:0 10px 24px -16px rgba(23,20,12,0.3);
+  }
+  label{ display:block; font-size:0.72rem; font-weight:600; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink-soft); margin:0 0 0.35rem; }
+  input[type=text], input[type=password], select, textarea{
+    width:100%; font-family:inherit; font-size:0.95rem; color:var(--ink);
+    border:1px solid var(--line); border-radius:8px; padding:0.6rem 0.7rem;
+    background:#fff; margin-bottom:0.9rem;
+  }
+  textarea{ resize:vertical; min-height:3.2rem; }
+  button{
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.9rem;
+    border:none; border-radius:100px; padding:0.7rem 1.3rem; cursor:pointer;
+  }
+  .btn-primary{ background:var(--blue); color:#fff; width:100%; }
+  .btn-primary:disabled{ opacity:0.5; cursor:not-allowed; }
+  .btn-secondary{ background:rgba(42,70,224,0.1); color:var(--blue); font-size:0.8rem; padding:0.5rem 1rem; }
+  .btn-danger-text{ background:none; color:var(--red); font-size:0.72rem; padding:0; text-decoration:underline; }
+  #token-gate .card{ display:flex; flex-direction:column; gap:0; }
+  #token-status{ font-size:0.78rem; color:var(--ink-soft); margin:0 0 0.9rem; display:flex; justify-content:space-between; align-items:center; }
+  .log-ok{ color:var(--green); } .log-err{ color:var(--red); } .log-mid{ color:var(--ink-soft); }
+  #edit-log{ font-size:0.8rem; margin-top:0.7rem; }
+  a{ color:var(--blue); }
+  hr{ border:none; border-top:1px solid var(--line); margin:1.5rem 0; }
+
+  .entry-row{
+    display:flex; align-items:center; gap:0.7rem; padding:0.6rem 0;
+    border-top:1px solid var(--line); cursor:pointer;
+  }
+  .entry-row:first-child{ border-top:none; }
+  .entry-thumb{ width:48px; height:48px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--line); }
+  .entry-row-text{ flex:1; min-width:0; }
+  .entry-row-id{ font-size:0.68rem; color:var(--ink-soft); font-weight:600; }
+  .entry-row-preview{ font-size:0.85rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+  #entry-editor-thumb{ width:100%; border-radius:10px; display:block; }
+  #deploy-status{ margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid var(--line); }
+  #deploy-status p{ font-size:0.72rem; color:var(--ink-soft); line-height:1.5; margin:0 0 0.6rem; }
+  #deploy-status-text{ font-weight:600; }
+</style>
+</head>
+<body>
+
+<h1>Edit captions &amp; tags</h1>
+<p class="lede">Fix a caption, name a street-art artist, tweak a description — one photo at a time, from anywhere. Structural fields (id, image path, category, order, color) aren't editable here; this is for text content only. A new page or a full re-batch still goes through a proper session.</p>
+
+<div id="token-gate">
+  <div class="card">
+    <div id="token-status"></div>
+    <label for="pat">GitHub access token</label>
+    <input type="password" id="pat" placeholder="github_pat_...">
+    <p style="font-size:0.72rem;color:var(--ink-soft);line-height:1.5;margin:0 0 0.9rem;">
+      Same token as the story uploader works here too (same repo scope). Create one at
+      <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">github.com/settings/tokens</a> —
+      fine-grained, scoped only to the <code>field-notes</code> repo, with <strong>Contents: Read and write</strong> permission. Stored only in this browser.
+    </p>
+    <button class="btn-primary" onclick="saveToken()">Save token</button>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+
+  <div class="card">
+    <label for="page-select">Which page?</label>
+    <select id="page-select" onchange="onPageChange()">
+      <option value="">Loading pages…</option>
+    </select>
+  </div>
+
+  <div class="card" id="browse-card" style="display:none;">
+    <label for="entry-search">Find a photo</label>
+    <input type="text" id="entry-search" placeholder="search title, artist, caption, location..." oninput="renderEntryList()">
+    <p id="entry-count-status" style="font-size:0.72rem;color:var(--ink-soft);margin:-0.5rem 0 0.6rem;"></p>
+    <div id="entry-list"></div>
+  </div>
+
+  <div class="card" id="entry-editor-card" style="display:none;">
+    <button type="button" class="btn-secondary" onclick="closeEntryEditor()" style="margin-bottom:0.8rem;">← Back to list</button>
+    <img id="entry-editor-thumb" src="" alt="" style="margin-bottom:0.9rem;">
+    <div id="entry-editor-fields"></div>
+    <button type="button" class="btn-primary" onclick="saveCurrentEntry()" id="save-entry-btn">Save changes</button>
+    <div id="edit-log"></div>
+    <div id="deploy-status" style="display:none;"></div>
+  </div>
+
+</div>
+
+<hr>
+<p style="font-size:0.72rem;color:var(--ink-soft);"><button class="btn-danger-text" onclick="forgetToken()">Forget saved token</button></p>
+
+<script>
+const REPO = 'Dr-VarunAgarwal/field-notes';
+const API = `https://api.github.com/repos/${REPO}/contents`;
+const TOKEN_KEY = 'wander_gh_pat'; // shared with log/index.html -- same repo/token scope, no need to re-enter
+
+/* ---------- token gate ---------- */
+function renderTokenStatus(){
+  const has = !!localStorage.getItem(TOKEN_KEY);
+  document.getElementById('token-status').innerHTML = has
+    ? '<span>✓ Token saved on this device</span>'
+    : '<span>No token saved yet</span>';
+  document.getElementById('app').style.display = has ? 'block' : 'none';
+  document.getElementById('pat').value = '';
+}
+async function saveToken(){
+  const val = document.getElementById('pat').value.trim();
+  if (!val) return;
+  localStorage.setItem(TOKEN_KEY, val);
+  renderTokenStatus();
+  const statusEl = document.getElementById('token-status');
+  statusEl.innerHTML = '<span>Checking access to the repo...</span>';
+  try {
+    await ghGet('index.html');
+    statusEl.innerHTML = '<span style="color:var(--green);">✓ Token saved and verified — can read the repo.</span>';
+    populatePageList();
+  } catch (err) {
+    statusEl.innerHTML = `<span style="color:var(--red);">✗ Saved, but can't read the repo yet: ${err.message}</span>`;
+  }
+}
+function forgetToken(){
+  localStorage.removeItem(TOKEN_KEY);
+  renderTokenStatus();
+}
+renderTokenStatus();
+if (localStorage.getItem(TOKEN_KEY)) populatePageList();
+
+/* ---------- UTF-8 safe base64 ---------- */
+function base64ToUtf8(base64){
+  const binary = atob(base64.replace(/\n/g, ''));
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function utf8ToBase64(str){
+  const bytes = new TextEncoder().encode(str);
+  let binary = '';
+  bytes.forEach(b => binary += String.fromCharCode(b));
+  return btoa(binary);
+}
+
+/* ---------- GitHub Contents API ---------- */
+function ghHeaders(){
+  return {
+    'Authorization': `Bearer ${localStorage.getItem(TOKEN_KEY)}`,
+    'Accept': 'application/vnd.github+json',
+  };
+}
+async function ghGet(path){
+  const res = await fetch(`${API}/${path}`, { headers: ghHeaders() });
+  if (!res.ok) throw new Error(`GET ${path} failed (${res.status}): ${(await res.json().catch(()=>({})))?.message || res.statusText}`);
+  return res.json();
+}
+async function ghPut(path, body){
+  const res = await fetch(`${API}/${path}`, { method: 'PUT', headers: ghHeaders(), body: JSON.stringify(body) });
+  if (!res.ok) throw new Error(`PUT ${path} failed (${res.status}): ${(await res.json().catch(()=>({})))?.message || res.statusText}`);
+  return res.json();
+}
+
+/* ---------- generic bracket/entry/string parsing ----------
+   Same string-literal-aware depth splitter as log/index.html's reorder
+   feature, generalized here to ANY top-level array of {...} object
+   literals (a page's own DATA array, not just STORIES), and extended one
+   level further: splitEntryFields breaks a single {...} entry into its
+   own top-level key:value chunks (also string/bracket aware, since e.g.
+   tags:['a', 'b'] has a comma that must NOT be treated as a field
+   separator). */
+function findMatchingBracket(str, openIdx){
+  let depth = 0;
+  for (let i = openIdx; i < str.length; i++){
+    if (str[i] === '[') depth++;
+    else if (str[i] === ']'){ depth--; if (depth === 0) return i; }
+  }
+  throw new Error('Could not find the matching closing bracket — file structure may have changed.');
+}
+function splitTopLevelEntries(span){
+  const inner = span.slice(1, -1);
+  const entries = [];
+  let depth = 0, start = -1, inString = false, quoteChar = '';
+  for (let i = 0; i < inner.length; i++){
+    const c = inner[i];
+    if (inString){
+      if (c === '\\'){ i++; continue; }
+      if (c === quoteChar) inString = false;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`'){ inString = true; quoteChar = c; continue; }
+    if (c === '{'){ if (depth === 0) start = i; depth++; }
+    else if (c === '[') depth++;
+    else if (c === ']') depth--;
+    else if (c === '}'){
+      depth--;
+      if (depth === 0 && start !== -1){ entries.push(inner.slice(start, i + 1)); start = -1; }
+    }
+  }
+  return entries;
+}
+function splitTopLevelEntriesWithPos(span, spanOffset){
+  const entries = splitTopLevelEntries(span);
+  const results = [];
+  let cursor = 0;
+  for (const text of entries){
+    const idx = span.indexOf(text, cursor);
+    results.push({ text, start: spanOffset + idx, end: spanOffset + idx + text.length });
+    cursor = idx + text.length;
+  }
+  return results;
+}
+function splitEntryFields(entryText){
+  const inner = entryText.slice(1, -1);
+  const fields = [];
+  let depth = 0, inString = false, quoteChar = '', fieldStart = 0;
+  for (let i = 0; i <= inner.length; i++){
+    const c = inner[i];
+    if (i === inner.length || (c === ',' && depth === 0 && !inString)){
+      const chunk = inner.slice(fieldStart, i).trim();
+      if (chunk) fields.push(chunk);
+      fieldStart = i + 1;
+      continue;
+    }
+    if (inString){
+      if (c === '\\'){ i++; continue; }
+      if (c === quoteChar) inString = false;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`'){ inString = true; quoteChar = c; continue; }
+    if (c === '{' || c === '[') depth++;
+    else if (c === '}' || c === ']') depth--;
+  }
+  return fields;
+}
+function splitKeyValue(fieldText){
+  const i = fieldText.indexOf(':');
+  return { key: fieldText.slice(0, i).trim(), valueRaw: fieldText.slice(i + 1).trim() };
+}
+function valueKind(valueRaw){
+  if (valueRaw === 'null') return 'null';
+  if (valueRaw[0] === '[') return 'array';
+  if (valueRaw[0] === "'" || valueRaw[0] === '"') return 'string';
+  return 'other'; // number/boolean -- not editable here
+}
+function unquoteString(raw){
+  const q = raw[0];
+  if ((q !== "'" && q !== '"') || raw[raw.length - 1] !== q || raw.length < 2) return raw;
+  let out = '';
+  for (let i = 1; i < raw.length - 1; i++){
+    if (raw[i] === '\\'){ i++; out += raw[i]; }
+    else out += raw[i];
+  }
+  return out;
+}
+function quoteCharOr(raw, fallback){
+  return (raw[0] === "'" || raw[0] === '"') ? raw[0] : fallback;
+}
+function escapeForQuote(str, q){
+  return str.replace(/\\/g, '\\\\').split(q).join('\\' + q);
+}
+function serializeString(str, q){ return `${q}${escapeForQuote(str, q)}${q}`; }
+function parseArrayOfStrings(raw){
+  const items = [];
+  let i = 0;
+  while (i < raw.length){
+    const c = raw[i];
+    if (c === "'" || c === '"'){
+      const q = c;
+      let j = i + 1, value = '';
+      while (j < raw.length && raw[j] !== q){
+        if (raw[j] === '\\'){ value += raw[j + 1]; j += 2; }
+        else { value += raw[j]; j++; }
+      }
+      items.push(value);
+      i = j + 1;
+    } else {
+      i++;
+    }
+  }
+  return items;
+}
+function serializeArrayOfStrings(arr){
+  return '[' + arr.map(s => serializeString(s, "'")).join(', ') + ']';
+}
+function parseEntryIdGeneric(entryText){
+  const strMatch = /id:\s*(['"])((?:(?!\1)[\s\S])*)\1/.exec(entryText);
+  if (strMatch) return strMatch[2];
+  const numMatch = /id:\s*(-?\d+)/.exec(entryText);
+  return numMatch ? numMatch[1] : null;
+}
+function extractStringField(entryText, key){
+  const m = new RegExp(`${key}:\\s*(['"])((?:(?!\\1)[\\s\\S])*)\\1`).exec(entryText);
+  return m ? m[2] : '';
+}
+function escapeHtml(str){
+  return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+function fieldLabel(key){
+  return key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase());
+}
+
+/* fields we never show as editable -- structural/positional/enum-like,
+   where a free-text edit could silently break rendering (a category not
+   matching its CSS class, a slug not matching a filter chip, etc). */
+const READONLY_FIELDS = new Set(['id', 'img', 'type', 'category', 'citySlug', 'ratio', 'order', 'colorFrame', 'date', 'slug', 'extras', 'curated', 'video']);
+const LONG_FIELDS = new Set(['caption', 'notes', 'altText', 'note', 'blurb']);
+
+/* ---------- page list (which page's DATA to edit) ----------
+   Derived from the hub's own live PLACES entries (same anti-staleness
+   reasoning as the story uploader's place dropdown) rather than a
+   hand-maintained list. street-art/ is a themed aggregator, not a place
+   in PLACES, so it's added on top as the one known, stable exception. */
+let pagesCache = null;
+async function ensurePagesList(){
+  if (pagesCache) return pagesCache;
+  const file = await ghGet('index.html');
+  const content = base64ToUtf8(file.content);
+  const marker = 'const PLACES = [';
+  const start = content.indexOf(marker);
+  if (start === -1) throw new Error("Couldn't find PLACES — has the file structure changed?");
+  const openBracketPos = start + marker.length - 1;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  const span = content.slice(openBracketPos, closeBracketPos + 1);
+  const pages = splitTopLevelEntries(span)
+    .map(e => ({ name: extractStringField(e, 'name'), slug: extractStringField(e, 'slug'), status: extractStringField(e, 'status') }))
+    .filter(p => p.status === 'live' && p.slug)
+    .map(p => ({ name: p.name, slug: p.slug }));
+  pages.push({ name: 'Street Art', slug: 'street-art' });
+  pagesCache = pages;
+  return pages;
+}
+async function populatePageList(){
+  const select = document.getElementById('page-select');
+  try {
+    const pages = await ensurePagesList();
+    select.innerHTML = '<option value="">Pick a page…</option>' + pages.map(p => `<option value="${p.slug}">${p.name}</option>`).join('');
+  } catch (err) {
+    select.innerHTML = `<option value="">Couldn't load: ${err.message}</option>`;
+  }
+}
+
+/* ---------- browsing a page's entries ---------- */
+let currentPageSlug = null;
+let currentRawEntries = [];   // raw {...} text for every entry on the current page
+let currentEntryList = [];    // [{id, img, preview}]
+let currentEntryId = null;
+let currentEntryFields = null; // raw key:value chunks for the entry being edited
+
+function parseEntryForList(entryText){
+  const fields = splitEntryFields(entryText).map(f => splitKeyValue(f));
+  const byKey = Object.fromEntries(fields.map(f => [f.key, f.valueRaw]));
+  const id = parseEntryIdGeneric(entryText);
+  const img = byKey.img ? unquoteString(byKey.img) : '';
+  const previewRaw = ['title', 'caption', 'artist', 'location'].map(k => byKey[k] && byKey[k] !== 'null' ? unquoteString(byKey[k]) : '').find(Boolean);
+  return { id, img, preview: previewRaw || '(untitled)' };
+}
+async function onPageChange(){
+  const slug = document.getElementById('page-select').value;
+  document.getElementById('browse-card').style.display = 'none';
+  document.getElementById('entry-editor-card').style.display = 'none';
+  if (!slug) return;
+  currentPageSlug = slug;
+  const listEl = document.getElementById('entry-list');
+  listEl.innerHTML = '';
+  document.getElementById('entry-count-status').textContent = 'Loading...';
+  document.getElementById('browse-card').style.display = 'block';
+  try {
+    const file = await ghGet(`${slug}/index.html`);
+    const content = base64ToUtf8(file.content);
+    const marker = 'const DATA = [';
+    const start = content.indexOf(marker);
+    if (start === -1) throw new Error(`No DATA array found on "${slug}" — has the file structure changed?`);
+    const openBracketPos = start + marker.length - 1;
+    const closeBracketPos = findMatchingBracket(content, openBracketPos);
+    currentRawEntries = splitTopLevelEntries(content.slice(openBracketPos, closeBracketPos + 1));
+    currentEntryList = currentRawEntries.map(parseEntryForList);
+    document.getElementById('entry-search').value = '';
+    renderEntryList();
+  } catch (err) {
+    document.getElementById('entry-count-status').textContent = `Couldn't load: ${err.message}`;
+  }
+}
+function renderEntryList(){
+  const q = document.getElementById('entry-search').value.trim().toLowerCase();
+  const filtered = q ? currentEntryList.filter(e => e.preview.toLowerCase().includes(q) || String(e.id).includes(q)) : currentEntryList;
+  document.getElementById('entry-count-status').textContent = `${filtered.length} of ${currentEntryList.length} shown`;
+  document.getElementById('entry-list').innerHTML = filtered.map(e => `
+    <div class="entry-row" onclick="openEntryEditor('${e.id}')">
+      <img class="entry-thumb" src="../${currentPageSlug}/${e.img}" alt="" loading="lazy">
+      <div class="entry-row-text">
+        <div class="entry-row-id">#${escapeHtml(e.id)}</div>
+        <div class="entry-row-preview">${escapeHtml(e.preview)}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---------- editing one entry ---------- */
+function openEntryEditor(id){
+  const entryText = currentRawEntries.find(t => parseEntryIdGeneric(t) === String(id));
+  if (!entryText) return;
+  currentEntryId = id;
+  currentEntryFields = splitEntryFields(entryText);
+  document.getElementById('browse-card').style.display = 'none';
+  document.getElementById('entry-editor-card').style.display = 'block';
+  document.getElementById('edit-log').innerHTML = '';
+  document.getElementById('deploy-status').style.display = 'none';
+  const listMeta = currentEntryList.find(e => e.id === id);
+  document.getElementById('entry-editor-thumb').src = listMeta ? `../${currentPageSlug}/${listMeta.img}` : '';
+
+  const container = document.getElementById('entry-editor-fields');
+  container.innerHTML = '';
+  currentEntryFields.forEach(f => {
+    const { key, valueRaw } = splitKeyValue(f);
+    if (READONLY_FIELDS.has(key)) return;
+    const kind = valueKind(valueRaw);
+    if (kind !== 'string' && kind !== 'null' && kind !== 'array') return; // unknown type -- leave untouched, don't guess
+    const currentDisplay = kind === 'array' ? parseArrayOfStrings(valueRaw).join(', ')
+      : kind === 'null' ? '' : unquoteString(valueRaw);
+    const wrap = document.createElement('div');
+    const isLong = LONG_FIELDS.has(key);
+    const hint = kind === 'array' ? ' (comma-separated)' : '';
+    wrap.innerHTML = isLong
+      ? `<label>${fieldLabel(key)}${hint}</label><textarea data-field-key="${key}" data-field-kind="${kind}">${escapeHtml(currentDisplay)}</textarea>`
+      : `<label>${fieldLabel(key)}${hint}</label><input type="text" data-field-key="${key}" data-field-kind="${kind}" value="${escapeHtml(currentDisplay)}">`;
+    container.appendChild(wrap);
+  });
+  if (!container.children.length){
+    container.innerHTML = '<p style="font-size:0.85rem;color:var(--ink-soft);">No editable text fields on this entry.</p>';
+  }
+}
+function closeEntryEditor(){
+  document.getElementById('entry-editor-card').style.display = 'none';
+  document.getElementById('browse-card').style.display = 'block';
+}
+function editLogMsg(msg, cls){
+  const el = document.getElementById('edit-log');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  el.appendChild(line);
+}
+
+/* Re-fetches and re-splits the page fresh at save time (rather than
+   trusting whatever was cached when the list loaded), same reasoning as
+   the story uploader's reorder feature -- an edit made elsewhere in the
+   meantime shouldn't get clobbered by a stale copy. Only the one entry's
+   changed fields are rewritten; everything else, including every other
+   entry, is left completely untouched. */
+async function saveEntryEdit(pageSlug, entryId, editedFields){
+  const file = await ghGet(`${pageSlug}/index.html`);
+  const content = base64ToUtf8(file.content);
+  const marker = 'const DATA = [';
+  const start = content.indexOf(marker);
+  if (start === -1) throw new Error("Couldn't find the DATA array — has the file structure changed?");
+  const openBracketPos = start + marker.length - 1;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  const entries = splitTopLevelEntriesWithPos(content.slice(openBracketPos, closeBracketPos + 1), openBracketPos);
+  const target = entries.find(e => parseEntryIdGeneric(e.text) === String(entryId));
+  if (!target) throw new Error(`Couldn't find id ${entryId} anymore — it may have been edited or removed elsewhere.`);
+  const fields = splitEntryFields(target.text);
+  const newFields = fields.map(f => {
+    const { key } = splitKeyValue(f);
+    const edited = editedFields.find(e => e.key === key);
+    return edited ? `${key}:${edited.newRawValue}` : f;
+  });
+  const newEntryText = '{' + newFields.join(', ') + '}';
+  const updated = content.slice(0, target.start) + newEntryText + content.slice(target.end);
+  return { updated, sha: file.sha };
+}
+
+let lastPublish = null;
+function showDeployStatus(){
+  const box = document.getElementById('deploy-status');
+  box.style.display = 'block';
+  box.innerHTML = `
+    <p>GitHub Pages usually redeploys within 30–90 seconds (occasionally a few minutes if its CDN is holding an older cached copy).</p>
+    <button type="button" class="btn-secondary" onclick="checkDeployStatus()">Check if live</button>
+    <p id="deploy-status-text"></p>
+  `;
+}
+async function checkDeployStatus(){
+  const textEl = document.getElementById('deploy-status-text');
+  if (!lastPublish || !textEl) return;
+  textEl.textContent = 'Checking the live site...';
+  textEl.style.color = 'var(--ink-soft)';
+  try {
+    const res = await fetch(`https://wander.varunagarwal.com/${lastPublish.pageSlug}/index.html?_=${Date.now()}`, { cache: 'no-store' });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    const isLive = text.includes(lastPublish.marker);
+    textEl.textContent = isLive ? '✓ Confirmed live on the real site.' : '⏳ Not live yet — still deploying, try again in a bit.';
+    textEl.style.color = isLive ? 'var(--green)' : 'var(--ink-soft)';
+  } catch (err) {
+    textEl.textContent = `Couldn't check: ${err.message}`;
+    textEl.style.color = 'var(--red)';
+  }
+}
+
+async function saveCurrentEntry(){
+  const saveBtn = document.getElementById('save-entry-btn');
+  saveBtn.disabled = true;
+  document.getElementById('edit-log').innerHTML = '';
+  document.getElementById('deploy-status').style.display = 'none';
+
+  const inputs = document.querySelectorAll('#entry-editor-fields [data-field-key]');
+  const editedFields = [];
+  inputs.forEach(input => {
+    const key = input.dataset.fieldKey;
+    const kind = input.dataset.fieldKind;
+    const original = currentEntryFields.find(f => splitKeyValue(f).key === key);
+    const { valueRaw: originalRaw } = splitKeyValue(original);
+    const newDisplay = input.value;
+    let newRaw;
+    if (kind === 'array'){
+      newRaw = serializeArrayOfStrings(newDisplay.split(',').map(s => s.trim()).filter(Boolean));
+    } else if (kind === 'null'){
+      newRaw = newDisplay.trim() ? serializeString(newDisplay.trim(), quoteCharOr(originalRaw, "'")) : 'null';
+    } else {
+      newRaw = serializeString(newDisplay, quoteCharOr(originalRaw, "'"));
+    }
+    if (newRaw !== originalRaw) editedFields.push({ key, newRawValue: newRaw });
+  });
+
+  if (!editedFields.length){
+    editLogMsg('Nothing changed.', 'log-mid');
+    saveBtn.disabled = false;
+    return;
+  }
+
+  try {
+    editLogMsg('Fetching current file...', 'log-mid');
+    const { updated, sha } = await saveEntryEdit(currentPageSlug, currentEntryId, editedFields);
+    editLogMsg('Publishing...', 'log-mid');
+    await ghPut(`${currentPageSlug}/index.html`, {
+      message: `Edit ${currentPageSlug} #${currentEntryId}: ${editedFields.map(f => f.key).join(', ')}`,
+      content: utf8ToBase64(updated),
+      sha,
+    });
+    editLogMsg('✓ Saved.', 'log-ok');
+    // update the in-memory copies too, so going back to the list (or
+    // re-opening this entry) reflects the edit without another fetch
+    const idx = currentRawEntries.findIndex(t => parseEntryIdGeneric(t) === String(currentEntryId));
+    if (idx !== -1){
+      const newFields = currentEntryFields.map(f => {
+        const { key } = splitKeyValue(f);
+        const edited = editedFields.find(e => e.key === key);
+        return edited ? `${key}:${edited.newRawValue}` : f;
+      });
+      currentRawEntries[idx] = '{' + newFields.join(', ') + '}';
+      currentEntryList = currentRawEntries.map(parseEntryForList);
+    }
+    lastPublish = { pageSlug: currentPageSlug, marker: editedFields[0].newRawValue };
+    showDeployStatus();
+    setTimeout(checkDeployStatus, 20000);
+  } catch (err){
+    editLogMsg(`✗ ${err.message}`, 'log-err');
+    editLogMsg('Nothing further was changed after this error — safe to fix and retry.', 'log-err');
+  } finally {
+    saveBtn.disabled = false;
+  }
+}
+</script>
+
+</body>
+</html>
