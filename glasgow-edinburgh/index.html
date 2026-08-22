@@ -566,8 +566,8 @@ function hydrateShots(){
 
   applyColorFrames();
 
-  // masthead — use the Holyrood shot if present, else first photo
-  const heroItem = DATA.find(d => d.id === 9) || DATA[0];
+  // masthead — the Scott Monument / Princes Street shot, else first photo
+  const heroItem = DATA.find(d => d.id === 12) || DATA[0];
   if(heroItem) document.getElementById('masthead-img').src = heroItem.img;
 }
 
