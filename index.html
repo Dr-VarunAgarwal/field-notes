@@ -317,19 +317,28 @@
   .stories-feed::-webkit-scrollbar{ display:none; }
   .story-item{ display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex-shrink:0; }
   .story-ring{
-    padding:3px; border-radius:50%; display:inline-block; cursor:pointer;
+    position:relative; padding:3px; border-radius:50%; display:inline-block; cursor:pointer;
     transition:transform 0.2s ease; border:none; background:none;
   }
   .story-ring:hover{ transform:scale(1.05); }
-  .story-ring.color-0{ background:linear-gradient(135deg,#2A46E0 0%,#5B7CFA 100%); }
-  .story-ring.color-1{ background:linear-gradient(135deg,#454F30 0%,#7C8A57 100%); }
-  .story-ring.color-2{ background:linear-gradient(135deg,#FF7F00 0%,#FFB347 100%); }
-  .story-ring.color-3{ background:linear-gradient(135deg,#E73F1E 0%,#F9B637 100%); }
-  .story-ring.color-0.viewed{ background:linear-gradient(135deg,#AEB9EC 0%,#C7D0F5 100%); }
-  .story-ring.color-1.viewed{ background:linear-gradient(135deg,#A7AC98 0%,#BFC4AC 100%); }
-  .story-ring.color-2.viewed{ background:linear-gradient(135deg,#F2C093 0%,#F8D8B5 100%); }
-  .story-ring.color-3.viewed{ background:linear-gradient(135deg,#EFAA97 0%,#F6D79B 100%); }
+  /* the ring colour lives on ::before (not the button's own background) so
+     that "viewed" can mask away half of *just the ring*, via a separate
+     layer, without also cutting into the avatar photo sitting on top of it. */
+  .story-ring::before{
+    content:''; position:absolute; inset:0; border-radius:50%;
+  }
+  .story-ring.color-0::before{ background:linear-gradient(135deg,#2A46E0 0%,#5B7CFA 100%); }
+  .story-ring.color-1::before{ background:linear-gradient(135deg,#454F30 0%,#7C8A57 100%); }
+  .story-ring.color-2::before{ background:linear-gradient(135deg,#FF7F00 0%,#FFB347 100%); }
+  .story-ring.color-3::before{ background:linear-gradient(135deg,#E73F1E 0%,#F9B637 100%); }
+  /* viewed: same colour, half the ring — a clean crescent instead of a
+     washed-out tint of the same hue. */
+  .story-ring.viewed::before{
+    -webkit-mask-image:conic-gradient(#000 0deg 180deg, transparent 180deg 360deg);
+    mask-image:conic-gradient(#000 0deg 180deg, transparent 180deg 360deg);
+  }
   .story-avatar{
+    position:relative; z-index:1;
     width:64px; height:64px; border:3px solid var(--cream);
     border-radius:50%; background:#fff; object-fit:cover; display:block;
   }
@@ -408,11 +417,16 @@
   .story-info{
     position:absolute; left:16px; right:16px; bottom:70px; z-index:30;
     pointer-events:none;
+    /* column-reverse + gap (not per-child margins) so the location line
+       always sits flush against `bottom`, at the same screen position on
+       every slide — instead of drifting upward whenever a caption/note
+       happens to be present below it. */
+    display:flex; flex-direction:column-reverse; gap:0.4rem;
   }
   .story-location{
     display:flex; align-items:center; flex-wrap:wrap; gap:5px;
     font-size:0.72rem; font-weight:600; color:#fff;
-    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0 0 0.35rem;
+    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
   }
   .story-location svg{ width:12px; height:12px; flex:none; }
   .story-date{ opacity:0.75; font-weight:500; white-space:nowrap; }
@@ -427,7 +441,7 @@
      above (which is always your own words). */
   .story-note{
     font-size:0.68rem; line-height:1.45; color:rgba(255,255,255,0.6);
-    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0.5rem 0 0; max-width:88%;
+    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0; max-width:88%;
   }
   .story-note .lbl{
     text-transform:uppercase; letter-spacing:0.08em; font-size:0.6rem;
@@ -963,6 +977,13 @@ function loadSlide(direction = 'none'){
     storyImg.classList.remove('hidden');
     storyCaptionEl.textContent = slide.caption || '';
     storyNoteEl.innerHTML = '';
+    if (slide.note) {
+      const lbl = document.createElement('span');
+      lbl.className = 'lbl';
+      lbl.textContent = 'Note from Claude';
+      storyNoteEl.appendChild(lbl);
+      storyNoteEl.appendChild(document.createTextNode(slide.note));
+    }
     storyLocationText.textContent = slide.location || '';
     storyDateText.textContent = formatStoryDate(slide.date);
     storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
