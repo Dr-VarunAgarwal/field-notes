@@ -976,14 +976,9 @@ function loadSlide(direction = 'none'){
     storySpinner.classList.add('hidden');
     storyImg.classList.remove('hidden');
     storyCaptionEl.textContent = slide.caption || '';
+    // Deliberately never rendered in the Story viewer — slide.note stays as
+    // authored context in the data, but shouldn't surface as visible UI here.
     storyNoteEl.innerHTML = '';
-    if (slide.note) {
-      const lbl = document.createElement('span');
-      lbl.className = 'lbl';
-      lbl.textContent = 'Note from Claude';
-      storyNoteEl.appendChild(lbl);
-      storyNoteEl.appendChild(document.createTextNode(slide.note));
-    }
     storyLocationText.textContent = slide.location || '';
     storyDateText.textContent = formatStoryDate(slide.date);
     storyElapsed = 0; storyStart = performance.now(); storyPaused = false;
