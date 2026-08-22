@@ -663,6 +663,7 @@ const DATA = [
   {id:40, img:'img/train-05-window-moor.jpg', type:'photo', category:'journey', title:'', location:'Kyle Line, Scottish Highlands', notes:"", claudeIdea:"Open moorland from the window, flatter and greyer than the loch views either side of it.", tags:['train','moor','window'], ratio:'1280/960', date:'2018-06-07T19:15:58', order:3},
   {id:41, img:'img/train-04-forest-river-bend.jpg', type:'photo', category:'journey', title:'', location:'Kyle Line, Scottish Highlands', notes:"", claudeIdea:"A river bending through forest and moorland, shot clear of the window this time.", tags:['train','river','forest'], ratio:'1280/960', date:'2018-06-07T19:31:01', order:4},
   {id:42, img:'img/train-06-loch-hills-evening.jpg', type:'photo', category:'journey', title:'', location:'Kyle Line, Scottish Highlands', notes:"", claudeIdea:"Evening light on a loch and the hills behind it, not long before the line reaches Kyle of Lochalsh and the bridge over to Skye.", tags:['train','loch','evening'], ratio:'1280/960', date:'2018-06-07T19:42:05', order:5, colorFrame:'128,140,59'},
+  {id:43, img:'img/d2-17-sligachan-bridge-portrait.jpg', type:'photo', category:'journey', title:'', location:'Sligachan, Isle of Skye', notes:"", claudeIdea:"Standing by the old stone bridge at Sligachan with the blue backpack — the one with all the patches — parked on the wall beside him.", tags:['sligachan','bridge','portrait'], ratio:'3024/4032', date:'2018-06-08T14:21:27', order:12.5},
 ];
 
 /* ============================================================
@@ -794,7 +795,7 @@ function hydrateShots(){
   applyColorFrames();
 
   // masthead — use the Quiraing shot if present, else first photo
-  const heroItem = DATA.find(d => d.id === 27) || DATA[0];
+  const heroItem = DATA.find(d => d.id === 43) || DATA[0];
   if(heroItem) document.getElementById('masthead-img').src = heroItem.img;
 }
 
