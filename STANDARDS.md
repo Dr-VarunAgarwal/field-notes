@@ -164,6 +164,16 @@ on mobile for one-tap access.
   image's URL, or — for a reorder — the live `STORIES` id order) means
   the whole build finished. Needs no token, since Pages content is
   public regardless of repo visibility.
+- "▶ Preview story" (existing/new modes only) mirrors the real
+  `#story-modal` viewer from the hub — same markup, CSS class names,
+  and tap-through mechanics, copied over rather than reimplemented, so
+  it looks and behaves identically. Shows the pending photos (straight
+  from their resized blobs — works before publishing) appended after
+  that story's already-live slides in "existing" mode, so a batch reads
+  in its real final order. Loops instead of paging to a "next user"
+  (there's only one story to preview solo). Not available in reorder
+  mode — there's no slide content to preview there, just the id list
+  the reorder screen already shows.
 - Three modes:
   - **Add photos to an existing story** — the place dropdown is
     populated live from the hub's own `STORIES` array (fetched once,

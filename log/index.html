@@ -6,7 +6,7 @@
 <title>Add a story</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Inter:wght@400;500;600&family=Fraunces:ital@1&display=swap" rel="stylesheet">
 <style>
   :root{
     --blue:#2A46E0; --cream:#F3ECDE; --card:#FFFFFF; --ink:#17140C;
@@ -79,6 +79,90 @@
   #deploy-status{ margin-top:0.9rem; padding-top:0.9rem; border-top:1px solid var(--line); }
   #deploy-status p{ font-size:0.72rem; color:var(--ink-soft); line-height:1.5; margin:0 0 0.6rem; }
   #deploy-status-text{ font-weight:600; }
+
+  /* ---- mirrored story viewer (copied from the real site's #story-modal,
+     same class names, so it looks/behaves identically -- see index.html) ---- */
+  .story-modal{
+    display:none; position:fixed; inset:0; z-index:100; background:#000;
+    align-items:center; justify-content:center; touch-action:none;
+  }
+  .story-modal.open{ display:flex; }
+  .viewer-container{
+    position:relative; width:100%; height:100%; background:#000;
+    overflow:hidden; display:flex; flex-direction:column;
+  }
+  @media(min-width:640px){
+    .viewer-container{ width:400px; height:800px; max-height:90vh; border-radius:24px; box-shadow:0 25px 50px -12px rgba(0,0,0,0.6); }
+  }
+  .cube-wrapper{ width:100%; flex:1; position:relative; display:flex; flex-direction:column; }
+  .progress-container{ position:absolute; top:0; left:0; right:0; z-index:40; display:flex; gap:4px; padding:12px 8px 0; pointer-events:none; }
+  .prog-bar{ flex:1; height:3px; background:rgba(255,255,255,0.3); border-radius:100px; overflow:hidden; }
+  .prog-fill{ height:100%; background:#fff; width:0%; border-radius:100px; }
+  .viewer-header{
+    position:absolute; top:0; left:0; right:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:32px 16px 16px; background:linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+    pointer-events:none;
+  }
+  .viewer-header-left{ display:flex; align-items:center; gap:12px; pointer-events:auto; }
+  .viewer-avatar{ width:32px; height:32px; border-radius:50%; border:1px solid #9ca3af; object-fit:cover; }
+  .viewer-username{ color:#fff; font-weight:600; font-size:0.875rem; text-shadow:0 1px 2px rgba(0,0,0,0.5); }
+  .story-close-btn{
+    color:#fff; padding:8px; border-radius:50%; background:transparent; border:none;
+    cursor:pointer; pointer-events:auto; position:relative; z-index:50; transition:background .15s;
+  }
+  .story-close-btn:hover{ background:rgba(255,255,255,0.2); }
+  .story-close-btn svg{ width:24px; height:24px; }
+  .media-area{ position:relative; flex:1; background:#111827; width:100%; height:100%; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .story-loading{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:10; }
+  .dot-matrix-loader{ display:grid; grid-template-columns:repeat(3,1fr); gap:4px; width:36px; height:36px; }
+  .dot-matrix-loader .dot{ background:#fff; border-radius:2px; width:100%; height:100%; opacity:0.2; animation:dotMatrixPulse 1.2s infinite ease-in-out; }
+  .dot-matrix-loader .dot:nth-child(1){ animation-delay:0.0s; }
+  .dot-matrix-loader .dot:nth-child(2){ animation-delay:0.1s; }
+  .dot-matrix-loader .dot:nth-child(3){ animation-delay:0.2s; }
+  .dot-matrix-loader .dot:nth-child(6){ animation-delay:0.3s; }
+  .dot-matrix-loader .dot:nth-child(9){ animation-delay:0.4s; }
+  .dot-matrix-loader .dot:nth-child(8){ animation-delay:0.5s; }
+  .dot-matrix-loader .dot:nth-child(7){ animation-delay:0.6s; }
+  .dot-matrix-loader .dot:nth-child(4){ animation-delay:0.7s; }
+  .dot-matrix-loader .dot:nth-child(5){ animation-delay:0.8s; }
+  @keyframes dotMatrixPulse{ 0%,100%{opacity:0.2; transform:scale(0.8);} 40%{opacity:1; transform:scale(1.1); box-shadow:0 0 8px rgba(255,255,255,0.8);} }
+  .story-image{ width:100%; height:100%; object-fit:cover; user-select:none; z-index:0; display:block; -webkit-user-drag:none; pointer-events:none; }
+  .hidden{ display:none !important; }
+  .tap-left{ position:absolute; left:0; top:0; bottom:0; width:33.333%; z-index:20; cursor:pointer; }
+  .tap-right{ position:absolute; right:0; top:0; bottom:0; width:66.666%; z-index:20; cursor:pointer; }
+  .story-info{
+    position:absolute; left:16px; right:16px; bottom:70px; z-index:30; pointer-events:none;
+    display:flex; flex-direction:column-reverse; gap:0.4rem;
+  }
+  .story-location{
+    display:flex; align-items:center; flex-wrap:wrap; gap:5px;
+    font-size:0.72rem; font-weight:600; color:#fff;
+    text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
+  }
+  .story-location svg{ width:12px; height:12px; flex:none; }
+  .story-date{ opacity:0.75; font-weight:500; white-space:nowrap; }
+  .story-date:not(:empty)::before{ content:'\00b7'; margin:0 4px; opacity:0.6; }
+  .story-caption{
+    font-family:"Fraunces", serif; font-style:italic; color:#fff; font-size:0.92rem;
+    line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
+  }
+  .story-caption:empty{ display:none; }
+  .story-wm{
+    position:absolute; z-index:15; pointer-events:none; bottom:18px; right:16px;
+    width:32px; height:32px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(0,0,0,0.45); backdrop-filter:blur(2px);
+    border:1px solid rgba(255,255,255,0.25);
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:11px; letter-spacing:0.03em;
+    color:rgba(255,255,255,0.85);
+  }
+  .viewer-footer{
+    position:absolute; bottom:0; left:0; right:0; padding:16px; z-index:30;
+    background:linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    display:flex; flex-direction:column; align-items:center; pointer-events:none;
+  }
+  .viewer-handle{ width:48px; height:4px; background:rgba(255,255,255,0.3); border-radius:100px; }
 </style>
 </head>
 <body>
@@ -137,7 +221,9 @@
   <div id="slides-section">
     <div id="slides"></div>
 
-    <button type="button" class="btn-secondary" onclick="addSlideRow()" style="margin-bottom:1.2rem;">+ Add another photo</button>
+    <button type="button" class="btn-secondary" onclick="addSlideRow()" style="margin-bottom:0.6rem;">+ Add another photo</button>
+    <br>
+    <button type="button" class="btn-secondary" onclick="openPreview()" style="margin-bottom:1.2rem;">▶ Preview story</button>
   </div>
 
   <button type="submit" class="btn-primary" id="submit-btn">Publish to site</button>
@@ -151,6 +237,49 @@
 
 <hr>
 <p style="font-size:0.72rem;color:var(--ink-soft);"><button class="btn-danger-text" onclick="forgetToken()">Forget saved token</button></p>
+
+<!-- Mirrors the real site's #story-modal viewer (same markup/classes) so a
+     preview of the current photos/captions looks and behaves identically. -->
+<div id="preview-modal" class="story-modal">
+  <div class="viewer-container">
+    <div class="cube-wrapper">
+      <div id="preview-progress" class="progress-container"></div>
+      <div class="viewer-header">
+        <div class="viewer-header-left">
+          <img id="preview-avatar" class="viewer-avatar" src="" alt="" draggable="false" oncontextmenu="return false">
+          <span id="preview-username" class="viewer-username"></span>
+        </div>
+        <button type="button" id="preview-close-btn" class="story-close-btn" aria-label="Close preview">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div class="media-area">
+        <div id="preview-spinner" class="story-loading">
+          <div class="dot-matrix-loader">
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+          </div>
+        </div>
+        <img id="preview-image" class="story-image hidden" src="" alt="" draggable="false" oncontextmenu="return false">
+        <span class="story-wm" aria-hidden="true">VA</span>
+        <div class="story-info">
+          <p class="story-location">
+            <svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M9.69 18.933l.003.001C9.89 19.02 10 19 10 19s.11.02.308-.066l.002-.001.006-.003.018-.008a5.741 5.741 0 00.281-.14c.186-.096.446-.24.757-.433.62-.384 1.445-.966 2.274-1.765C15.302 14.988 17 12.493 17 9A7 7 0 103 9c0 3.493 1.698 5.988 3.354 7.584a13.731 13.731 0 002.274 1.765 11.842 11.842 0 00.976.544l.062.029.018.008.006.003zM10 11.25a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5z" clip-rule="evenodd"></path></svg>
+            <span id="preview-location-text"></span>
+            <span id="preview-date-text" class="story-date"></span>
+          </p>
+          <p id="preview-caption" class="story-caption"></p>
+        </div>
+        <div id="preview-tap-left" class="tap-left"></div>
+        <div id="preview-tap-right" class="tap-right"></div>
+      </div>
+      <div class="viewer-footer">
+        <div class="viewer-handle"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
 const REPO = 'Dr-VarunAgarwal/field-notes';
@@ -778,6 +907,152 @@ function escapeRegex(str){ return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function storyIdExists(content, id){
   return new RegExp(`id:\\s*['"]${escapeRegex(id)}['"]`).test(content);
 }
+
+/* ---------- story-format preview ("mirror" of the real viewer) ----------
+   Renders whatever's currently in the form through the exact tap-through
+   viewer chrome the live site uses (progress bars, location/date/caption,
+   tap-left/right) -- ported from index.html's loadSlide/animateStoryProgress/
+   storyGoNext, simplified to one story instead of paging between many (a
+   solo preview has no "next user" to advance to, so it just loops). Photos
+   not yet uploaded render straight from their resized blob, so this works
+   before publishing, not just after. */
+let previewSlides = [], previewIdx = 0, previewUsername = '', previewAvatar = '';
+let previewRAF = null, previewStart = 0, previewElapsed = 0, previewPaused = false;
+const PREVIEW_SLIDE_DURATION = 4500;
+
+function parseSlideField(entryText, field){
+  const m = new RegExp(`${field}:\\s*(['"])((?:(?!\\1)[\\s\\S])*)\\1`).exec(entryText);
+  return m ? m[2] : '';
+}
+function collectPendingSlides(){
+  return Array.from(document.querySelectorAll('.slide-row')).map(row => {
+    const fileInput = row.querySelector('.slide-file');
+    const blob = fileInput._resizedBlob;
+    return {
+      img: blob ? URL.createObjectURL(blob) : '',
+      location: row.querySelector('.slide-location').value.trim(),
+      caption: row.querySelector('.slide-caption').value.trim(),
+      date: new Date().toISOString().replace(/\.\d{3}Z$/, ''),
+    };
+  }).filter(s => s.img);
+}
+function openPreview(){
+  const mode = document.getElementById('mode').value;
+  let slides;
+  if (mode === 'existing'){
+    const placeId = document.getElementById('place').value;
+    const meta = storiesCache && storiesCache.entries.find(e => e.id === placeId);
+    previewUsername = meta ? meta.username : (placeId || 'Preview');
+    previewAvatar = meta ? `../${meta.avatar}` : '';
+    let existingSlides = [];
+    if (storiesCache && placeId){
+      try {
+        const { openBracketPos, closeBracketPos } = getStorySlidesSpan(storiesCache.content, placeId);
+        const span = storiesCache.content.slice(openBracketPos, closeBracketPos + 1);
+        existingSlides = splitTopLevelEntries(span).map(entry => ({
+          img: `../${parseSlideField(entry, 'img')}`,
+          location: parseSlideField(entry, 'location'),
+          caption: parseSlideField(entry, 'caption'),
+          date: parseSlideField(entry, 'date'),
+        }));
+      } catch (err) { /* fine -- preview just shows the new photos instead */ }
+    }
+    slides = [...existingSlides, ...collectPendingSlides()];
+  } else if (mode === 'new'){
+    previewUsername = document.getElementById('new-username').value.trim() || 'New story';
+    const avatarBlob = document.getElementById('new-avatar')._resizedBlob;
+    previewAvatar = avatarBlob ? URL.createObjectURL(avatarBlob) : '';
+    slides = collectPendingSlides();
+  } else {
+    return; // no preview for reorder mode -- nothing story-shaped to show
+  }
+  if (!slides.length){
+    alert('Add at least one photo first.');
+    return;
+  }
+  previewSlides = slides;
+  previewIdx = 0;
+  document.getElementById('preview-modal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  loadPreviewSlide();
+}
+function closePreview(){
+  document.getElementById('preview-modal').classList.remove('open');
+  document.body.style.overflow = '';
+  cancelAnimationFrame(previewRAF);
+  previewSlides.forEach(s => { if (s.img && s.img.startsWith('blob:')) URL.revokeObjectURL(s.img); });
+  if (previewAvatar && previewAvatar.startsWith('blob:')) URL.revokeObjectURL(previewAvatar);
+}
+function formatPreviewDate(iso){
+  if (!iso) return '';
+  const d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+function renderPreviewProgressBars(){
+  document.getElementById('preview-progress').innerHTML = previewSlides.map((_, idx) => `
+    <div class="prog-bar"><div class="prog-fill" id="preview-prog-fill-${idx}"></div></div>
+  `).join('');
+}
+function loadPreviewSlide(){
+  cancelAnimationFrame(previewRAF);
+  const slide = previewSlides[previewIdx];
+  document.getElementById('preview-avatar').src = previewAvatar;
+  document.getElementById('preview-username').textContent = previewUsername;
+  renderPreviewProgressBars();
+  for (let i = 0; i < previewIdx; i++){
+    const bar = document.getElementById(`preview-prog-fill-${i}`);
+    if (bar) bar.style.width = '100%';
+  }
+  const img = document.getElementById('preview-image');
+  const spinner = document.getElementById('preview-spinner');
+  img.classList.add('hidden');
+  spinner.classList.remove('hidden');
+  document.getElementById('preview-caption').textContent = slide.caption || '';
+  document.getElementById('preview-location-text').textContent = slide.location || '';
+  document.getElementById('preview-date-text').textContent = formatPreviewDate(slide.date);
+  const preload = new Image();
+  preload.onload = () => {
+    img.src = slide.img;
+    spinner.classList.add('hidden');
+    img.classList.remove('hidden');
+    previewElapsed = 0; previewStart = performance.now(); previewPaused = false;
+    previewRAF = requestAnimationFrame(animatePreviewProgress);
+  };
+  preload.onerror = () => { spinner.classList.add('hidden'); };
+  preload.src = slide.img;
+}
+function animatePreviewProgress(ts){
+  if (previewPaused){ previewStart = ts - previewElapsed; previewRAF = requestAnimationFrame(animatePreviewProgress); return; }
+  if (!ts) ts = performance.now();
+  previewElapsed = ts - previewStart;
+  const pct = Math.min((previewElapsed / PREVIEW_SLIDE_DURATION) * 100, 100);
+  const bar = document.getElementById(`preview-prog-fill-${previewIdx}`);
+  if (bar) bar.style.width = `${pct}%`;
+  if (previewElapsed < PREVIEW_SLIDE_DURATION) previewRAF = requestAnimationFrame(animatePreviewProgress);
+  else previewGoNext();
+}
+function previewGoNext(){
+  previewIdx = previewIdx < previewSlides.length - 1 ? previewIdx + 1 : 0; // loop -- no "next user" to page to
+  loadPreviewSlide();
+}
+function previewGoPrev(){
+  previewIdx = previewIdx > 0 ? previewIdx - 1 : 0;
+  loadPreviewSlide();
+}
+document.getElementById('preview-tap-right').onclick = previewGoNext;
+document.getElementById('preview-tap-left').onclick = previewGoPrev;
+document.getElementById('preview-close-btn').addEventListener('click', e => { e.stopPropagation(); closePreview(); });
+['mousedown', 'touchstart'].forEach(ev => {
+  document.getElementById('preview-tap-right').addEventListener(ev, () => { previewPaused = true; }, { passive: true });
+  document.getElementById('preview-tap-left').addEventListener(ev, () => { previewPaused = true; }, { passive: true });
+});
+['mouseup', 'touchend'].forEach(ev => {
+  document.getElementById('preview-tap-right').addEventListener(ev, () => { previewPaused = false; }, { passive: true });
+  document.getElementById('preview-tap-left').addEventListener(ev, () => { previewPaused = false; }, { passive: true });
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && document.getElementById('preview-modal').classList.contains('open')) closePreview();
+});
 
 /* ---------- logging UI ---------- */
 const logEl = document.getElementById('log');
