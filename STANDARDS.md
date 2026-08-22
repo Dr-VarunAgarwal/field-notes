@@ -146,7 +146,7 @@ on mobile for one-tap access.
 - Resizing happens client-side (Canvas, same ~1280px/quality 0.75
   treatment as everywhere else); uploads go through the GitHub Contents
   API — no server involved.
-- Two modes:
+- Three modes:
   - **Add photos to an existing story** — the place dropdown is
     populated live from the hub's own `STORIES` array (fetched once,
     cached for the session), not a hardcoded list, so it can't drift
@@ -167,6 +167,14 @@ on mobile for one-tap access.
     place's own folder. Inserts a whole new entry at the end of
     `STORIES` — checks the id doesn't already collide before uploading
     anything.
+  - **Rearrange story order** — the ring feed renders `STORIES` in
+    array order (§5), so this is reordering that array directly. A
+    list of every current story (avatar + name) with ▲/▼ buttons per
+    row; Save re-fetches and re-splits the array's raw entry text fresh
+    (rather than trusting whatever was cached when the list loaded), so
+    a story added by someone else in the meantime can't get clobbered —
+    it's just appended at the end if it wasn't part of the order being
+    saved.
 - A brand new *place* (its own city page — cover, blurb, full gallery,
   editorial judgment on what's worth including) is a different, bigger
   thing than a standalone story and still needs the fuller pass in

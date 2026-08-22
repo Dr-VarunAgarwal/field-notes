@@ -62,12 +62,19 @@
   #log-actions{ margin-top:1rem; }
   a{ color:var(--blue); }
   hr{ border:none; border-top:1px solid var(--line); margin:1.5rem 0; }
+  .reorder-row{ display:flex; align-items:center; gap:0.6rem; padding:0.5rem 0; border-top:1px solid var(--line); }
+  .reorder-row:first-child{ border-top:none; }
+  .reorder-avatar{ width:36px; height:36px; border-radius:50%; object-fit:cover; flex-shrink:0; background:var(--line); }
+  .reorder-name{ flex:1; font-size:0.88rem; font-weight:500; }
+  .reorder-btns{ display:flex; gap:0.3rem; }
+  .reorder-btns button{ padding:0.35rem 0.6rem; font-size:0.85rem; line-height:1; }
+  .reorder-btns button:disabled{ opacity:0.3; cursor:not-allowed; }
 </style>
 </head>
 <body>
 
 <h1>Add a story</h1>
-<p class="lede">Quick photo drops from anywhere, no laptop needed — either onto an existing story ring, or as a brand new standalone story that isn't tied to any of the main "Travel stories" cards. A whole new <em>city page</em> (cover, blurb, full gallery) still goes through a full pass separately.</p>
+<p class="lede">Quick photo drops from anywhere, no laptop needed — onto an existing story ring, as a brand new standalone story that isn't tied to any of the main "Travel stories" cards, or just reordering the ring itself. A whole new <em>city page</em> (cover, blurb, full gallery) still goes through a full pass separately.</p>
 
 <div id="token-gate">
   <div class="card">
@@ -88,6 +95,7 @@
     <select id="mode" onchange="onModeChange()">
       <option value="existing">Add photos to an existing story</option>
       <option value="new">Create a brand new standalone story</option>
+      <option value="reorder">Rearrange story order</option>
     </select>
   </div>
 
@@ -109,9 +117,17 @@
     <p id="new-avatar-status" class="file-status"></p>
   </div>
 
-  <div id="slides"></div>
+  <div class="card" id="reorder-fields" style="display:none;">
+    <label>Story order (top = first in the ring)</label>
+    <p id="reorder-status" style="font-size:0.72rem;color:var(--ink-soft);margin:-0.3rem 0 0.8rem;"></p>
+    <div id="reorder-list"></div>
+  </div>
 
-  <button type="button" class="btn-secondary" onclick="addSlideRow()" style="margin-bottom:1.2rem;">+ Add another photo</button>
+  <div id="slides-section">
+    <div id="slides"></div>
+
+    <button type="button" class="btn-secondary" onclick="addSlideRow()" style="margin-bottom:1.2rem;">+ Add another photo</button>
+  </div>
 
   <button type="submit" class="btn-primary" id="submit-btn">Publish to site</button>
 
@@ -169,8 +185,14 @@ function onModeChange(){
   const mode = document.getElementById('mode').value;
   document.getElementById('existing-fields').style.display = mode === 'existing' ? 'block' : 'none';
   document.getElementById('new-fields').style.display = mode === 'new' ? 'block' : 'none';
+  document.getElementById('reorder-fields').style.display = mode === 'reorder' ? 'block' : 'none';
+  document.getElementById('slides-section').style.display = mode === 'reorder' ? 'none' : 'block';
+  document.getElementById('submit-btn').textContent = mode === 'reorder' ? 'Save new order' : 'Publish to site';
   if (mode === 'existing' && localStorage.getItem(TOKEN_KEY)){
     populatePlaceDropdown();
+  }
+  if (mode === 'reorder' && localStorage.getItem(TOKEN_KEY)){
+    populateReorderList();
   }
 }
 function slugify(str){
@@ -252,9 +274,9 @@ function parseStoriesEntries(content){
   const closeBracketPos = findMatchingBracket(content, openBracketPos);
   const span = content.slice(openBracketPos, closeBracketPos + 1);
   const entries = [];
-  const re = /\{\s*id:\s*(['"])((?:(?!\1)[\s\S])*)\1\s*,\s*username:\s*(['"])((?:(?!\3)[\s\S])*)\3/g;
+  const re = /\{\s*id:\s*(['"])((?:(?!\1)[\s\S])*)\1\s*,\s*username:\s*(['"])((?:(?!\3)[\s\S])*)\3\s*,\s*avatar:\s*(['"])((?:(?!\5)[\s\S])*)\5/g;
   let m;
-  while ((m = re.exec(span))) entries.push({ id: m[2], username: m[4] });
+  while ((m = re.exec(span))) entries.push({ id: m[2], username: m[4], avatar: m[6] });
   return entries;
 }
 function setStoriesCache(content){
@@ -301,6 +323,104 @@ function loadLocationSuggestionsFor(placeId){
 }
 if (document.getElementById('mode').value === 'existing' && localStorage.getItem(TOKEN_KEY)){
   populatePlaceDropdown();
+}
+
+/* ---------- reorder mode ----------
+   The ring feed renders STORIES in array order (never sorted at runtime -
+   see STANDARDS.md §5), so reordering the array is reordering the feed.
+   The on-screen list is just for choosing an order (id + display info from
+   the cached parse above); saving re-fetches and re-splits the array's raw
+   entry text fresh, so it can't clobber a story added elsewhere in the
+   meantime -- any id not in our chosen order gets appended at the end. */
+let reorderIds = [];
+let reorderMeta = {};
+
+async function populateReorderList(){
+  const statusEl = document.getElementById('reorder-status');
+  statusEl.textContent = 'Loading current stories...';
+  try {
+    await ensureStoriesCache();
+    reorderIds = storiesCache.entries.map(e => e.id);
+    reorderMeta = Object.fromEntries(storiesCache.entries.map(e => [e.id, e]));
+    renderReorderList();
+    statusEl.textContent = `${reorderIds.length} stories — use ▲▼ to reorder, then Save.`;
+  } catch (err) {
+    statusEl.textContent = `Couldn't load story list: ${err.message}`;
+  }
+}
+function renderReorderList(){
+  const list = document.getElementById('reorder-list');
+  list.innerHTML = reorderIds.map((id, i) => {
+    const meta = reorderMeta[id] || { username: id, avatar: '' };
+    return `
+      <div class="reorder-row">
+        <img class="reorder-avatar" src="../${meta.avatar}" alt="" draggable="false" oncontextmenu="return false">
+        <span class="reorder-name">${meta.username}</span>
+        <div class="reorder-btns">
+          <button type="button" class="btn-secondary" ${i === 0 ? 'disabled' : ''} onclick="moveStory(${i}, -1)">▲</button>
+          <button type="button" class="btn-secondary" ${i === reorderIds.length - 1 ? 'disabled' : ''} onclick="moveStory(${i}, 1)">▼</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+function moveStory(index, delta){
+  const newIndex = index + delta;
+  if (newIndex < 0 || newIndex >= reorderIds.length) return;
+  [reorderIds[index], reorderIds[newIndex]] = [reorderIds[newIndex], reorderIds[index]];
+  renderReorderList();
+}
+
+/* Split the STORIES array's own text into its top-level {...} entries,
+   tracking string literals so a stray bracket in a caption/location can't
+   throw off the depth count. */
+function splitTopLevelEntries(span){
+  const inner = span.slice(1, -1);
+  const entries = [];
+  let depth = 0, start = -1, inString = false, quoteChar = '';
+  for (let i = 0; i < inner.length; i++){
+    const c = inner[i];
+    if (inString){
+      if (c === '\\'){ i++; continue; }
+      if (c === quoteChar) inString = false;
+      continue;
+    }
+    if (c === '"' || c === "'" || c === '`'){ inString = true; quoteChar = c; continue; }
+    if (c === '{'){ if (depth === 0) start = i; depth++; }
+    else if (c === '[') depth++;
+    else if (c === ']') depth--;
+    else if (c === '}'){
+      depth--;
+      if (depth === 0 && start !== -1){ entries.push(inner.slice(start, i + 1)); start = -1; }
+    }
+  }
+  return entries;
+}
+function parseEntryId(entryText){
+  const m = /id:\s*(['"])((?:(?!\1)[\s\S])*)\1/.exec(entryText);
+  return m ? m[2] : '';
+}
+async function rebuildStoriesOrder(orderedIds){
+  const file = await ghGet('index.html');
+  const content = base64ToUtf8(file.content);
+  const marker = 'const STORIES = [';
+  const start = content.indexOf(marker);
+  if (start === -1) throw new Error("Couldn't find the STORIES array — has the file structure changed?");
+  const openBracketPos = start + marker.length - 1;
+  const closeBracketPos = findMatchingBracket(content, openBracketPos);
+  const span = content.slice(openBracketPos, closeBracketPos + 1);
+  const rawEntries = splitTopLevelEntries(span);
+  const byId = new Map();
+  const freshIds = [];
+  for (const raw of rawEntries){
+    const id = parseEntryId(raw);
+    byId.set(id, raw);
+    freshIds.push(id);
+  }
+  const finalOrder = orderedIds.filter(id => byId.has(id));
+  for (const id of freshIds) if (!finalOrder.includes(id)) finalOrder.push(id);
+  const rebuilt = '[\n  ' + finalOrder.map(id => byId.get(id)).join(',\n\n  ') + ',\n]';
+  const updated = content.slice(0, openBracketPos) + rebuilt + content.slice(closeBracketPos + 1);
+  return { updated, sha: file.sha, missingIds: orderedIds.filter(id => !byId.has(id)) };
 }
 
 /* ---------- copy log ---------- */
@@ -481,6 +601,31 @@ document.getElementById('story-form').addEventListener('submit', async (e) => {
   logEl.innerHTML = '';
 
   const mode = document.getElementById('mode').value;
+
+  if (mode === 'reorder'){
+    if (reorderIds.length < 2){
+      log('Nothing to reorder yet.', 'log-err');
+      submitBtn.disabled = false;
+      return;
+    }
+    try {
+      log('Fetching current index.html...', 'log-mid');
+      const { updated, sha, missingIds } = await rebuildStoriesOrder(reorderIds);
+      if (missingIds.length) log(`Note: ${missingIds.join(', ')} no longer in STORIES — skipped.`, 'log-mid');
+      log('Publishing new story order...', 'log-mid');
+      await ghPut('index.html', { message: 'Reorder Stories ring', content: utf8ToBase64(updated), sha });
+      log('✓ Done — new story order published.', 'log-ok');
+      log('Live in about a minute once GitHub Pages redeploys.', 'log-ok');
+      setStoriesCache(updated);
+      populateReorderList();
+    } catch (err){
+      log(`✗ ${err.message}`, 'log-err');
+      log('Nothing further was changed after this error — safe to fix and retry.', 'log-err');
+    } finally {
+      submitBtn.disabled = false;
+    }
+    return;
+  }
 
   const rows = Array.from(document.querySelectorAll('.slide-row'));
   const slides = rows.map((row, i) => {
