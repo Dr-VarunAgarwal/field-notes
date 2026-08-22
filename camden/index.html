@@ -300,17 +300,6 @@
   .d-artist{color:var(--acid); font-size:13px; margin-bottom:14px; font-weight:700;}
   .d-notes{font-size:13.5px; line-height:1.65; color:var(--chalk); white-space:pre-line;}
   .d-notes.notes-empty{color:var(--chalk-dim); font-style:italic;}
-  .d-idea{
-    margin-top:14px; padding:12px 13px;
-    background:rgba(255,46,99,0.07);
-    border:1px dashed rgba(255,46,99,0.28);
-    border-radius:4px;
-  }
-  .d-idea .lbl{
-    font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--acid); margin-bottom:5px; display:block;
-  }
-  .d-idea .txt{font-size:12.5px; line-height:1.55; color:var(--chalk-dim);}
   .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
 
   footer{
@@ -361,10 +350,6 @@
   <div class="d-title" id="dTitle"></div>
   <div class="d-artist" id="dArtist"></div>
   <div class="d-notes" id="dNotes"></div>
-  <div class="d-idea" id="dIdea" style="display:none;">
-    <span class="lbl">Note from Claude</span>
-    <div class="txt" id="dIdeaText"></div>
-  </div>
   <div class="d-tags" id="dTags"></div>
 </div>
 
@@ -379,9 +364,9 @@
    location  — plain text
    notes     — YOUR words only. Leave "" and it'll show a placeholder
                until you write something. Claude never edits this.
-   claudeIdea— optional. A guess/suggestion about what the piece is —
-               shown separately in the drawer, clearly labelled "Note
-               from Claude", never mixed into your notes.
+   altText   — optional, Claude's description of the piece. Used as
+               the image's accessible name (aria-label) for screen
+               readers — never shown as visible copy on the page.
    tags      — short labels, freely organised
    ratio     — "width/height" of the actual image file.
    order     — controls display sequence, lowest first.
@@ -398,17 +383,17 @@ const GLYPHS = {'mural':'🎨','paste-up':'📌'};
 const MONOGRAM_TEXT = 'VA';
 
 const DATA = [
-  {id:1, img:'img/01-owl-roof-garden-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:"Blue owl mural above the \"Buck's Head Roof Garden\" lettering, mushrooms and foliage painted in below it.", tags:['owl','lettering','colour'], ratio:'960/1280', date:'2018-05-07T12:12:55', order:1, colorFrame:'36,85,157'},
-  {id:2, img:'img/02-strange-burger-robot-pasteup.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Small robot/pig character paste-up next to a burger poster reading "...ICE THE STRANGE" — much smaller scale than everything else in this batch.', tags:['paste-up','character','small scale'], ratio:'960/1280', date:'2018-05-07T12:13:46', order:2},
-  {id:3, img:'img/03-zebra-striped-rhino-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Rhino painted in bold zebra-style black-and-white stripes with orange accents, tagged "CWOTY" in the corner.', tags:['rhino','black & white','animals'], ratio:'1280/960', date:'2018-05-07T18:28:13', order:3},
-  {id:4, img:'img/04-bat-wolf-creature-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Angular, fanged bat-or-wolf creature mural on a wooden gate, a small "Some Kids" gallery sign mounted beside it.', tags:['creature','geometric','fangs'], ratio:'1280/960', date:'2018-05-07T18:28:21', order:4},
-  {id:5, img:'img/05-geometric-hawley-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Purely abstract geometric mural in reds, greens and blues, painted right under the "Hawley Street NW1" sign.', tags:['geometric','abstract','colour'], ratio:'960/1280', date:'2018-05-07T18:28:36', order:5},
-  {id:6, img:'img/06-melting-heads-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Row of drippy, melting ice-cream-like character heads in candy colours — one of the most maximalist pieces in the set.', tags:['character','psychedelic','colour'], ratio:'960/1280', date:'2018-05-07T18:29:00', order:6, colorFrame:'17,106,161'},
-  {id:7, img:'img/07-woman-portrait-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Moody portrait of a woman in a leather jacket, pink and purple lighting across her face.', tags:['portrait','mural','moody'], ratio:'960/1280', date:'2018-05-07T18:29:18', order:7},
-  {id:8, img:'img/08-angel-devil-boat-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'An angel and a devil seated together rowing a boat, painted in warm gold light against a dark wall — surreal, storybook quality.', tags:['surreal','narrative','gold tones'], ratio:'1280/960', date:'2018-05-07T18:34:40', order:8, colorFrame:'182,134,72'},
-  {id:9, img:'img/09-tophat-character-hawley-mews.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Hawley Mews, Camden, London', notes:"", claudeIdea:'Green-toned mural of a top-hatted character among foliage, shot on Hawley Mews — busy wall with several layered elements.', tags:['character','top hat','green tones'], ratio:'960/1280', date:'2018-05-07T18:31:19', order:9},
-  {id:10, img:'img/10-blue-bird-hearts-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", claudeIdea:'Fine-line blue bird (crow or magpie) on brick, a small stencilled figure reaching for a heart-shaped balloon beside it, tagged "Peixe Buenos Aires".', tags:['bird','line art','stencil'], ratio:'1280/960', date:'2018-05-07T18:33:21', order:10},
-  {id:11, img:'img/11-owl-butterfly-buck-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Buck Street, Camden, London', notes:"", claudeIdea:"Owl with a butterfly's wings and face patterning worked into the feathers, on the \"Buck Street NW1\" corner — bright, illustrative style, closing shot of the walk.", tags:['owl','butterfly','illustrative'], ratio:'960/1280', date:'2018-05-07T18:49:48', order:11, colorFrame:'147,103,37'},
+  {id:1, img:'img/01-owl-roof-garden-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:"Blue owl mural above the \"Buck's Head Roof Garden\" lettering, mushrooms and foliage painted in below it.", tags:['owl','lettering','colour'], ratio:'960/1280', date:'2018-05-07T12:12:55', order:1, colorFrame:'36,85,157'},
+  {id:2, img:'img/02-strange-burger-robot-pasteup.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Camden, London', notes:"", altText:'Small robot/pig character paste-up next to a burger poster reading "...ICE THE STRANGE" — much smaller scale than everything else in this batch.', tags:['paste-up','character','small scale'], ratio:'960/1280', date:'2018-05-07T12:13:46', order:2},
+  {id:3, img:'img/03-zebra-striped-rhino-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Rhino painted in bold zebra-style black-and-white stripes with orange accents, tagged "CWOTY" in the corner.', tags:['rhino','black & white','animals'], ratio:'1280/960', date:'2018-05-07T18:28:13', order:3},
+  {id:4, img:'img/04-bat-wolf-creature-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Angular, fanged bat-or-wolf creature mural on a wooden gate, a small "Some Kids" gallery sign mounted beside it.', tags:['creature','geometric','fangs'], ratio:'1280/960', date:'2018-05-07T18:28:21', order:4},
+  {id:5, img:'img/05-geometric-hawley-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Purely abstract geometric mural in reds, greens and blues, painted right under the "Hawley Street NW1" sign.', tags:['geometric','abstract','colour'], ratio:'960/1280', date:'2018-05-07T18:28:36', order:5},
+  {id:6, img:'img/06-melting-heads-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Row of drippy, melting ice-cream-like character heads in candy colours — one of the most maximalist pieces in the set.', tags:['character','psychedelic','colour'], ratio:'960/1280', date:'2018-05-07T18:29:00', order:6, colorFrame:'17,106,161'},
+  {id:7, img:'img/07-woman-portrait-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Moody portrait of a woman in a leather jacket, pink and purple lighting across her face.', tags:['portrait','mural','moody'], ratio:'960/1280', date:'2018-05-07T18:29:18', order:7},
+  {id:8, img:'img/08-angel-devil-boat-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'An angel and a devil seated together rowing a boat, painted in warm gold light against a dark wall — surreal, storybook quality.', tags:['surreal','narrative','gold tones'], ratio:'1280/960', date:'2018-05-07T18:34:40', order:8, colorFrame:'182,134,72'},
+  {id:9, img:'img/09-tophat-character-hawley-mews.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Hawley Mews, Camden, London', notes:"", altText:'Green-toned mural of a top-hatted character among foliage, shot on Hawley Mews — busy wall with several layered elements.', tags:['character','top hat','green tones'], ratio:'960/1280', date:'2018-05-07T18:31:19', order:9},
+  {id:10, img:'img/10-blue-bird-hearts-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Camden, London', notes:"", altText:'Fine-line blue bird (crow or magpie) on brick, a small stencilled figure reaching for a heart-shaped balloon beside it, tagged "Peixe Buenos Aires".', tags:['bird','line art','stencil'], ratio:'1280/960', date:'2018-05-07T18:33:21', order:10},
+  {id:11, img:'img/11-owl-butterfly-buck-street.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Buck Street, Camden, London', notes:"", altText:"Owl with a butterfly's wings and face patterning worked into the feathers, on the \"Buck Street NW1\" corner — bright, illustrative style, closing shot of the walk.", tags:['owl','butterfly','illustrative'], ratio:'960/1280', date:'2018-05-07T18:49:48', order:11, colorFrame:'147,103,37'},
 ];
 
 /* ============================================================
@@ -441,7 +426,7 @@ function thumbHTML(item, opts){
     const cropClass = opts.crop ? ' crop' : '';
     const ratioStyle = item.ratio ? `aspect-ratio:${item.ratio};` : '';
     return `
-      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
+      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.altText || item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
         ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
         <span class="wm-mark">${MONOGRAM_TEXT}</span>
       </div>
@@ -484,7 +469,7 @@ function renderWall(){
         <div class="meta">
           <div class="loc"><span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}</div>
           <div class="cat">${CATEGORIES.find(c=>c.id===item.category).label}</div>
-          <div class="title">${item.title ? item.title : '— untitled —'}</div>
+          ${item.title ? `<div class="title">${item.title}</div>` : ''}
           <div class="tags">
             ${item.artist ? `<span class="tag t-artist">${item.artist}</span>` : ''}
             ${item.tags.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')}
@@ -594,7 +579,8 @@ function openDrawer(id){
   if(!item) return;
   document.getElementById('dThumb').innerHTML = thumbHTML(item, {size:46});
   document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
-  document.getElementById('dTitle').textContent = item.title ? item.title : '— untitled —';
+  document.getElementById('dTitle').textContent = item.title || '';
+  document.getElementById('dTitle').style.display = item.title ? 'block' : 'none';
   document.getElementById('dArtist').textContent = item.artist ? '— ' + item.artist : '';
   document.getElementById('dArtist').style.display = item.artist ? 'block':'none';
 
@@ -607,13 +593,6 @@ function openDrawer(id){
     notesEl.classList.add('notes-empty');
   }
 
-  const ideaEl = document.getElementById('dIdea');
-  if(item.claudeIdea && item.claudeIdea.trim()){
-    ideaEl.style.display = 'block';
-    document.getElementById('dIdeaText').textContent = item.claudeIdea;
-  } else {
-    ideaEl.style.display = 'none';
-  }
 
   document.getElementById('dTags').innerHTML = [
     `<span class="tag">${CATEGORIES.find(c=>c.id===item.category).label}</span>`,

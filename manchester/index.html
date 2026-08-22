@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>MANCHESTER — Field Notes</title>
+<meta name="description" content="The 2018 Bee in the City sculpture trail through the city centre, plus Northern Quarter murals, shutter art and Outhouse MCR's painted utility boxes — two days in Manchester, August 2018.">
+<meta name="theme-color" content="#150E24">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/manchester/">
+<meta property="og:title" content="Manchester · Wander">
+<meta property="og:description" content="The 2018 Bee in the City sculpture trail through the city centre, plus Northern Quarter murals, shutter art and Outhouse MCR's painted utility boxes — two days in Manchester, August 2018.">
+<meta property="og:image" content="https://wander.varunagarwal.com/manchester/img/02-harlequin-bee.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Manchester · Wander">
+<meta name="twitter:description" content="The 2018 Bee in the City sculpture trail through the city centre, plus Northern Quarter murals, shutter art and Outhouse MCR's painted utility boxes — two days in Manchester, August 2018.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/manchester/img/02-harlequin-bee.jpg">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo+Black&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#150E24;
+    --panel:#1E1440;
+    --panel-2:#291C52;
+    --paper:#FFF6E9;
+    --paper-dim:rgba(255,246,233,0.62);
+    --paper-faint:rgba(255,246,233,0.36);
+    --acid:#E9FF3C;
+    --hot:#FF3CAC;
+    --electric:#3CD3FF;
+    --orange:#FF8A3D;
+    --line:rgba(255,246,233,0.14);
+    --hard:#0E0819;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  img{ -webkit-touch-callout:none; }
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Space Grotesk', sans-serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+
+  header{
+    background:linear-gradient(165deg, var(--hard) 0%, var(--ink) 55%, var(--panel-2) 100%);
+    padding:34px 18px 16px;
+    border-bottom:3px solid var(--hard);
+    position:relative;
+    overflow:hidden;
+  }
+  header::before{
+    content:"";
+    position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(circle at 8% 0%, rgba(255,60,172,0.35), transparent 42%),
+      radial-gradient(circle at 96% 18%, rgba(60,211,255,0.28), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(233,255,60,0.12), transparent 55%);
+  }
+  header::after{
+    content:"";
+    position:absolute; inset:0; pointer-events:none; opacity:0.05; mix-blend-mode:screen;
+    background-image:radial-gradient(var(--paper) 1px, transparent 1px);
+    background-size:10px 10px;
+  }
+  .header-top{
+    position:absolute; top:14px; right:18px; z-index:2;
+    display:flex; align-items:center; gap:8px;
+  }
+  .header-mark{
+    display:flex; align-items:center; justify-content:center;
+    width:36px; height:36px; border-radius:50%;
+    border:2px solid var(--hard);
+    background:var(--acid);
+    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:13px;
+    color:var(--hard);
+    box-shadow:2px 2px 0 var(--hard);
+  }
+  .header-inner{position:relative; padding-right:0; z-index:1;}
+  .eyebrow{
+    font-size:11.5px; letter-spacing:0.18em; color:var(--paper-dim);
+    text-align:center; margin-bottom:10px; text-transform:uppercase;
+  }
+  .eyebrow a{color:var(--electric); text-decoration:none; border-bottom:1px dotted var(--electric);}
+  h1{
+    font-family:'Archivo Black', 'Space Grotesk', sans-serif; font-weight:400;
+    font-size:clamp(44px, 15vw, 96px);
+    letter-spacing:0.01em;
+    margin:6px 0 10px;
+    line-height:0.94;
+    text-align:center;
+    text-transform:uppercase;
+    color:var(--acid);
+    -webkit-text-stroke:2px var(--hard);
+    text-shadow:5px 5px 0 var(--hot);
+    position:relative;
+  }
+  .sub{
+    color:var(--paper-dim); font-size:13px; margin:14px auto 26px; max-width:48ch; line-height:1.65;
+    text-align:center;
+  }
+
+  .filters{
+    display:flex; gap:10px; justify-content:center; flex-wrap:wrap; overflow-x:auto; padding:14px 0 4px;
+    scrollbar-width:none;
+  }
+  .filters::-webkit-scrollbar{display:none;}
+  .chip{
+    flex:0 0 auto;
+    font-family:'Space Grotesk', sans-serif;
+    font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+    padding:9px 18px;
+    border:2px solid var(--hard);
+    border-radius:999px;
+    background:var(--panel);
+    color:var(--paper);
+    cursor:pointer;
+    white-space:nowrap;
+    box-shadow:3px 3px 0 var(--hard);
+    transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+  }
+  .chip:active{ transform:translate(2px,2px); box-shadow:1px 1px 0 var(--hard); }
+  .chip.active{
+    background:var(--acid); color:var(--hard); border-color:var(--hard);
+    box-shadow:3px 3px 0 var(--hot);
+    font-weight:700;
+  }
+
+  .count{font-size:11px; color:var(--paper-dim); padding:8px 0 2px; text-align:center;}
+  .count b{color:var(--paper);}
+
+  main{padding:6px 14px 80px; max-width:1150px; margin:0 auto;}
+  .wall{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:22px;
+    padding-top:18px;
+  }
+  @media(min-width:640px){
+    .wall{ display:block; column-count:2; column-gap:26px; padding-top:28px; }
+    .card{ break-inside:avoid; width:100%; margin-bottom:26px; }
+  }
+  @media(min-width:980px){
+    .wall{ column-count:3; }
+  }
+
+  .card{
+    opacity:0; transform:translateY(16px);
+    transition:opacity .5s ease, transform .5s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease;
+    cursor:pointer;
+  }
+  .card.in{opacity:1; transform:translateY(0);}
+  @media(min-width:640px){
+    .card:hover .frame{ box-shadow:5px 5px 0 var(--hard); transform:translate(-2px,-2px); }
+  }
+
+  .frame{
+    position:relative;
+    background:var(--panel);
+    border:2px solid var(--hard);
+    border-radius:10px;
+    overflow:hidden;
+    box-shadow:3px 3px 0 var(--hard);
+    transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  }
+  .frame::before{
+    content:"";
+    position:absolute; top:0; left:0; right:0; height:6px;
+    background: var(--frame-color, var(--acid)); opacity:1; z-index:2;
+  }
+  .card:active .frame{transform:scale(0.985); transition:transform .1s;}
+
+  .thumb{
+    width:100%; min-height:80px;
+    background:var(--hard);
+    position:relative; overflow:hidden;
+    display:flex; align-items:center; justify-content:center;
+    -webkit-user-select:none; user-select:none;
+    -webkit-user-drag:none;
+  }
+  .thumb.has-photo{
+    display:block;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+  }
+  .thumb .glyph{font-size:36px; opacity:0.8;}
+  .thumb .ph-note{
+    position:absolute; bottom:6px; left:6px; right:6px;
+    font-size:9px; letter-spacing:0.04em; color:rgba(255,246,233,0.35);
+    text-transform:uppercase;
+  }
+  .thumb::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(160deg, rgba(255,255,255,0.02), transparent 40%);
+  }
+  .wm-mark{
+    position:absolute; z-index:3; pointer-events:none;
+    bottom:10px; right:10px;
+    width:28px; height:28px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    background:var(--acid);
+    border:2px solid var(--hard);
+    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:11px;
+    color:var(--hard);
+  }
+  .video-badge{
+    position:absolute; top:8px; right:8px; z-index:2;
+    background:var(--hard); color:var(--acid);
+    font-size:9px; font-weight:700; letter-spacing:0.08em; padding:3px 7px; border-radius:999px;
+    border:2px solid var(--hard);
+  }
+
+  .meta{padding:12px 13px 15px;}
+  .meta .loc{
+    font-size:10px; letter-spacing:0.06em; text-transform:uppercase; color:var(--paper-dim);
+    display:flex; align-items:center; gap:5px; justify-content:space-between;
+  }
+  .meta .date{color:rgba(255,246,233,0.32);}
+  .cat{
+    font-family:'Space Grotesk', sans-serif; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--hot); margin-top:7px;
+  }
+  .meta .title{
+    font-family:'Space Grotesk', sans-serif; font-weight:500;
+    font-size:15.5px; letter-spacing:0.005em; margin:4px 0 4px; line-height:1.25;
+  }
+  .meta .artist{font-size:11px; color:var(--electric); margin:0 0 4px;}
+  .tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:6px;}
+  .tag{
+    font-size:9.5px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;
+    padding:3px 9px; border:1px solid var(--hard); border-radius:999px; color:var(--paper-dim);
+    background:rgba(255,246,233,0.04);
+  }
+
+  .scrim{
+    position:fixed; inset:0; background:rgba(6,3,14,0.8);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; z-index:100;
+    backdrop-filter: blur(2px);
+  }
+  .scrim.open{opacity:1; pointer-events:auto;}
+  .drawer{
+    position:fixed; left:0; right:0; bottom:0; z-index:101;
+    background:var(--panel);
+    border-top:3px solid var(--hard);
+    border-radius:18px 18px 0 0;
+    padding:22px 20px 28px;
+    transform:translateY(100%);
+    transition:transform .32s cubic-bezier(.2,.8,.2,1);
+    max-height:80vh; overflow-y:auto;
+    box-shadow:0 -20px 50px rgba(0,0,0,0.5);
+  }
+  .drawer.open{transform:translateY(0);}
+  .drawer-handle{
+    width:40px; height:5px; background:var(--acid); border-radius:4px; margin:0 auto 16px;
+  }
+  .drawer .thumb{margin-bottom:16px; border-radius:8px; border:2px solid var(--hard);}
+  .drawer-close{
+    position:absolute; top:14px; right:14px;
+    background:var(--hot); border:2px solid var(--hard); color:var(--hard);
+    width:32px; height:32px; border-radius:100px; font-size:14px; font-weight:700; cursor:pointer;
+    box-shadow:2px 2px 0 var(--hard);
+  }
+  .d-loc{font-size:10.5px; letter-spacing:0.06em; text-transform:uppercase; color:var(--paper-dim); display:flex; justify-content:space-between; align-items:center;}
+  .d-loc .date{color:rgba(255,246,233,0.35); letter-spacing:0.06em;}
+  .d-title{font-family:'Archivo Black','Space Grotesk',sans-serif; font-weight:400; text-transform:uppercase; font-size:26px; margin:8px 0 2px; line-height:1.05; color:var(--acid);}
+  .d-artist{color:var(--electric); font-size:12px; margin-bottom:12px;}
+  .d-notes{font-size:13.5px; line-height:1.65; color:var(--paper); white-space:pre-line;}
+  .d-notes.notes-empty{color:var(--paper-dim); font-style:italic;}
+  .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
+
+  footer{
+    text-align:center; padding:30px 16px 60px; color:var(--paper-dim); font-size:10.5px;
+    letter-spacing:0.05em; text-transform:uppercase;
+  }
+  footer a{color:var(--hot); text-decoration:none;}
+
+  .empty{
+    text-align:center; padding:60px 20px; color:var(--paper-dim); font-size:12px;
+  }
+</style>
+</head>
+<body>
+
+<header id="siteHeader">
+  <div class="header-top">
+    <span class="header-mark">VA</span>
+  </div>
+  <div class="header-inner">
+    <div class="eyebrow"><a href="../">← field notes</a> / manchester</div>
+    <h1>Manchester</h1>
+    <div class="sub">Two days on foot around the city centre and the Northern Quarter — the 2018 "Bee in the City" sculpture trail, Affleck's, Outhouse MCR's painted utility boxes, and a run of gable murals and shutter art. August 2018.</div>
+  </div>
+
+  <div class="filters" id="filters"></div>
+  <div class="count" id="count"></div>
+</header>
+
+<main>
+  <div class="wall" id="wall"></div>
+  <div class="empty" id="empty" style="display:none;">Nothing matches that combo yet. Clear a filter.</div>
+</main>
+
+<footer>
+  Manchester, England
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <button class="drawer-close" id="drawerClose">✕</button>
+  <div class="thumb" id="dThumb"><span class="glyph" id="dGlyph"></span></div>
+  <div class="d-loc" id="dLoc"></div>
+  <div class="d-title" id="dTitle"></div>
+  <div class="d-artist" id="dArtist" style="display:none;"></div>
+  <div class="d-notes" id="dNotes"></div>
+  <div class="d-tags" id="dTags"></div>
+</div>
+
+<script>
+/* ============================================================
+   DATA — one object per photo/video.
+
+   img       — file path in img/ (poster frame, if type is video)
+   type      — "photo" | "video"
+   category  — one of the CATEGORIES below
+   artist    — credited artist/creator, or null if unsigned/unknown
+   location  — plain text
+   notes     — YOUR words only. Leave "" and it'll show a placeholder
+               until you write something. Claude never edits this.
+   altText   — optional, Claude's description of the piece. Used as
+               the image's accessible name (aria-label) for screen
+               readers — never shown as visible copy on the page.
+   tags      — short labels, freely organised
+   ratio     — "width/height" of the actual image file.
+   order     — controls display sequence, lowest first.
+   colorFrame— optional "r,g,b" string for a colour-sampled frame accent.
+   date      — ISO date/time string, pulled from EXIF.
+   ============================================================ */
+const CATEGORIES = [
+  {id:'bee', label:'Bee in the City'},
+  {id:'mural', label:'Mural'},
+  {id:'paste-up', label:'Paste-up'},
+  {id:'shutter', label:'Shutter'},
+];
+
+const GLYPHS = {'bee':'🐝','mural':'🎨','paste-up':'📌','shutter':'🪟'};
+
+const MONOGRAM_TEXT = 'VA';
+
+const DATA = [
+  {id:1, img:'img/01-aubee-piccadilly.jpg', type:'photo', category:'bee', artist:null, title:'AuBee', location:'Manchester Piccadilly, Manchester', notes:"", altText:"AuBee — one of over a hundred Bee in the City sculptures scattered around Manchester in 2018 (in aid of the We Love Manchester Emergency Fund), this bronze/gunmetal casting stands outside Piccadilly station, the first stop of the trail.", tags:['bee in the city','bronze','piccadilly'], ratio:'960/1280', date:'2018-08-21T17:13:20', order:1, colorFrame:'140,91,55'},
+  {id:2, img:'img/02-harlequin-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A Bee in the City sculpture painted in a rainbow harlequin triangle pattern, planted on a shopping street outside an Adidas store.", tags:['bee in the city','harlequin','geometric'], ratio:'960/1280', date:'2018-08-21T18:22:11', order:2, colorFrame:'175,145,12'},
+  {id:3, img:'img/03-gold-spot-bee-king-street.jpg', type:'photo', category:'bee', artist:null, title:'', location:'King Street, Manchester', notes:"", altText:"A floral polka-dot bee with gold-spotted wings, standing outside Pall Mall Medical on King Street.", tags:['bee in the city','floral','king street'], ratio:'960/1280', date:'2018-08-21T18:27:53', order:3, colorFrame:'164,112,11'},
+  {id:4, img:'img/04-polka-dot-bee-phone-box.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A blue polka-dot bee with a swarm of tiny bees painted across its wings, resting on a brick-pattern base with a ball of wool at its feet — a red phone box just visible behind it.", tags:['bee in the city','polka dot','phone box'], ratio:'960/1280', date:'2018-08-21T18:28:09', order:4},
+  {id:5, img:'img/05-skyline-bee-rainbow-wings.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"Rainbow-striped wings and a red head, with the Manchester skyline silhouetted in black across its abdomen against a sunset gradient.", tags:['bee in the city','skyline','rainbow'], ratio:'960/1280', date:'2018-08-21T18:34:05', order:5},
+  {id:6, img:'img/06-rocket-steampunk-bee.jpg', type:'photo', category:'bee', artist:null, title:'Rocket, the Steampunk Bee', location:'Manchester city centre', notes:"", altText:"Rocket, the Steampunk (Bee) — brass gear-and-rivet paintwork with 'BEE INVENTIVE' lettered around the base, created by an artist surnamed Sinclair (the rest of the plaque was chained over) and sponsored by law firm Browne Jacobson.", tags:['bee in the city','steampunk','gears'], ratio:'960/1280', date:'2018-08-21T18:51:44', order:6, colorFrame:'169,119,18'},
+  {id:7, img:'img/07-striped-wing-polka-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A polka-dot yellow abdomen under teal-and-blue striped wings, one wide blue eye looking straight down the lens.", tags:['bee in the city','polka dot','stripes'], ratio:'960/1280', date:'2018-08-21T18:52:16', order:7, colorFrame:'202,137,0'},
+  {id:8, img:'img/08-binary-code-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A bee painted entirely in green binary code on black, standing outside a Foot Locker — a nod to Manchester's tech and digital scene.", tags:['bee in the city','binary','tech'], ratio:'960/1280', date:'2018-08-21T19:21:42', order:8},
+  {id:9, img:'img/09-fabric-pattern-bee-boutique.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"An ornate rust-and-cream fabric-print bee with a string of pearls draped over its abdomen, standing inside a boutique shopfront rather than out on the pavement.", tags:['bee in the city','fabric pattern','boutique'], ratio:'960/1280', date:'2018-08-22T12:59:25', order:9, colorFrame:'140,64,0'},
+  {id:10, img:'img/10-patchwork-skyline-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A patchwork of tiny painted terraced houses and rooftops covering the bee's abdomen, wings in bold primary colours.", tags:['bee in the city','patchwork','skyline'], ratio:'960/1280', date:'2018-08-22T13:00:59', order:10},
+  {id:11, img:'img/11-tartan-skyline-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"Deep red head and tartan-block wings over a night-blue abdomen with the skyline silhouetted across it, chained off outside a row of shops.", tags:['bee in the city','tartan','skyline'], ratio:'960/1280', date:'2018-08-22T13:15:01', order:11, colorFrame:'32,129,198'},
+  {id:12, img:'img/12-saint-cactus-shutter.jpg', type:'photo', category:'shutter', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A shopfront shutter painted with a haloed, masked figure in pink robes, flanked by cartoon cacti and a sunburst — only visible when the shop's closed.", tags:['shutter art','northern quarter','cactus'], ratio:'960/1280', date:'2018-08-22T13:25:35', order:12},
+  {id:13, img:'img/13-mosaic-portrait-masks.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"Three cracked-mosaic portrait masks set into brick recesses along a Northern Quarter wall — a bearded face in heart-shaped sunglasses, a mask in orange and yellow, one in pink and purple.", tags:['mural','portrait','mosaic'], ratio:'1280/960', date:'2018-08-22T13:25:48', order:13, colorFrame:'179,66,60'},
+  {id:14, img:'img/14-god-created-manchester-plaque.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"'...and on the sixth day, God created MANchester' — a faux-scripture plaque bolted to a Northern Quarter warehouse wall, playing on the city's own name.", tags:['plaque','text art','civic pride'], ratio:'960/1280', date:'2018-08-22T13:26:08', order:14},
+  {id:15, img:'img/15-dapper-fox-afflecks.jpg', type:'photo', category:'mural', artist:null, title:'', location:"Affleck's, Northern Quarter, Manchester", notes:"", altText:"A pinstripe-suited fox in a top hat, reaching for a passing bee, painted across black-and-yellow hazard stripes inside Affleck's — the Northern Quarter's indoor indie market, gig posters and a Hello Kitty figure crowding the shelf above it.", tags:['mural','fox','afflecks'], ratio:'960/1280', date:'2018-08-22T13:40:46', order:15, colorFrame:'198,127,0'},
+  {id:16, img:'img/16-believe-in-you-moth-mural.jpg', type:'photo', category:'mural', artist:null, title:'Believe in You', location:'Northern Quarter, Manchester', notes:"", altText:"A psychedelic moth-faced mural in flame orange and turquoise, banners either side reading 'Believe' and 'in You!'.", tags:['mural','moth','psychedelic'], ratio:'1280/960', date:'2018-08-22T13:56:18', order:16, colorFrame:'0,69,149'},
+  {id:17, img:'img/17-punk-dog-stencil.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A grey, chained-up dog stencil with a rainbow mohawk, sprayed onto a stairwell wall — small enough to walk straight past.", tags:['stencil','dog','punk'], ratio:'1280/960', date:'2018-08-22T14:16:59', order:17, colorFrame:'16,134,185'},
+  {id:18, img:'img/18-leopard-print-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"Leopard-print wings and gold filigree swirls over a near-black abdomen — one of the more subdued, jewel-toned bees on the trail.", tags:['bee in the city','leopard print','gold'], ratio:'960/1280', date:'2018-08-22T14:25:59', order:18},
+  {id:19, img:'img/19-tankpetrol-girl-portrait-outhouse.jpg', type:'photo', category:'mural', artist:'Tank Petrol', title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A teal-toned portrait of a girl with a braid, on one of Outhouse MCR's painted utility boxes — signed @tankpetrol, the same artist behind the large gable portrait later in this walk.", tags:['outhouse mcr','portrait','tankpetrol'], ratio:'960/1280', date:'2018-08-22T14:26:13', order:19},
+  {id:20, img:'img/20-outhouse-gorilla-box.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A flat-colour teal gorilla character on a pink Outhouse MCR box, tag scrawled in the corner too stylised to read with confidence.", tags:['outhouse mcr','character','utility box'], ratio:'960/1280', date:'2018-08-22T14:26:35', order:20, colorFrame:'146,36,75'},
+  {id:21, img:'img/21-checkered-diamond-panel.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A pink-and-green checkerboard panel with a diamond cut into the pattern — shot six seconds after the gorilla box, likely the reverse face of the same street furniture.", tags:['pattern','geometric'], ratio:'960/1280', date:'2018-08-22T14:26:41', order:21, colorFrame:'52,181,133'},
+  {id:22, img:'img/22-eye-tentacle-monster-pasteup.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A white paste-up monster bristling with eyestalks around one huge green eye, tongue lolling out, a small sword icon stencilled in the corner.", tags:['paste-up','monster','eye'], ratio:'960/1280', date:'2018-08-22T14:26:59', order:22},
+  {id:23, img:'img/23-neon-bites-shutter.jpg', type:'photo', category:'shutter', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A shutter mural under a 'Neon Bites' sign — a wide-eyed burger character fist-bumping a red-haired girl.", tags:['shutter art','characters','food'], ratio:'1280/960', date:'2018-08-22T14:28:46', order:23},
+  {id:24, img:'img/24-military-woman-shutter.jpg', type:'photo', category:'shutter', artist:null, title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A shutter portrait of a woman in a military-style cap, an 'I ❤' tag sprayed on the brick above.", tags:['shutter art','portrait'], ratio:'960/1280', date:'2018-08-22T14:28:49', order:24, colorFrame:'21,109,183'},
+  {id:25, img:'img/25-tankpetrol-portrait-mural.jpg', type:'photo', category:'mural', artist:'Tank Petrol', title:'', location:'Northern Quarter, Manchester', notes:"", altText:"A large gable-end portrait of an older man in warm ochre tones, signed @tankpetrol above the frame — the same signature as the girl portrait on the Outhouse box earlier in this walk, plus a scatter of unrelated tags below.", tags:['mural','portrait','tankpetrol'], ratio:'960/1280', date:'2018-08-22T14:31:20', order:25},
+  {id:26, img:'img/26-blue-pattern-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A blue polka-dot bee with small painted icons scattered across its wings, orange legs planted on a ringed-pattern base.", tags:['bee in the city','pattern','blue'], ratio:'960/1280', date:'2018-08-22T14:32:12', order:26},
+  {id:27, img:'img/27-polka-dot-yellow-bee.jpg', type:'photo', category:'bee', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A bright yellow bee with black polka-dot wings and pink-ringed eyes, tucked into a scaffolded loading bay away from the main shopping streets.", tags:['bee in the city','polka dot','yellow'], ratio:'960/1280', date:'2018-08-22T14:50:09', order:27},
+  {id:28, img:'img/28-hands-mural.jpg', type:'photo', category:'mural', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A gable-end mural of cupped hands, high on a building above a bus stop and billboard — spotted from across the road rather than up close.", tags:['mural','hands'], ratio:'960/1280', date:'2018-08-22T16:01:17', order:28, colorFrame:'50,64,140'},
+  {id:29, img:'img/29-blue-robot-sticker.jpg', type:'photo', category:'paste-up', artist:null, title:'', location:'Manchester city centre', notes:"", altText:"A die-cut blue robot sticker with big round eyes and a toothy grin, stuck to a sheet of plywood hoarding.", tags:['sticker','robot','character'], ratio:'960/1280', date:'2018-08-22T16:47:52', order:29, colorFrame:'4,140,199'},
+];
+
+/* ============================================================
+   Rendering
+   ============================================================ */
+let activeCat = 'all';
+
+function formatDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  if(isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+}
+
+function renderFilters(){
+  const wrap = document.getElementById('filters');
+  const chips = [{id:'all', label:'All'}, ...CATEGORIES];
+  wrap.innerHTML = chips.map(c => `
+    <button class="chip ${activeCat===c.id?'active':''}" data-cat="${c.id}">${c.label}</button>
+  `).join('');
+  wrap.querySelectorAll('.chip').forEach(el=>{
+    el.onclick = () => { activeCat = el.dataset.cat; renderFilters(); renderWall(); };
+  });
+}
+
+function thumbHTML(item, opts){
+  opts = opts || {};
+  const g = GLYPHS[item.category] || '📍';
+  if(item.img){
+    const ratioStyle = item.ratio ? `aspect-ratio:${item.ratio};` : '';
+    return `
+      <div class="thumb has-photo" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.altText || item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
+        ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
+        <span class="wm-mark">${MONOGRAM_TEXT}</span>
+      </div>
+    `;
+  }
+  return `
+    <div class="thumb">
+      ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
+      <span class="glyph" style="font-size:${opts.size||36}px">${g}</span>
+      <div class="ph-note">placeholder — add photo url</div>
+    </div>
+  `;
+}
+
+function renderWall(){
+  const wall = document.getElementById('wall');
+  const empty = document.getElementById('empty');
+  const count = document.getElementById('count');
+  const items = DATA
+    .filter(d => activeCat==='all' || d.category===activeCat)
+    .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
+
+  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCat!=='all' ? ' · ' + CATEGORIES.find(c=>c.id===activeCat).label : ''}`;
+
+  if(items.length===0){
+    wall.innerHTML=''; empty.style.display='block'; return;
+  }
+  empty.style.display='none';
+
+  wall.innerHTML = items.map(item => {
+    const frameStyle = item.colorFrame ? ` style="--frame-color:rgb(${item.colorFrame})"` : '';
+    return `
+    <div class="card" data-id="${item.id}">
+      <div class="frame"${frameStyle} ${item.colorFrame ? `data-color-frame="1" data-img="${item.img}"` : ''}>
+        <div style="position:relative;">
+          ${thumbHTML(item)}
+        </div>
+        <div class="meta">
+          <div class="loc"><span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}</div>
+          <div class="cat">${CATEGORIES.find(c=>c.id===item.category).label}</div>
+          ${item.title ? `<div class="title">${item.title}</div>` : ''}
+          ${item.artist ? `<div class="artist">${item.artist}</div>` : ''}
+          <div class="tags">
+            ${item.tags.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+
+  wall.querySelectorAll('.card').forEach(el=>{
+    el.onclick = () => openDrawer(parseInt(el.dataset.id));
+  });
+
+  applyColorFrames();
+
+  requestAnimationFrame(()=>{
+    const obs = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); obs.unobserve(e.target);} });
+    }, {threshold:0.15});
+    wall.querySelectorAll('.card').forEach(c=>obs.observe(c));
+  });
+}
+
+/* ============================================================
+   Colour-sampled frames — refines each flagged card's frame colour by
+   re-reading the actual photo pixels in the browser (never uploads
+   anywhere). The DATA colorFrame value is already a real colour picked
+   from the image, so this only improves on it when it can.
+   ============================================================ */
+function rgbToHsv(r, g, b){
+  r/=255; g/=255; b/=255;
+  const mx=Math.max(r,g,b), mn=Math.min(r,g,b), d=mx-mn;
+  let h=0;
+  if(d!==0){
+    if(mx===r) h = ((g-b)/d) % 6;
+    else if(mx===g) h = (b-r)/d + 2;
+    else h = (r-g)/d + 4;
+    h *= 60; if(h<0) h+=360;
+  }
+  return [h/360, mx===0?0:d/mx, mx];
+}
+function hsvToRgb(h,s,v){
+  const i = Math.floor(h*6), f = h*6-i;
+  const p=v*(1-s), q=v*(1-f*s), t=v*(1-(1-f)*s);
+  let r,g,b;
+  switch(i%6){
+    case 0: r=v;g=t;b=p; break; case 1: r=q;g=v;b=p; break;
+    case 2: r=p;g=v;b=t; break; case 3: r=p;g=q;b=v; break;
+    case 4: r=t;g=p;b=v; break; default: r=v;g=p;b=q;
+  }
+  return [Math.round(r*255), Math.round(g*255), Math.round(b*255)];
+}
+function extractVividColor(url, callback){
+  const img = new Image();
+  img.onload = () => {
+    try{
+      const size = 48;
+      const c = document.createElement('canvas');
+      c.width = size; c.height = size;
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, 0, 0, size, size);
+      const data = ctx.getImageData(0, 0, size, size).data;
+      let cutoff = 0.45;
+      let best = null;
+      while(!best && cutoff > 0.1){
+        const bins = {};
+        for(let i=0; i<data.length; i+=4){
+          const [h,s,v] = rgbToHsv(data[i], data[i+1], data[i+2]);
+          if(s < cutoff || v < 0.2) continue;
+          const bi = Math.floor(h*24) % 24;
+          const w = s*v;
+          if(!bins[bi]) bins[bi] = {w:0, r:0, g:0, b:0};
+          bins[bi].w += w; bins[bi].r += data[i]*w; bins[bi].g += data[i+1]*w; bins[bi].b += data[i+2]*w;
+        }
+        const keys = Object.keys(bins);
+        if(keys.length){
+          best = keys.reduce((a,b)=> bins[a].w > bins[b].w ? a : b);
+          best = bins[best];
+        } else {
+          cutoff -= 0.1;
+        }
+      }
+      if(!best) return;
+      let r = best.r/best.w, g = best.g/best.w, b = best.b/best.w;
+      let [h,s,v] = rgbToHsv(r,g,b);
+      s = Math.min(1, s*1.2); v = Math.min(1, Math.max(v, 0.55));
+      const [fr,fg,fb] = hsvToRgb(h,s,v);
+      callback(`rgb(${fr},${fg},${fb})`);
+    } catch(e){ /* canvas blocked — baked-in colour stays */ }
+  };
+  img.src = url;
+}
+
+function applyColorFrames(){
+  document.querySelectorAll('[data-color-frame="1"]').forEach(frameEl => {
+    const url = frameEl.dataset.img;
+    if(!url || frameEl.dataset.colorApplied) return;
+    frameEl.dataset.colorApplied = '1';
+    extractVividColor(url, (color) => {
+      frameEl.style.setProperty('--frame-color', color);
+    });
+  });
+}
+
+function openDrawer(id){
+  const item = DATA.find(d=>d.id===id);
+  if(!item) return;
+
+  const dThumb = document.getElementById('dThumb');
+  dThumb.innerHTML = thumbHTML(item, {size:44});
+
+  document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
+  document.getElementById('dTitle').textContent = item.title || '';
+  document.getElementById('dTitle').style.display = item.title ? 'block' : 'none';
+
+  const artistEl = document.getElementById('dArtist');
+  if(item.artist){
+    artistEl.style.display = 'block';
+    artistEl.textContent = item.artist;
+  } else {
+    artistEl.style.display = 'none';
+  }
+
+  const notesEl = document.getElementById('dNotes');
+  if(item.notes && item.notes.trim()){
+    notesEl.textContent = item.notes;
+    notesEl.classList.remove('notes-empty');
+  } else {
+    notesEl.textContent = '— add your notes —';
+    notesEl.classList.add('notes-empty');
+  }
+
+
+  document.getElementById('dTags').innerHTML = [
+    `<span class="tag">${CATEGORIES.find(c=>c.id===item.category).label}</span>`,
+    ...item.tags.map(t=>`<span class="tag">${t}</span>`)
+  ].join('');
+
+  document.getElementById('scrim').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer(){
+  document.getElementById('scrim').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+document.getElementById('scrim').onclick = closeDrawer;
+document.getElementById('drawerClose').onclick = closeDrawer;
+
+renderFilters();
+renderWall();
+
+document.addEventListener('contextmenu', (e) => { if(e.target.closest('.thumb')) e.preventDefault(); });
+document.addEventListener('dragstart', (e) => { if(e.target.closest('.thumb')) e.preventDefault(); });
+
+</script>
+
+</body>
+</html>

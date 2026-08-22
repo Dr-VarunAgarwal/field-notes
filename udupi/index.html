@@ -312,17 +312,6 @@
   .d-title{font-family:'EB Garamond',serif; font-weight:600; font-size:26px; text-transform:none; margin:6px 0 2px; line-height:1.1;}
   .d-notes{font-size:13.5px; line-height:1.65; color:var(--chalk); white-space:pre-line;}
   .d-notes.notes-empty{color:var(--chalk-dim); font-style:italic;}
-  .d-idea{
-    margin-top:14px; padding:12px 13px;
-    background:rgba(79,195,176,0.07);
-    border:1px dashed rgba(79,195,176,0.28);
-    border-radius:4px;
-  }
-  .d-idea .lbl{
-    font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase;
-    color:var(--acid); margin-bottom:5px; display:block;
-  }
-  .d-idea .txt{font-size:12.5px; line-height:1.55; color:var(--chalk-dim);}
   .d-tags{display:flex; gap:6px; flex-wrap:wrap; margin-top:16px;}
 
   footer{
@@ -372,10 +361,6 @@
   <div class="d-loc" id="dLoc"></div>
   <div class="d-title" id="dTitle"></div>
   <div class="d-notes" id="dNotes"></div>
-  <div class="d-idea" id="dIdea" style="display:none;">
-    <span class="lbl">Note from Claude</span>
-    <div class="txt" id="dIdeaText"></div>
-  </div>
   <div class="d-tags" id="dTags"></div>
 </div>
 
@@ -389,9 +374,9 @@
    location  — plain text
    notes     — YOUR words only. Leave "" and it'll show a placeholder
                until you write something. Claude never edits this.
-   claudeIdea— optional. A guess/suggestion about what the piece is —
-               shown separately in the drawer, clearly labelled "Note
-               from Claude", never mixed into your notes.
+   altText   — optional, Claude's description of the piece. Used as
+               the image's accessible name (aria-label) for screen
+               readers — never shown as visible copy on the page.
    tags      — short labels, freely organised
    ratio     — "width/height" of the actual image file, used so the
                photo displays at its true proportions.
@@ -410,11 +395,11 @@ const GLYPHS = {'landscape':'🌊','trail':'🌳','golden-hour':'🌅'};
 const MONOGRAM_TEXT = 'VA';
 
 const DATA = [
-  {id:1, img:'img/01-lake-boats-aerial.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", claudeIdea:"Drone shot over a small backwater — a couple of narrow wooden boats pulled up on the bank, palms crowding right to the waterline. First flight with the new drone, from the look of the framing.", tags:['drone','aerial','boats'], ratio:'1280/722', date:'2025-08-24T11:09:27', order:1, colorFrame:'98,148,231'},
-  {id:2, img:'img/02-lake-island-framed-trees.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", claudeIdea:"Overcast lake view framed through a tree trunk in the foreground — a small tree-covered island sitting in the middle of the water.", tags:['framed shot','island','overcast'], ratio:'964/1280', date:'2025-08-03T18:02:11', order:2},
-  {id:3, img:'img/03-lake-island-wide.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", claudeIdea:"Wider view of the same kind of lake and island, different visit — grey sky, water down a little, more of the bank exposed.", tags:['wide shot','island','overcast'], ratio:'1280/964', date:'2026-02-21T17:34:00', order:3},
-  {id:4, img:'img/04-walking-path-leaves.jpg', type:'photo', category:'trail', title:'', location:'Udupi, Karnataka, India', notes:"", claudeIdea:"Paved walking path cutting through a stand of trees, yellow fallen leaves scattered across the tarmac — looks like a lakeside park path.", tags:['walking path','fallen leaves','trees'], ratio:'964/1280', date:'2026-02-25T18:03:52', order:4},
-  {id:5, img:'img/05-sunset-lake.jpg', type:'photo', category:'golden-hour', title:'', location:'Udupi, Karnataka, India', notes:"", claudeIdea:"Sun going down over the same lake, shot through tree branches with a bit of a lens flare — same walk as the path shot, a few minutes later by the look of the light.", tags:['sunset','silhouette','lake'], ratio:'964/1280', date:'2026-02-25T18:18:15', order:5, colorFrame:'140,82,52'},
+  {id:1, img:'img/01-lake-boats-aerial.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Drone shot over a small backwater — a couple of narrow wooden boats pulled up on the bank, palms crowding right to the waterline. First flight with the new drone, from the look of the framing.", tags:['drone','aerial','boats'], ratio:'1280/722', date:'2025-08-24T11:09:27', order:1, colorFrame:'98,148,231'},
+  {id:2, img:'img/02-lake-island-framed-trees.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Overcast lake view framed through a tree trunk in the foreground — a small tree-covered island sitting in the middle of the water.", tags:['framed shot','island','overcast'], ratio:'964/1280', date:'2025-08-03T18:02:11', order:2},
+  {id:3, img:'img/03-lake-island-wide.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Wider view of the same kind of lake and island, different visit — grey sky, water down a little, more of the bank exposed.", tags:['wide shot','island','overcast'], ratio:'1280/964', date:'2026-02-21T17:34:00', order:3},
+  {id:4, img:'img/04-walking-path-leaves.jpg', type:'photo', category:'trail', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Paved walking path cutting through a stand of trees, yellow fallen leaves scattered across the tarmac — looks like a lakeside park path.", tags:['walking path','fallen leaves','trees'], ratio:'964/1280', date:'2026-02-25T18:03:52', order:4},
+  {id:5, img:'img/05-sunset-lake.jpg', type:'photo', category:'golden-hour', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Sun going down over the same lake, shot through tree branches with a bit of a lens flare — same walk as the path shot, a few minutes later by the look of the light.", tags:['sunset','silhouette','lake'], ratio:'964/1280', date:'2026-02-25T18:18:15', order:5, colorFrame:'140,82,52'},
 ];
 
 /* ============================================================
@@ -447,7 +432,7 @@ function thumbHTML(item, opts){
     const cropClass = opts.crop ? ' crop' : '';
     const ratioStyle = item.ratio ? `aspect-ratio:${item.ratio};` : '';
     return `
-      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
+      <div class="thumb has-photo${cropClass}" style="${ratioStyle}background-image:url('${item.img}');" role="img" aria-label="${(item.altText || item.title || item.category || 'photo').replace(/"/g,'&quot;')}">
         ${item.type==='video' ? '<div class="video-badge">▶ VIDEO</div>' : ''}
         <span class="wm-mark">${MONOGRAM_TEXT}</span>
       </div>
@@ -490,7 +475,7 @@ function renderWall(){
         <div class="meta">
           <div class="loc"><span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}</div>
           <div class="cat">${CATEGORIES.find(c=>c.id===item.category).label}</div>
-          <div class="title">${item.title ? item.title : '— untitled —'}</div>
+          ${item.title ? `<div class="title">${item.title}</div>` : ''}
           <div class="tags">
             ${item.tags.slice(0,2).map(t=>`<span class="tag">${t}</span>`).join('')}
           </div>
@@ -599,7 +584,8 @@ function openDrawer(id){
   if(!item) return;
   document.getElementById('dThumb').innerHTML = thumbHTML(item, {size:46});
   document.getElementById('dLoc').innerHTML = `<span>📍 ${item.location}</span>${item.date ? `<span class="date">${formatDate(item.date)}</span>` : ''}`;
-  document.getElementById('dTitle').textContent = item.title ? item.title : '— untitled —';
+  document.getElementById('dTitle').textContent = item.title || '';
+  document.getElementById('dTitle').style.display = item.title ? 'block' : 'none';
 
   const notesEl = document.getElementById('dNotes');
   if(item.notes && item.notes.trim()){
@@ -610,13 +596,6 @@ function openDrawer(id){
     notesEl.classList.add('notes-empty');
   }
 
-  const ideaEl = document.getElementById('dIdea');
-  if(item.claudeIdea && item.claudeIdea.trim()){
-    ideaEl.style.display = 'block';
-    document.getElementById('dIdeaText').textContent = item.claudeIdea;
-  } else {
-    ideaEl.style.display = 'none';
-  }
 
   document.getElementById('dTags').innerHTML = [
     `<span class="tag">${CATEGORIES.find(c=>c.id===item.category).label}</span>`,

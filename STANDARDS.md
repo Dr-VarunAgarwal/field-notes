@@ -189,20 +189,24 @@ pass.
 **Current site shape** (check this hasn't drifted before trusting it):
 - Hub `index.html` — `PLACES` array, split by `kind` (§5) into Albums
   and Photo Walks. Live albums: Shoreditch, Camden, Khajuraho, Concerts,
-  Udupi, Glasgow. Live walks: Isle of Skye, Glasgow & Edinburgh. Story-only
-  (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Parvati Valley,
-  Mauritius. Draft (not yet promoted): Rishikesh, Mussoorie, Dehradun.
+  Udupi, Glasgow, Manchester. Live walks: Isle of Skye, Glasgow & Edinburgh.
+  Story-only (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Parvati
+  Valley, Mauritius. Draft (not yet promoted): Rishikesh, Mussoorie, Dehradun.
 - Album pages (`london/`, `camden/`, `khajuraho/`, `udupi/`, `glasgow/`,
-  each a standalone HTML file) — own theme (CSS custom
-  properties, fonts, category glyphs; don't reuse one city's exact
-  palette for another) and a `DATA` array: `id, img, type('photo'|'video'),
-  category, artist, title, location, notes` (Varun's own words, blank
-  `""` if none), `claudeIdea` (AI observation, kept separate from
-  `notes`), `tags, ratio('w/h'), date` (ISO, from EXIF), `order,
-  colorFrame` (optional `'r,g,b'`, only on the most vivid pieces). Each
-  such page also has its own `extractVividColor` JS function (in-browser
-  version of the same algorithm — mirror it in Python for the baked-in
-  `colorFrame` value).
+  `manchester/`, each a standalone HTML file) — own theme (CSS custom
+  properties, fonts, category glyphs, button/chip style; don't reuse one
+  city's palette or chrome for another — each place should read as
+  visually distinct, not a reskin) and a `DATA` array: `id, img,
+  type('photo'|'video'), category, artist, title, location, notes`
+  (Varun's own words, blank `""` if none), `altText` (Claude's
+  description of the piece — wired into the image's accessible name
+  (`aria-label`/`img.alt`), never shown as visible copy on the page, kept
+  separate from `notes`), `tags, ratio('w/h'), date` (ISO, from EXIF),
+  `order, colorFrame` (optional `'r,g,b'`, only on the most vivid
+  pieces). Each such page also has its own `extractVividColor` JS
+  function (in-browser version of the same algorithm — mirror it in
+  Python for the baked-in `colorFrame` value). `title` renders only when
+  set — no placeholder text when it's blank.
 - Walk pages (`skye/`, `glasgow-edinburgh/`) — same `DATA` fields as an
   album page, but HTML is hand-placed into `.day` sections rather than
   generated into a grid, and DATA is read by `id` to hydrate each
@@ -214,7 +218,7 @@ pass.
   artist, img, type, video, extras` (array of extra photo paths,
   side-scrolling in the drawer — must include the cover photo itself in
   that strip, not just the extras, or the scroll breaks one direction),
-  `venue, city, date, billing, notes, tags, order`. No `claudeIdea` field
+  `venue, city, date, billing, notes, tags, order`. No `altText` field
   — keep commentary out of `notes` here too, unless it's a plain fact
   ("Lollapalooza India, day one").
 - `street-art/index.html` — themed cross-city aggregator (§6 above), own
@@ -263,8 +267,11 @@ pass.
    mirroring that page's own `extractVividColor` JS function in Python.
 6. **Write `DATA` entries** — match the schema/style of whichever page
    is being edited exactly (see shapes above). `notes` stays blank
-   unless it's Varun's own words; AI observations go in `claudeIdea`
-   (or get left out entirely on `concerts`, which has no such field).
+   unless it's Varun's own words; AI observations go in `altText` (or
+   get left out entirely on `concerts`, which has no such field).
+   `altText` is not visible UI copy — it's the image's accessible name,
+   so write it as a plain description a screen reader would read out,
+   not as editorial commentary directed at the page's viewer.
    If any pieces are street art, also feed them into
    `street-art/index.html` per §6. If a draft place is being promoted to
    live, also update `PLACES`, `FEATURED_PHOTOS`, `HEADER_PHOTOS` per §5

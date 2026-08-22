@@ -475,9 +475,9 @@
     line-height:1.5; text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0;
   }
   .story-caption:empty{ display:none; }
-  /* small, clearly-labelled AI-assessment note — same "Note from Claude"
-     convention used in the album drawers, never mixed into the caption
-     above (which is always your own words). */
+  /* small AI-assessment note field (kept in the data, not surfaced as
+     visible UI here — same treatment as `altText` on the album pages),
+     never mixed into the caption above (which is always your own words). */
   .story-note{
     font-size:0.68rem; line-height:1.45; color:rgba(255,255,255,0.6);
     text-shadow:0 1px 4px rgba(0,0,0,0.6); margin:0; max-width:88%;
@@ -673,6 +673,7 @@ const PLACES = [
   {name:'Concerts', slug:'concerts', status:'live', kind:'album', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows', region:''},
   {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces', region:'Karnataka 🇮🇳'},
   {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
@@ -712,6 +713,8 @@ const HEADER_PHOTOS = [
   {src:'glasgow/img/12-necropolis-crosses-sunset.jpg', coords:'55.8625°N, 4.2316°W'},
   {src:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', coords:'55.9529°N, 3.1719°W'},
   {src:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', coords:'55.9550°N, 3.1828°W'},
+  {src:'manchester/img/02-harlequin-bee.jpg', coords:'53.4808°N, 2.2426°W'},
+  {src:'manchester/img/15-dapper-fox-afflecks.jpg', coords:'53.4808°N, 2.2426°W'},
 ];
 const headerPhotoEl = document.getElementById('header-photo');
 const headerCoordsEl = document.getElementById('header-coords');
@@ -779,6 +782,9 @@ const FEATURED_PHOTOS = [
   {img:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', caption:'The Palace of Holyroodhouse and the ruin of Holyrood Abbey, shot long from Calton Hill.', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
   {img:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
   {img:'glasgow-edinburgh/img/d1-04-necropolis-city-view.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
+  {img:'manchester/img/01-aubee-piccadilly.jpg', caption:'AuBee, outside Piccadilly station — one of over a hundred Bee in the City sculptures across Manchester in 2018.', place:'Manchester', slug:'manchester'},
+  {img:'manchester/img/06-rocket-steampunk-bee.jpg', caption:'Rocket, the Steampunk Bee.', place:'Manchester', slug:'manchester'},
+  {img:'manchester/img/15-dapper-fox-afflecks.jpg', caption:'', place:'Manchester', slug:'manchester'},
 ];
 
 const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];

@@ -215,13 +215,6 @@
     background:var(--paper); border:1px solid var(--line); border-radius:2px;
     padding:0.9rem 1rem;
   }
-  .d-idea-lbl{
-    font-size:0.62rem; letter-spacing:0.1em; text-transform:uppercase;
-    margin:0 0 0.35rem; display:block;
-  }
-  .day--i .d-idea-lbl{ color:var(--day1); }
-  .day--ii .d-idea-lbl{ color:var(--day2); }
-  .d-idea-txt{ font-size:0.84rem; line-height:1.6; color:var(--ink-soft); margin:0 0 0.7rem; }
   .d-notes{ font-size:0.84rem; line-height:1.6; color:var(--ink); margin:0 0 0.7rem; white-space:pre-line; }
   .d-notes.notes-empty{ color:var(--ink-faint); font-style:italic; }
   .d-tags{ display:flex; gap:0.4rem; flex-wrap:wrap; }
@@ -414,28 +407,29 @@
 /* ============================================================
    DATA — one object per photo. Same schema as the other place
    pages (id, img, type, category, title, location, notes,
-   claudeIdea, tags, ratio, date, order, colorFrame) — but this
+   altText, tags, ratio, date, order, colorFrame) — but this
    page's HTML is hand-placed rather than generated into a grid,
    so DATA is read by id to populate each figure's caption and
    its click-to-expand detail panel, not to build the layout.
 
    notes      — YOUR words only, left blank until you write them.
-   claudeIdea — my observations, always shown separately/labelled.
+   altText — Claude's description of the piece, used as the image's
+             accessible name (img.alt) — never shown as visible copy.
    ============================================================ */
 const DATA = [
-  {id:1, img:'img/d1-01-kelvingrove-park.jpg', type:'photo', category:'architecture', title:'', location:'Kelvingrove Park, Glasgow', notes:"", claudeIdea:"Kelvingrove Art Gallery and Museum's red sandstone towers seen across the park — the wider, cleaner daylight version of the phone shot from the same trip.", tags:['kelvingrove','park','architecture'], ratio:'1280/720', date:'2025-10-26', order:1, colorFrame:'35,140,26'},
-  {id:2, img:'img/d1-02-necropolis-monuments.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"Celtic crosses and obelisks among the Necropolis's autumn trees, low golden-hour light.", tags:['necropolis','celtic crosses','autumn'], ratio:'1280/720', date:'2025-10-27', order:2, colorFrame:'140,121,26'},
-  {id:3, img:'img/d1-03-necropolis-path.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"A tree-lined avenue within the Necropolis grounds, autumn leaves scattered across the gravel.", tags:['necropolis','path','autumn'], ratio:'720/1280', date:'2025-10-27', order:3},
-  {id:4, img:'img/d1-04-necropolis-city-view.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", claudeIdea:"Looking out from among the monuments toward the city below, dusk light and a couple of steam plumes on the skyline.", tags:['necropolis','cityscape','dusk'], ratio:'1280/720', date:'2025-10-27', order:4, colorFrame:'82,140,46'},
+  {id:1, img:'img/d1-01-kelvingrove-park.jpg', type:'photo', category:'architecture', title:'', location:'Kelvingrove Park, Glasgow', notes:"", altText:"Kelvingrove Art Gallery and Museum's red sandstone towers seen across the park — the wider, cleaner daylight version of the phone shot from the same trip.", tags:['kelvingrove','park','architecture'], ratio:'1280/720', date:'2025-10-26', order:1, colorFrame:'35,140,26'},
+  {id:2, img:'img/d1-02-necropolis-monuments.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", altText:"Celtic crosses and obelisks among the Necropolis's autumn trees, low golden-hour light.", tags:['necropolis','celtic crosses','autumn'], ratio:'1280/720', date:'2025-10-27', order:2, colorFrame:'140,121,26'},
+  {id:3, img:'img/d1-03-necropolis-path.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", altText:"A tree-lined avenue within the Necropolis grounds, autumn leaves scattered across the gravel.", tags:['necropolis','path','autumn'], ratio:'720/1280', date:'2025-10-27', order:3},
+  {id:4, img:'img/d1-04-necropolis-city-view.jpg', type:'photo', category:'cemetery', title:'', location:'Glasgow Necropolis', notes:"", altText:"Looking out from among the monuments toward the city below, dusk light and a couple of steam plumes on the skyline.", tags:['necropolis','cityscape','dusk'], ratio:'1280/720', date:'2025-10-27', order:4, colorFrame:'82,140,46'},
 
-  {id:5, img:'img/d2-01-calton-hill-skyline.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"The Old Town skyline from Calton Hill — the Balmoral's clock tower, Edinburgh Castle on its ridge, the Scott Monument's spire, and the curved silver roof of the W Edinburgh hotel.", tags:['old town','skyline','calton hill'], ratio:'1280/720', date:'2025-11-01', order:5, colorFrame:'56,71,140'},
-  {id:6, img:'img/d2-02-national-monument.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"The National Monument — Edinburgh's unfinished Parthenon replica, begun in 1826 and abandoned half-built; long nicknamed 'Edinburgh's Disgrace'.", tags:['national monument','columns','calton hill'], ratio:'1280/720', date:'2025-11-01', order:6, colorFrame:'58,84,140'},
-  {id:7, img:'img/d2-03-firth-of-forth.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"Looking north to the Firth of Forth and Leith's docks — a ship carrying wind turbine blades moored in the harbour, the Fife coast hazy across the water.", tags:['firth of forth','leith','coast'], ratio:'1280/720', date:'2025-11-01', order:7, colorFrame:'70,109,157'},
-  {id:8, img:'img/d2-04-arthurs-seat.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"Arthur's Seat and Salisbury Crags to the south, the Scottish Parliament's tented roofline visible at their foot.", tags:["arthur's seat",'salisbury crags','parliament'], ratio:'1280/720', date:'2025-11-01', order:8, colorFrame:'131,140,58'},
-  {id:9, img:'img/d2-05-holyrood-palace.jpg', type:'photo', category:'architecture', title:'', location:'Holyrood, Edinburgh', notes:"", claudeIdea:"The Palace of Holyroodhouse and the roofless ruin of Holyrood Abbey beside it, Salisbury Crags rising behind — shot long from up on the hill.", tags:['holyrood palace','abbey ruin','crags'], ratio:'1280/720', date:'2025-11-01', order:9, colorFrame:'140,135,57'},
-  {id:10, img:'img/d2-06-crow-calton-hill.jpg', type:'photo', category:'wildlife', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"A crow working the grass on the hilltop — one quiet frame between the wide monument and skyline shots.", tags:['crow','grass','calton hill'], ratio:'1280/720', date:'2025-11-01', order:10, colorFrame:'124,140,41'},
-  {id:11, img:'img/d2-07-city-observatory.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", claudeIdea:"One of the old observatory buildings on Calton Hill, its round tower framed through autumn branches and tall grass.", tags:['observatory','tower','calton hill'], ratio:'1280/720', date:'2025-11-01', order:11, colorFrame:'140,124,41'},
-  {id:12, img:'img/d2-08-scott-monument.jpg', type:'photo', category:'architecture', title:'', location:'Princes Street, Edinburgh', notes:"", claudeIdea:"The Scott Monument's gothic spire from street level, a ferris wheel behind it and crowds crossing at its foot — the walk's closing frame, back down among people after two hilltops of empty views.", tags:['scott monument','princes street','crowds'], ratio:'720/1280', date:'2025-11-01', order:12, colorFrame:'143,99,13'},
+  {id:5, img:'img/d2-01-calton-hill-skyline.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"The Old Town skyline from Calton Hill — the Balmoral's clock tower, Edinburgh Castle on its ridge, the Scott Monument's spire, and the curved silver roof of the W Edinburgh hotel.", tags:['old town','skyline','calton hill'], ratio:'1280/720', date:'2025-11-01', order:5, colorFrame:'56,71,140'},
+  {id:6, img:'img/d2-02-national-monument.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"The National Monument — Edinburgh's unfinished Parthenon replica, begun in 1826 and abandoned half-built; long nicknamed 'Edinburgh's Disgrace'.", tags:['national monument','columns','calton hill'], ratio:'1280/720', date:'2025-11-01', order:6, colorFrame:'58,84,140'},
+  {id:7, img:'img/d2-03-firth-of-forth.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"Looking north to the Firth of Forth and Leith's docks — a ship carrying wind turbine blades moored in the harbour, the Fife coast hazy across the water.", tags:['firth of forth','leith','coast'], ratio:'1280/720', date:'2025-11-01', order:7, colorFrame:'70,109,157'},
+  {id:8, img:'img/d2-04-arthurs-seat.jpg', type:'photo', category:'cityscape', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"Arthur's Seat and Salisbury Crags to the south, the Scottish Parliament's tented roofline visible at their foot.", tags:["arthur's seat",'salisbury crags','parliament'], ratio:'1280/720', date:'2025-11-01', order:8, colorFrame:'131,140,58'},
+  {id:9, img:'img/d2-05-holyrood-palace.jpg', type:'photo', category:'architecture', title:'', location:'Holyrood, Edinburgh', notes:"", altText:"The Palace of Holyroodhouse and the roofless ruin of Holyrood Abbey beside it, Salisbury Crags rising behind — shot long from up on the hill.", tags:['holyrood palace','abbey ruin','crags'], ratio:'1280/720', date:'2025-11-01', order:9, colorFrame:'140,135,57'},
+  {id:10, img:'img/d2-06-crow-calton-hill.jpg', type:'photo', category:'wildlife', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"A crow working the grass on the hilltop — one quiet frame between the wide monument and skyline shots.", tags:['crow','grass','calton hill'], ratio:'1280/720', date:'2025-11-01', order:10, colorFrame:'124,140,41'},
+  {id:11, img:'img/d2-07-city-observatory.jpg', type:'photo', category:'architecture', title:'', location:'Calton Hill, Edinburgh', notes:"", altText:"One of the old observatory buildings on Calton Hill, its round tower framed through autumn branches and tall grass.", tags:['observatory','tower','calton hill'], ratio:'1280/720', date:'2025-11-01', order:11, colorFrame:'140,124,41'},
+  {id:12, img:'img/d2-08-scott-monument.jpg', type:'photo', category:'architecture', title:'', location:'Princes Street, Edinburgh', notes:"", altText:"The Scott Monument's gothic spire from street level, a ferris wheel behind it and crowds crossing at its foot — the walk's closing frame, back down among people after two hilltops of empty views.", tags:['scott monument','princes street','crowds'], ratio:'720/1280', date:'2025-11-01', order:12, colorFrame:'143,99,13'},
 ];
 
 /* ============================================================
@@ -534,7 +528,7 @@ function hydrateShots(){
     const mount = el.querySelector('.mount');
     const img = el.querySelector('img');
     img.src = item.img;
-    img.alt = item.title || item.location || '';
+    img.alt = item.altText || item.title || item.location || '';
     if(item.ratio) mount.style.aspectRatio = item.ratio;
     if(item.colorFrame){
       mount.style.setProperty('--frame-color', `rgb(${item.colorFrame})`);
@@ -549,12 +543,10 @@ function hydrateShots(){
 
     const detail = el.querySelector('.detail');
     if(detail){
-      const ideaBlock = item.claudeIdea ? `<span class="d-idea-lbl">Note from Claude</span><p class="d-idea-txt">${item.claudeIdea}</p>` : '';
       const hasNotes = item.notes && item.notes.trim();
       const notesTxt = hasNotes ? item.notes : '— add your notes —';
       detail.innerHTML = `
         <div class="detail-inner">
-          ${ideaBlock}
           <p class="d-notes${hasNotes ? '' : ' notes-empty'}">${notesTxt}</p>
           <div class="d-tags">${(item.tags||[]).map(t=>`<span>${t}</span>`).join('')}</div>
         </div>`;
