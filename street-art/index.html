@@ -88,7 +88,7 @@
   }
   .mode-icon-btn.is-fun{ color:var(--acid); border-color:rgba(255,138,61,0.35); }
   .header-inner{position:relative; padding-right:96px;}
-  .eyebrow{
+  .eyebrow{ position:relative; z-index:2;
     font-size:11px; letter-spacing:0.25em; color:var(--chalk-dim);
     text-transform:uppercase; margin-bottom:8px;
     transition:opacity .3s ease;
@@ -167,6 +167,19 @@
   .chip.city-camden.active{ background:var(--city-camden); color:#26000c; border-color:var(--city-camden); }
   .chip.city-glasgow.active{ background:var(--city-glasgow); color:#211a2c; border-color:var(--city-glasgow); }
   .chip.city-manchester.active{ background:var(--city-manchester); color:#241a00; border-color:var(--city-manchester); }
+  .artist-select{
+    display:block; margin:10px auto 0; max-width:260px;
+    font-family:'Space Mono', monospace; font-size:11px; letter-spacing:0.05em; text-transform:uppercase;
+    padding:7px 10px; border:1px solid var(--line); border-radius:100px;
+    background:var(--concrete); color:var(--chalk-dim);
+  }
+  .gift-cta{
+    display:block; width:max-content; margin:26px auto 0;
+    font-family:'Anton', sans-serif; font-size:15px; letter-spacing:0.06em;
+    padding:12px 22px; border:1px solid var(--acid); border-radius:100px;
+    color:var(--acid); text-decoration:none;
+  }
+  .gift-cta:hover{ background:var(--acid); color:#1a0009; }
 
   .count{font-size:11px; color:var(--chalk-dim); padding:6px 0 2px;}
   .count b{color:var(--chalk);}
@@ -377,7 +390,7 @@
   </div>
   <div class="header-inner">
     <div class="title-block">
-      <div class="eyebrow"><a href="../">← field notes</a> / exit through the gift shop</div>
+      <div class="eyebrow"><a href="../">← wander ~ field notes</a> / exit through the gift shop</div>
       <h1>EXIT THROUGH<br><span>THE GIFT SHOP</span></h1>
     </div>
     <div class="sub">Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Flip the switch for the full compendium, city by city.</div>
@@ -388,6 +401,7 @@
     <button class="vt-btn" data-view="all" id="vtAll">All street art</button>
   </div>
   <div class="filters" id="filters"></div>
+  <select class="artist-select" id="artistFilter"></select>
   <div class="count" id="count"></div>
 </header>
 
@@ -398,6 +412,7 @@
 
 <footer>
   Exit through the gift shop — a curated tour, or the full compendium, your call
+  <a class="gift-cta" href="https://contact.varunagarwal.com" target="_blank" rel="noopener">Identify an artist? Contact me!</a>
 </footer>
 
 <div class="scrim" id="scrim"></div>
@@ -597,7 +612,19 @@ const DATA = [
    Rendering
    ============================================================ */
 let activeCity = 'all';
+let activeArtist = 'all';
 let curatedView = true;
+
+function renderArtistFilter(){
+  const sel = document.getElementById('artistFilter');
+  const artists = [...new Set(DATA.map(d => d.artist).filter(Boolean))].sort();
+  sel.innerHTML = [
+    `<option value="all">All artists</option>`,
+    `<option value="__unidentified">Unidentified</option>`,
+    ...artists.map(a => `<option value="${a}">${a}</option>`)
+  ].join('');
+  sel.onchange = () => { activeArtist = sel.value; renderWall(); };
+}
 
 function setView(view){
   curatedView = view === 'curated';
@@ -660,9 +687,10 @@ function renderWall(){
   const items = DATA
     .filter(d => !curatedView || d.curated)
     .filter(d => activeCity==='all' || d.citySlug===activeCity)
+    .filter(d => activeArtist==='all' || (activeArtist==='__unidentified' ? !d.artist : d.artist===activeArtist))
     .sort((a,b) => (a.order ?? 0) - (b.order ?? 0));
 
-  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCity!=='all' ? ' · ' + CITIES.find(c=>c.id===activeCity).label : ''}${curatedView ? ' · curated' : ''}`;
+  count.innerHTML = `<b>${items.length}</b> piece${items.length===1?'':'s'}${activeCity!=='all' ? ' · ' + CITIES.find(c=>c.id===activeCity).label : ''}${activeArtist!=='all' ? ' · ' + (activeArtist==='__unidentified'?'Unidentified':activeArtist) : ''}${curatedView ? ' · curated' : ''}`;
 
   if(items.length===0){
     wall.innerHTML='';
@@ -887,6 +915,7 @@ document.getElementById('vtCurated').classList.toggle('active', curatedView);
 document.getElementById('vtAll').classList.toggle('active', !curatedView);
 
 renderFilters();
+renderArtistFilter();
 renderWall();
 
 document.addEventListener('contextmenu', (e) => {
