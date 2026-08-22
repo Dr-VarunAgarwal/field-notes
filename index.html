@@ -318,25 +318,28 @@
   .story-item{ display:flex; flex-direction:column; align-items:center; gap:0.4rem; flex-shrink:0; }
   .story-ring{
     position:relative; padding:3px; border-radius:50%; display:inline-block; cursor:pointer;
-    transition:transform 0.2s ease; border:none; background:none;
+    transition:transform 0.2s ease; border:0 solid transparent; background:none;
   }
   .story-ring:hover{ transform:scale(1.05); }
   /* the ring colour lives on ::before (not the button's own background) so
-     that "viewed" can mask away half of *just the ring*, via a separate
-     layer, without also cutting into the avatar photo sitting on top of it. */
+     the avatar photo sitting on top of it is never affected. */
   .story-ring::before{
     content:''; position:absolute; inset:0; border-radius:50%;
   }
-  .story-ring.color-0::before{ background:linear-gradient(135deg,#2A46E0 0%,#5B7CFA 100%); }
-  .story-ring.color-1::before{ background:linear-gradient(135deg,#454F30 0%,#7C8A57 100%); }
-  .story-ring.color-2::before{ background:linear-gradient(135deg,#FF7F00 0%,#FFB347 100%); }
-  .story-ring.color-3::before{ background:linear-gradient(135deg,#E73F1E 0%,#F9B637 100%); }
-  /* viewed: same colour, half the ring — a clean crescent instead of a
-     washed-out tint of the same hue. */
-  .story-ring.viewed::before{
-    -webkit-mask-image:conic-gradient(#000 0deg 180deg, transparent 180deg 360deg);
-    mask-image:conic-gradient(#000 0deg 180deg, transparent 180deg 360deg);
-  }
+  .story-ring.color-0::before{ background:linear-gradient(135deg,#6C3CE9 0%,#A78BFA 100%); }
+  .story-ring.color-1::before{ background:linear-gradient(135deg,#FF2E93 0%,#FF8FC7 100%); }
+  .story-ring.color-2::before{ background:linear-gradient(135deg,#FF7A00 0%,#FFC145 100%); }
+  .story-ring.color-3::before{ background:linear-gradient(135deg,#00BFA6 0%,#7CF2D9 100%); }
+  /* viewed: swap the filled ring for a dotted one in the same colour —
+     a clear "seen" signal without muting the hue into mud. Border
+     replaces padding (both 3px total, border-box) so the button's
+     overall size never shifts between the two states. */
+  .story-ring.viewed{ padding:0; border-width:3px; border-style:dotted; }
+  .story-ring.viewed::before{ content:none; }
+  .story-ring.color-0.viewed{ border-color:#6C3CE9; }
+  .story-ring.color-1.viewed{ border-color:#FF2E93; }
+  .story-ring.color-2.viewed{ border-color:#FF7A00; }
+  .story-ring.color-3.viewed{ border-color:#00BFA6; }
   .story-avatar{
     position:relative; z-index:1;
     width:64px; height:64px; border:3px solid var(--cream);
@@ -611,8 +614,14 @@
 <script>
 /* ============================================================
    PLACES — one card per city/location page.
-   status: "live" (clickable) or "draft" (upcoming, shown in the
-   itinerary section instead of the grid).
+   status: "live" (clickable, its own city page) or "draft" (upcoming,
+   shown in the itinerary section instead of the grid). A third value,
+   "story", is for a place that's represented in the Stories ring feed
+   but doesn't have (or isn't getting yet) a full city page — it's
+   excluded from both the grid and the itinerary, since it's no longer
+   "upcoming", but still counted in the ticker below: the ticker
+   represents every place that's been captured in some form, not just
+   the ones with a full album.
    ============================================================ */
 const PLACES = [
   {name:'London — Shoreditch', slug:'london', status:'live', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces'},
@@ -623,7 +632,7 @@ const PLACES = [
   {name:'Glasgow', slug:'glasgow', status:'live', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces'},
   {name:'Isle of Skye', slug:'skye', status:'live', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'42 pieces'},
   {name:'Rishikesh', slug:'rishikesh', status:'draft', count:''},
-  {name:'Edinburgh', slug:'edinburgh', status:'draft', count:''},
+  {name:'Edinburgh', slug:'edinburgh', status:'story', count:''},
   {name:'Mussoorie', slug:'mussoorie', status:'draft', count:''},
   {name:'Dehradun', slug:'dehradun', status:'draft', count:''},
 ];
@@ -766,7 +775,58 @@ document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
    that place's img/ folder, fill in location, add a caption if
    you've actually written one for that piece.
    ============================================================ */
+/* Ordered newest-first by each story's most recent slide date — matches
+   the Instagram-style convention this feature already mirrors elsewhere
+   (most recently active account first). Re-sort whenever a slide is
+   added/removed if the ordering should reflect it. */
 const STORIES = [
+  { id:"cat", username:"Cat", avatar:"stories/cat/img/avatar.jpg", slides:[
+    {img:"stories/cat/img/log-20260818203238-1.jpg", location:"Manipal", date:'2026-08-18T20:32:38', caption:""},
+  ] },
+
+  { id:'udupi-manipal', username:'Udupi-Manipal', avatar:'stories/udupi-manipal/img/01-manipal-aerial-tiltshift.jpg', slug:'udupi-manipal', slides:[
+    {img:'stories/udupi-manipal/img/09-kasturba-medical-college.jpg', location:'Kasturba Medical College, Manipal', date:'2023-12-28T14:42:51', caption:'', note:"KMC's campus front — one of Manipal's best-known landmarks."},
+    {img:'stories/udupi-manipal/img/03-kayak-paddle-golden-hour.jpg', location:'Udupi, Karnataka', date:'2024-04-07T13:33:41', caption:'', note:"A kayak paddle catching the light on the backwaters."},
+    {img:'stories/udupi-manipal/img/05-manipal-performer-motion.jpg', location:'Manipal, Karnataka', date:'2024-09-10T20:25:25', caption:'', note:"A costumed folk performer mid-movement on the street, long exposure blurring the arms."},
+    {img:'stories/udupi-manipal/img/04-kambala-buffalo-race.jpg', location:'Coastal Karnataka', date:'2025-02-22T19:06:56', caption:'Kambula.', note:"A pair of buffaloes and their racer at full sprint down a flooded Kambala track."},
+    {img:'stories/udupi-manipal/img/08-lake-sunset-silhouette.jpg', location:'Udupi, Karnataka', date:'2025-06-07T19:25:40', caption:'', note:"A lake going quiet at dusk, reeds silhouetted in the foreground."},
+    {img:'stories/udupi-manipal/img/06-mtr-udupi-food-spread.jpg', location:'MTR, Udupi', date:'2025-07-06T11:36:25', caption:'', note:"A proper Udupi breakfast spread — poori, idli, and a run of chutneys."},
+    {img:'udupi/img/02-lake-island-framed-trees.jpg', location:'Udupi, Karnataka', date:'2025-08-03T18:02:11', caption:'', note:"Overcast lake view framed through a tree trunk in the foreground — a small tree-covered island sitting in the middle of the water."},
+    {img:'udupi/img/01-lake-boats-aerial.jpg', location:'Udupi, Karnataka', date:'2025-08-24T11:09:27', caption:'', note:"Drone shot over a small backwater — a couple of narrow wooden boats pulled up on the bank, palms crowding right to the waterline."},
+    {img:'stories/udupi-manipal/img/07-seethanadi-nature-reserve.jpg', location:'Seethanadi Nature Reserve, Agumbe', date:'2025-08-27T10:21:52', caption:'', note:"Mist settling over the rainforest canopy at Seethanadi."},
+    {img:'stories/udupi-manipal/img/01-manipal-aerial-tiltshift.jpg', location:'Manipal, Karnataka', date:'2025-09-07T15:23:10', caption:'Tilt Shift with Manipal Aerials.', note:"The whole town from above, tilt-shifted into a miniature."},
+    {img:'stories/udupi-manipal/img/10-bike-ride-delta-beach.jpg', location:'Delta Beach, Kodibengre, Udupi', date:'2025-09-14T09:22:29', caption:'Bike ride to Delta Beach.', note:"A ride out through coconut groves to where the river meets the coast."},
+    {img:'stories/udupi-manipal/img/02-palm-trees-sunset.jpg', location:'Udupi, Karnataka', date:'2026-02-20T18:56:17', caption:'', note:"Palms cut black against a pink evening sky."},
+    {img:'udupi/img/03-lake-island-wide.jpg', location:'Udupi, Karnataka', date:'2026-02-21T17:34:00', caption:'', note:"Wider view of the same kind of lake and island, different visit — grey sky, water down a little, more of the bank exposed."},
+    {img:'udupi/img/04-walking-path-leaves.jpg', location:'Udupi, Karnataka', date:'2026-02-25T18:03:52', caption:'', note:"Paved walking path cutting through a stand of trees, yellow fallen leaves scattered across the tarmac — looks like a lakeside park path."},
+    {img:'udupi/img/05-sunset-lake.jpg', location:'Udupi, Karnataka', date:'2026-02-25T18:18:15', caption:'', note:"Sun going down over the same lake, shot through tree branches with a bit of a lens flare — same walk as the path shot, a few minutes later by the look of the light."},
+  ]},
+
+  { id:'concerts', username:'Concerts', avatar:'concerts/img/green-day.jpg', slug:'concerts', slides:[
+    {img:'concerts/img/green-day.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'Green Day — Lollapalooza India, headline set.'},
+    {img:'concerts/img/banshee-labyrinth.jpg', location:'Edinburgh, Scotland', date:'2025-10-31', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.'},
+    {img:'concerts/img/hanumankind.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'Hanumankind — Lollapalooza India.'},
+    {img:'concerts/img/glass-beams.jpg', location:'Bangalore, India', date:'2025-10-12', caption:'Glass Beams — Bangalore show.'},
+    {img:'concerts/img/john-mayer.jpg', location:'Mumbai, India', date:'2026-02-11', caption:'John Mayer — Mumbai show.'},
+    {img:'concerts/img/aurora.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'AURORA — Lollapalooza India, day two.'},
+    {img:'concerts/img/isabel-larosa.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
+    {img:'concerts/img/talwinder.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Talwiinder — Lollapalooza India, day one.'},
+  ]},
+
+  { id:'edinburgh', username:'Edinburgh', avatar:'stories/edinburgh/img/03-greyfriars-bobby-statue.jpg', slug:'edinburgh', slides:[
+    {img:'stories/edinburgh/img/01-royal-mile-street-musician.jpg', location:'The Royal Mile, Edinburgh', date:'2025-10-28T17:21:51', caption:'', note:"A street musician playing on the cobblestones outside a Royal Mile shopfront, after dark."},
+    {img:'stories/edinburgh/img/02-surgeons-hall-statues.jpg', location:"Surgeons' Hall Museums, Edinburgh", date:'2025-10-31T14:39:25', caption:'', note:"A row of bronze figures outside Surgeons' Hall Museums."},
+    {img:'stories/edinburgh/img/03-greyfriars-bobby-statue.jpg', location:'Greyfriars Bobby, Edinburgh', date:'2025-10-31T17:51:06', caption:'', note:"The Greyfriars Bobby statue, right outside the pub named after him."},
+  ]},
+
+  { id:'glasgow', username:'Glasgow', avatar:'glasgow/img/17-red-haired-woman-mural.jpg', slug:'glasgow', slides:[
+    {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', location:'Glasgow Necropolis', date:'2025-10-27T16:07:00', caption:'', note:'Celtic crosses and obelisks catching the last light in the Necropolis, golden hour.'},
+    {img:'glasgow/img/04-museum-tiger-taxidermy.jpg', location:'Kelvingrove Art Gallery and Museum, Glasgow', date:'2025-10-26T15:14:42', caption:'', note:'A taxidermy tiger in a glass case, its own skull displayed on a stand beside it.'},
+    {img:'glasgow/img/17-red-haired-woman-mural.jpg', location:'Glasgow', date:'2025-10-27T12:17:54', caption:'', note:'A large-scale gable-end portrait — a woman with pink-red hair holding a candlestick and a martini, in an ornately patterned robe.'},
+    {img:'glasgow/img/14-goma-wellington-statue.jpg', location:'Royal Exchange Square, Glasgow', date:'2025-10-27T14:45:01', caption:'', note:'The Duke of Wellington statue outside the Gallery of Modern Art, topped with a traffic cone — a running, decades-old Glasgow in-joke the council has given up fighting.'},
+    {img:'glasgow/img/26-west-end-market-blackberries.jpg', location:'Glasgow West End', date:'2025-10-28T11:09:29', caption:'', note:'A carton of blackberries picked up at a West End fruit stall.'},
+  ]},
+
   { id:'street-art', username:'Street Art', avatar:'stories/street-art/img/03-dank-door-mural.jpg', slug:'street-art', slides:[
     {img:'london/img/69-designated-graffiti-area-stencil.jpg', location:'The former Cargo nightclub, Shoreditch, London', date:'2018-06-14T17:31:57', caption:'', note:"Banksy's Guard Dog, still keeping watch over the old Cargo site."},
     {img:'london/img/43-xray-ribcage-mural.jpg', location:'Hanbury Street, Brick Lane, London', date:'2018-06-14T16:00:51', caption:'', note:"SHOK-1's spray-can X-ray style — Stolen Heart, mid-anatomy."},
@@ -779,6 +839,7 @@ const STORIES = [
     {img:'stories/street-art/img/05-melting-figure-drip-mural.jpg', location:'Shoreditch, London', date:'2018-06-14T15:21:58', caption:'', note:"A figure dissolving into a puddle of its own paint, twice over."},
     {img:'stories/street-art/img/06-rabbit-hood-skeleton-alcove.jpg', location:'Shoreditch, London', date:'2018-06-14T15:25:12', caption:'', note:"A rabbit-eared figure standing watch over a glowing skeleton kid, in a doorway that fits it exactly."},
   ]},
+
   { id:'khajuraho', username:'Khajuraho', avatar:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', slug:'khajuraho', slides:[
     {img:'khajuraho/img/01-sunset-temple-silhouette.jpg', location:'Khajuraho, Madhya Pradesh', date:'2022-12-08T16:35:24', caption:'', note:"Temple towers silhouetted against a hazy sunset behind the garden hedges — the classic first look at the Western Group complex."},
     {img:'khajuraho/img/05-mithuna-carving-niche.jpg', location:'Khajuraho, Madhya Pradesh', date:'2022-12-08T16:43:34', caption:'', note:"One of the famous mithuna (couple) carvings in a wall niche — the erotic sculpture Khajuraho is best known for internationally."},
@@ -787,23 +848,7 @@ const STORIES = [
     {img:'khajuraho/img/18-nandi-bull-statue.jpg', location:'Khajuraho, Madhya Pradesh', date:'2022-12-09T14:40:54', caption:'', note:"Close on a stone Nandi (bull) statue, weathered and pitted with age — Nandi is Shiva's mount, so this marks a Shiva shrine nearby."},
     {img:'khajuraho/img/26-white-temple-domes-wide.jpg', location:'Khajuraho, Madhya Pradesh', date:'2022-12-09T15:51:42', caption:'', note:"Wider shot of the same white multi-domed temple, full structure visible with a tree alongside for scale — a good closing/establishing shot for this stretch."},
   ]},
-  { id:'concerts', username:'Concerts', avatar:'concerts/img/green-day.jpg', slug:'concerts', slides:[
-    {img:'concerts/img/green-day.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'Green Day — Lollapalooza India, headline set.'},
-    {img:'concerts/img/banshee-labyrinth.jpg', location:'Edinburgh, Scotland', date:'2025-10-31', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.'},
-    {img:'concerts/img/hanumankind.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'Hanumankind — Lollapalooza India.'},
-    {img:'concerts/img/glass-beams.jpg', location:'Bangalore, India', date:'2025-10-12', caption:'Glass Beams — Bangalore show.'},
-    {img:'concerts/img/john-mayer.jpg', location:'Mumbai, India', date:'2026-02-11', caption:'John Mayer — Mumbai show.'},
-    {img:'concerts/img/aurora.jpg', location:'Mumbai, India', date:'2025-03-09', caption:'AURORA — Lollapalooza India, day two.'},
-    {img:'concerts/img/isabel-larosa.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Isabel LaRosa — Lollapalooza India, day one.'},
-    {img:'concerts/img/talwinder.jpg', location:'Mumbai, India', date:'2025-03-08', caption:'Talwiinder — Lollapalooza India, day one.'},
-  ]},
-  { id:'udupi', username:'Udupi', avatar:'udupi/img/05-sunset-lake.jpg', slug:'udupi', slides:[
-    {img:'udupi/img/01-lake-boats-aerial.jpg', location:'Udupi, Karnataka', date:'2025-08-24T11:09:27', caption:'', note:"Drone shot over a small backwater — a couple of narrow wooden boats pulled up on the bank, palms crowding right to the waterline. First flight with the new drone, from the look of the framing."},
-    {img:'udupi/img/02-lake-island-framed-trees.jpg', location:'Udupi, Karnataka', date:'2025-08-03T18:02:11', caption:'', note:"Overcast lake view framed through a tree trunk in the foreground — a small tree-covered island sitting in the middle of the water."},
-    {img:'udupi/img/04-walking-path-leaves.jpg', location:'Udupi, Karnataka', date:'2026-02-25T18:03:52', caption:'', note:"Paved walking path cutting through a stand of trees, yellow fallen leaves scattered across the tarmac — looks like a lakeside park path."},
-    {img:'udupi/img/05-sunset-lake.jpg', location:'Udupi, Karnataka', date:'2026-02-25T18:18:15', caption:'', note:"Sun going down over the same lake, shot through tree branches with a bit of a lens flare — same walk as the path shot, a few minutes later by the look of the light."},
-    {img:'udupi/img/03-lake-island-wide.jpg', location:'Udupi, Karnataka', date:'2026-02-21T17:34:00', caption:'', note:"Wider view of the same kind of lake and island, different visit — grey sky, water down a little, more of the bank exposed."},
-  ]},
+
   { id:'skye', username:'Skye', avatar:'skye/img/d3-08-quiraing.jpg', slug:'skye', slides:[
     {img:'skye/img/d2-02-eilean-donan-wide.jpg', location:'Eilean Donan Castle, Dornie', date:'2018-06-08T10:56:16', caption:''},
     {img:'skye/img/d2-10-sligachan-bridge-cuillins.jpg', location:'Sligachan Old Bridge', date:'2018-06-08T14:17:44', caption:''},
@@ -811,14 +856,6 @@ const STORIES = [
     {img:'skye/img/d3-08-quiraing.jpg', location:'The Quiraing, Trotternish', date:'2018-06-09T16:51:03', caption:''},
     {img:'skye/img/d3-09-kilt-rock.jpg', location:'Kilt Rock, Trotternish', date:'2018-06-09T17:19:52', caption:''},
     {img:'skye/img/coda-02-glenfinnan-viaduct.jpg', location:'Glenfinnan Viaduct, Lochaber', date:'2018-06-10T15:24:41', caption:''},
-  ]},
-
-  { id:'glasgow', username:'Glasgow', avatar:'glasgow/img/17-red-haired-woman-mural.jpg', slug:'glasgow', slides:[
-    {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', location:'Glasgow Necropolis', date:'2025-10-27T16:07:00', caption:'', note:'Celtic crosses and obelisks catching the last light in the Necropolis, golden hour.'},
-    {img:'glasgow/img/04-museum-tiger-taxidermy.jpg', location:'Kelvingrove Art Gallery and Museum, Glasgow', date:'2025-10-26T15:14:42', caption:'', note:'A taxidermy tiger in a glass case, its own skull displayed on a stand beside it.'},
-    {img:'glasgow/img/17-red-haired-woman-mural.jpg', location:'Glasgow', date:'2025-10-27T12:17:54', caption:'', note:'A large-scale gable-end portrait — a woman with pink-red hair holding a candlestick and a martini, in an ornately patterned robe.'},
-    {img:'glasgow/img/14-goma-wellington-statue.jpg', location:'Royal Exchange Square, Glasgow', date:'2025-10-27T14:45:01', caption:'', note:'The Duke of Wellington statue outside the Gallery of Modern Art, topped with a traffic cone — a running, decades-old Glasgow in-joke the council has given up fighting.'},
-    {img:'glasgow/img/26-west-end-market-blackberries.jpg', location:'Glasgow West End', date:'2025-10-28T11:09:29', caption:'', note:'A carton of blackberries picked up at a West End fruit stall.'},
   ]},
 
   { id:'pushkar', username:'Pushkar', avatar:'stories/pushkar/img/01-birds-lake-dusk.jpg', slug:'pushkar', slides:[
@@ -833,10 +870,15 @@ const STORIES = [
     {img:'stories/pushkar/img/02-lake-wide-view.jpg', location:'Pushkar Lake, Rajasthan', date:'2018-01-07T12:37:42', caption:'A toast to beauty.', note:"The lake and its ghats, seen wide across the water."},
   ]},
 
-  { id:'edinburgh', username:'Edinburgh', avatar:'stories/edinburgh/img/03-greyfriars-bobby-statue.jpg', slug:'edinburgh', slides:[
-    {img:'stories/edinburgh/img/01-royal-mile-street-musician.jpg', location:'The Royal Mile, Edinburgh', date:'2025-10-28T17:21:51', caption:'', note:"A street musician playing on the cobblestones outside a Royal Mile shopfront, after dark."},
-    {img:'stories/edinburgh/img/02-surgeons-hall-statues.jpg', location:"Surgeons' Hall Museums, Edinburgh", date:'2025-10-31T14:39:25', caption:'', note:"A row of bronze figures outside Surgeons' Hall Museums."},
-    {img:'stories/edinburgh/img/03-greyfriars-bobby-statue.jpg', location:'Greyfriars Bobby, Edinburgh', date:'2025-10-31T17:51:06', caption:'', note:"The Greyfriars Bobby statue, right outside the pub named after him."},
+  { id:'manali', username:'Kheerganga', avatar:'stories/manali/img/06-camping-tents-cliffside.jpg', slug:'manali', slides:[
+    {img:'stories/manali/img/01-chai-mountain-view.jpg', location:'Parvati Valley, Himachal Pradesh', date:'2017-08-25T10:51:37', caption:'', note:"Chai and a plate of food on a cafe table, mountains behind."},
+    {img:'stories/manali/img/02-market-stall-bazaar.jpg', location:'Parvati Valley, Himachal Pradesh', date:'2017-08-25T15:02:10', caption:'', note:"A roadside stall hung with bags, belts and trinkets."},
+    {img:'stories/manali/img/03-forest-valley-snow-peak.jpg', location:'Himachal Pradesh', date:'2017-08-26T05:04:06', caption:'', note:"Pine forest dropping into a valley, a snow-capped peak behind."},
+    {img:'stories/manali/img/04-alpine-meadow-huts.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-08-27T04:08:17', caption:'', note:"A high alpine meadow with a couple of wooden huts, cloud rolling over the ridge."},
+    {img:'stories/manali/img/05-kheerganga-sign.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-08-27T17:10:53', caption:'', note:'A hand-lettered sign nailed to a tree: "In Kheerganga silence is such a luxury."'},
+    {img:'stories/manali/img/06-camping-tents-cliffside.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-09-28T09:58:51', caption:'', note:"Tents pitched on the mountainside, cloud moving in fast."},
+    {img:'stories/manali/img/07-waterfall-mountainside.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-09-28T13:35:54', caption:'', note:"A waterfall threading straight down the mountain face."},
+    {img:'stories/manali/img/08-glacial-river-peak.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-10-26T08:33:57', caption:'', note:"A glacial river cutting through the valley, peak still holding cloud."},
   ]},
 
   { id:'mauritius', username:'Mauritius', avatar:'stories/mauritius/img/02-turquoise-lagoon-beach.jpg', slug:'mauritius', slides:[
@@ -850,34 +892,6 @@ const STORIES = [
     {img:'stories/mauritius/img/08-casela-fisheye.jpg', location:'Casela Nature Parks, Mauritius', date:'2016-01-12T16:41:12', caption:'', note:"A fisheye shot of the park entrance, storm clouds building overhead."},
     {img:'stories/mauritius/img/09-small-boat-calm-sea.jpg', location:'Mauritius', date:'2017-10-08T07:41:37', caption:'', note:"A single boat sitting still on flat, grey-green water."},
   ]},
-
-  { id:'udupi-manipal', username:'Udupi-Manipal', avatar:'stories/udupi-manipal/img/01-manipal-aerial-tiltshift.jpg', slug:'udupi-manipal', slides:[
-    {img:'stories/udupi-manipal/img/09-kasturba-medical-college.jpg', location:'Kasturba Medical College, Manipal', date:'2023-12-28T14:42:51', caption:'', note:"KMC's campus front — one of Manipal's best-known landmarks."},
-    {img:'stories/udupi-manipal/img/03-kayak-paddle-golden-hour.jpg', location:'Udupi, Karnataka', date:'2024-04-07T13:33:41', caption:'', note:"A kayak paddle catching the light on the backwaters."},
-    {img:'stories/udupi-manipal/img/05-manipal-performer-motion.jpg', location:'Manipal, Karnataka', date:'2024-09-10T20:25:25', caption:'', note:"A costumed folk performer mid-movement on the street, long exposure blurring the arms."},
-    {img:'stories/udupi-manipal/img/04-kambala-buffalo-race.jpg', location:'Coastal Karnataka', date:'2025-02-22T19:06:56', caption:'Kambula.', note:"A pair of buffaloes and their racer at full sprint down a flooded Kambala track."},
-    {img:'stories/udupi-manipal/img/08-lake-sunset-silhouette.jpg', location:'Udupi, Karnataka', date:'2025-06-07T19:25:40', caption:'', note:"A lake going quiet at dusk, reeds silhouetted in the foreground."},
-    {img:'stories/udupi-manipal/img/06-mtr-udupi-food-spread.jpg', location:'MTR, Udupi', date:'2025-07-06T11:36:25', caption:'', note:"A proper Udupi breakfast spread — poori, idli, and a run of chutneys."},
-    {img:'stories/udupi-manipal/img/07-seethanadi-nature-reserve.jpg', location:'Seethanadi Nature Reserve, Agumbe', date:'2025-08-27T10:21:52', caption:'', note:"Mist settling over the rainforest canopy at Seethanadi."},
-    {img:'stories/udupi-manipal/img/01-manipal-aerial-tiltshift.jpg', location:'Manipal, Karnataka', date:'2025-09-07T15:23:10', caption:'Tilt Shift with Manipal Aerials.', note:"The whole town from above, tilt-shifted into a miniature."},
-    {img:'stories/udupi-manipal/img/10-bike-ride-delta-beach.jpg', location:'Delta Beach, Kodibengre, Udupi', date:'2025-09-14T09:22:29', caption:'Bike ride to Delta Beach.', note:"A ride out through coconut groves to where the river meets the coast."},
-    {img:'stories/udupi-manipal/img/02-palm-trees-sunset.jpg', location:'Udupi, Karnataka', date:'2026-02-20T18:56:17', caption:'', note:"Palms cut black against a pink evening sky."},
-  ]},
-
-  { id:'manali', username:'Kheerganga', avatar:'stories/manali/img/06-camping-tents-cliffside.jpg', slug:'manali', slides:[
-    {img:'stories/manali/img/01-chai-mountain-view.jpg', location:'Parvati Valley, Himachal Pradesh', date:'2017-08-25T10:51:37', caption:'', note:"Chai and a plate of food on a cafe table, mountains behind."},
-    {img:'stories/manali/img/02-market-stall-bazaar.jpg', location:'Parvati Valley, Himachal Pradesh', date:'2017-08-25T15:02:10', caption:'', note:"A roadside stall hung with bags, belts and trinkets."},
-    {img:'stories/manali/img/03-forest-valley-snow-peak.jpg', location:'Himachal Pradesh', date:'2017-08-26T05:04:06', caption:'', note:"Pine forest dropping into a valley, a snow-capped peak behind."},
-    {img:'stories/manali/img/04-alpine-meadow-huts.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-08-27T04:08:17', caption:'', note:"A high alpine meadow with a couple of wooden huts, cloud rolling over the ridge."},
-    {img:'stories/manali/img/05-kheerganga-sign.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-08-27T17:10:53', caption:'', note:'A hand-lettered sign nailed to a tree: "In Kheerganga silence is such a luxury."'},
-    {img:'stories/manali/img/06-camping-tents-cliffside.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-09-28T09:58:51', caption:'', note:"Tents pitched on the mountainside, cloud moving in fast."},
-    {img:'stories/manali/img/07-waterfall-mountainside.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-09-28T13:35:54', caption:'', note:"A waterfall threading straight down the mountain face."},
-    {img:'stories/manali/img/08-glacial-river-peak.jpg', location:'Kheerganga, Himachal Pradesh', date:'2017-10-26T08:33:57', caption:'', note:"A glacial river cutting through the valley, peak still holding cloud."},
-  ]},
-
-  { id:"cat", username:"Cat", avatar:"stories/cat/img/avatar.jpg", slides:[
-    {img:"stories/cat/img/log-20260818203238-1.jpg", location:"Manipal", date:'2026-08-18T20:32:38', caption:""},
-  ] },
 ];
 const STORY_SLIDE_DURATION = 4500;
 
