@@ -216,7 +216,12 @@
     box-shadow:0 3px 8px -2px rgba(23,20,12,0.4);
   }
   .featured-card img{
-    width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; display:block;
+    width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
+    border-radius:10px 10px 0 0;
+    -webkit-mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,0 H100 V85 C93.75,85 93.75,97 87.5,97 C81.25,97 81.25,85 75,85 C68.75,85 68.75,97 62.5,97 C56.25,97 56.25,85 50,85 C43.75,85 43.75,97 37.5,97 C31.25,97 31.25,85 25,85 C18.75,85 18.75,97 12.5,97 C6.25,97 6.25,85 0,85 Z' fill='white'/%3E%3C/svg%3E");
+    -webkit-mask-size:100% 100%; -webkit-mask-repeat:no-repeat;
+    mask-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Cpath d='M0,0 H100 V85 C93.75,85 93.75,97 87.5,97 C81.25,97 81.25,85 75,85 C68.75,85 68.75,97 62.5,97 C56.25,97 56.25,85 50,85 C43.75,85 43.75,97 37.5,97 C31.25,97 31.25,85 25,85 C18.75,85 18.75,97 12.5,97 C6.25,97 6.25,85 0,85 Z' fill='white'/%3E%3C/svg%3E");
+    mask-size:100% 100%; mask-repeat:no-repeat;
   }
   .featured-card .place-label{
     font-size:0.62rem; letter-spacing:0.06em; text-transform:uppercase; font-weight:700;
@@ -237,7 +242,8 @@
   .grid{ display:grid; grid-template-columns:1fr; gap:1.8rem; }
   @media(min-width:640px){ .grid{ grid-template-columns:1fr 1fr; } }
 
-  .place-card{ text-decoration:none; color:inherit; display:block; position:relative; }
+  .place-card{ text-decoration:none; color:inherit; display:block; }
+  .place-card .cover{ position:relative; }
   .place-card .thumb{
     width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
     background:var(--card); border-radius:14px;
@@ -246,12 +252,28 @@
     display:flex; align-items:center; justify-content:center;
     color:var(--ink-soft); font-family:"Fraunces", serif; font-style:italic; font-size:0.85rem;
   }
+  .place-card .cover::after{
+    content:""; position:absolute; left:0; right:0; bottom:0; height:52%; z-index:1;
+    border-radius:0 0 14px 14px; pointer-events:none;
+    background:linear-gradient(180deg, transparent, rgba(23,20,12,0.55) 92%);
+  }
   .place-card .kind-pill{
     position:absolute; top:0.7rem; left:0.7rem; z-index:2;
     background:var(--coral); color:#fff;
     font-family:"Fredoka", sans-serif; font-size:0.62rem; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
     padding:0.3rem 0.65rem; border-radius:100px;
     box-shadow:0 3px 8px -2px rgba(23,20,12,0.35);
+  }
+  .place-card .cover-label{
+    position:absolute; left:0.75rem; bottom:0.6rem; z-index:2; max-width:calc(100% - 1.5rem);
+    color:#fff; font-family:"Fredoka", sans-serif; font-weight:600; font-size:0.9rem;
+    text-shadow:0 1px 4px rgba(0,0,0,0.4);
+  }
+  .place-card .cover-region{
+    position:absolute; right:0.75rem; bottom:0.65rem; z-index:2;
+    color:rgba(255,255,255,0.92); font-size:0.72rem; letter-spacing:0.02em;
+    text-shadow:0 1px 4px rgba(0,0,0,0.4);
+    display:flex; align-items:center; gap:0.3rem;
   }
   .place-card .meta-line{
     font-size:0.72rem; color:var(--ink-soft); margin:0.7rem 0 0.2rem;
@@ -645,14 +667,14 @@
    the ones with a full album.
    ============================================================ */
 const PLACES = [
-  {name:'London — Shoreditch', slug:'london', status:'live', kind:'album', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces'},
-  {name:'Camden', slug:'camden', status:'live', kind:'album', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', blurb:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces'},
-  {name:'Khajuraho', slug:'khajuraho', status:'live', kind:'album', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces'},
-  {name:'Concerts', slug:'concerts', status:'live', kind:'album', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows'},
-  {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces'},
-  {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces'},
-  {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos'},
-  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos'},
+  {name:'Shoreditch', slug:'london', status:'live', kind:'album', cover:'london/img/07-elephant-shutter.jpg', blurb:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces', region:'London 🇬🇧'},
+  {name:'Camden', slug:'camden', status:'live', kind:'album', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', blurb:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces', region:'London 🇬🇧'},
+  {name:'Khajuraho', slug:'khajuraho', status:'live', kind:'album', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces', region:'MP 🇮🇳'},
+  {name:'Concerts', slug:'concerts', status:'live', kind:'album', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows', region:''},
+  {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces', region:'Karnataka 🇮🇳'},
+  {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Kheerganga', slug:'manali', status:'story', count:''},
@@ -734,12 +756,12 @@ const FEATURED_PHOTOS = [
   {img:'skye/img/d3-08-quiraing.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
   {img:'skye/img/d2-02-eilean-donan-wide.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
   {img:'skye/img/d3-02-fairy-pools-turquoise.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
-  {img:'london/img/32-heron-mural-gable.jpg', caption:'ROA — Crane, Hanbury Street.', place:'London — Shoreditch', slug:'london'},
-  {img:'london/img/43-xray-ribcage-mural.jpg', caption:'SHOK-1 — Stolen Heart, Hanbury Street.', place:'London — Shoreditch', slug:'london'},
-  {img:'london/img/61-speak-the-truth-portrait.jpg', caption:'Alo — SPEAKTHETRUTH.', place:'London — Shoreditch', slug:'london'},
-  {img:'london/img/69-designated-graffiti-area-stencil.jpg', caption:'The Guard Dog — Banksy, at the former Cargo nightclub.', place:'London — Shoreditch', slug:'london'},
-  {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'London — Shoreditch', slug:'london'},
-  {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'London — Shoreditch', slug:'london'},
+  {img:'london/img/32-heron-mural-gable.jpg', caption:'ROA — Crane, Hanbury Street.', place:'Shoreditch', slug:'london'},
+  {img:'london/img/43-xray-ribcage-mural.jpg', caption:'SHOK-1 — Stolen Heart, Hanbury Street.', place:'Shoreditch', slug:'london'},
+  {img:'london/img/61-speak-the-truth-portrait.jpg', caption:'Alo — SPEAKTHETRUTH.', place:'Shoreditch', slug:'london'},
+  {img:'london/img/69-designated-graffiti-area-stencil.jpg', caption:'The Guard Dog — Banksy, at the former Cargo nightclub.', place:'Shoreditch', slug:'london'},
+  {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'Shoreditch', slug:'london'},
+  {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'Shoreditch', slug:'london'},
   {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.', place:'Concerts', slug:'concerts'},
@@ -771,10 +793,23 @@ if (featured) {
   `;
 }
 
+// cover badge — LHS place name, RHS region/flag (omitted where region is empty)
+function coverHTML(p, opts){
+  opts = opts || {};
+  return `
+    <div class="cover">
+      <img class="thumb" src="${p.cover}" alt="">
+      ${opts.pill ? `<span class="kind-pill">${opts.pill}</span>` : ''}
+      <span class="cover-label">${p.name}</span>
+      ${p.region ? `<span class="cover-region">${p.region}</span>` : ''}
+    </div>
+  `;
+}
+
 // albums grid — live places shown as grid galleries (skip the featured one, or show all incl. featured)
 document.getElementById('grid').innerHTML = liveAlbums.map(p => `
   <a class="place-card" href="${p.slug}/">
-    <img class="thumb" src="${p.cover}" alt="">
+    ${coverHTML(p)}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>
@@ -784,8 +819,7 @@ document.getElementById('grid').innerHTML = liveAlbums.map(p => `
 // walks grid — live places built as day-journal/route-map photo walks
 document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
   <a class="place-card" href="${p.slug}/">
-    <span class="kind-pill">Walk</span>
-    <img class="thumb" src="${p.cover}" alt="">
+    ${coverHTML(p, {pill:'Walk'})}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>

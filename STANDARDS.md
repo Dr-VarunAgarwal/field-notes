@@ -180,7 +180,7 @@ pass.
 
 **Current site shape** (check this hasn't drifted before trusting it):
 - Hub `index.html` — `PLACES` array, split by `kind` (§5) into Albums
-  and Photo Walks. Live albums: London, Camden, Khajuraho, Concerts,
+  and Photo Walks. Live albums: Shoreditch, Camden, Khajuraho, Concerts,
   Udupi, Glasgow. Live walks: Isle of Skye, Glasgow & Edinburgh. Story-only
   (§7, no full page): Udupi-Manipal, Edinburgh, Pushkar, Kheerganga,
   Mauritius. Draft (not yet promoted): Rishikesh, Mussoorie, Dehradun.
