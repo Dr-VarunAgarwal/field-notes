@@ -1143,6 +1143,20 @@ cubeWrapper.addEventListener('pointerup', e => {
 
 loadViewed();
 renderStoriesFeed();
+
+// Touch/trackpad drag already scrolls .stories-feed natively, but a plain
+// desktop mouse wheel only produces vertical deltaY — there's no touch
+// gesture to translate into scrollLeft, so the strip was unreachable by
+// mouse. Redirect vertical wheel input into horizontal scroll while
+// hovering the strip, same pattern as most horizontal carousels.
+document.querySelectorAll('.stories-feed').forEach(feed => {
+  feed.addEventListener('wheel', (e) => {
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      e.preventDefault();
+      feed.scrollLeft += e.deltaY;
+    }
+  }, { passive: false });
+});
 </script>
 
 </body>
