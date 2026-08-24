@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Travel Stamps</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  html, body {
+    height:100%;
+    background:#0a0a0a;
+    overflow:hidden;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+
+  #viewport {
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    cursor:grab;
+  }
+  #viewport.dragging { cursor:grabbing; }
+
+  #canvas {
+    position:absolute;
+    top:0; left:0;
+    will-change: transform;
+  }
+
+  .tile { position:absolute; top:0; left:0; }
+
+  /* ---------- Top-Left Pill Navigation ---------- */
+  #top-pill-nav {
+    position: fixed;
+    top: 24px;
+    left: 24px;
+    z-index: 20;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: rgba(35, 35, 35, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    font-size: 11.5px;
+    letter-spacing: 1.2px;
+  }
+  .pill-main {
+    text-decoration: none;
+    color: #c9634f;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-weight: 500;
+    text-transform: uppercase;
+    transition: color 0.2s ease;
+  }
+  .pill-main:hover { color: #e57c68; }
+  .pill-slash { color: #666; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
+  .pill-current { font-family: 'Georgia', serif; font-style: italic; color: #aaa; letter-spacing: 0.5px; }
+
+  /* ---------- Contact Badge (Top Right) ---------- */
+  #contact-badge {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 20;
+    width: 36px;
+    height: 36px;
+    background: rgba(35, 35, 35, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #eee;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, border-color 0.2s ease;
+  }
+  #contact-badge:hover { transform: scale(1.08); border-color: rgba(255, 255, 255, 0.3); }
+
+  /* ---------- Stamp ---------- */
+  .stamp {
+    position:absolute;
+    cursor:pointer;
+    z-index:1;
+  }
+  .stamp.size-sm { width:140px; height:117px; --inner-inset:15px; }
+  .stamp.size-md { width:180px; height:150px; --inner-inset:22px; }
+  .stamp.size-lg { width:224px; height:187px; --inner-inset:28px; }
+
+  .stamp-lift {
+    position:absolute;
+    inset:0;
+    transition: transform .22s cubic-bezier(.2,.8,.2,1);
+  }
+  .stamp:hover .stamp-lift { transform: scale(1.08) translateY(-3px); }
+  .stamp:hover { z-index:20; }
+
+  /* shadow is its own clipped layer (identical shape to the paper), never a filter on top
+     of a clip-path -- that combination is what produced the stray rectangle before */
+  .stamp-shadow {
+    position:absolute;
+    inset:8px;
+    background: rgba(0,0,0,0.55);
+    clip-path: url(#stampClip);
+    -webkit-clip-path: url(#stampClip);
+    transform: translateY(5px);
+    filter: blur(3px);
+  }
+
+  .stamp-paper {
+    position:absolute;
+    inset:8px;
+    background: var(--paper, #ece6d8);
+    clip-path: url(#stampClip);
+    -webkit-clip-path: url(#stampClip);
+  }
+
+  .stamp-inner {
+    position:absolute;
+    inset: var(--inner-inset, 22px);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:9px 10px;
+    color: var(--ink, #1a1a1a);
+  }
+
+  .stamp-art { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:0; }
+  .stamp-top, .stamp-bottom { position:relative; z-index:1; }
+
+  .stamp-kicker {
+    font-size:9.5px;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight:600;
+    opacity:0.85;
+  }
+  .size-sm .stamp-kicker { font-size:8px; letter-spacing:1px; }
+  .size-lg .stamp-kicker { font-size:10.5px; }
+
+  .stamp-title {
+    font-size:13.5px;
+    line-height:1.22;
+    font-weight:700;
+    margin-top:2px;
+    max-width:82%;
+  }
+  .size-sm .stamp-title { font-size:11px; max-width:88%; }
+  .size-lg .stamp-title { font-size:15.5px; }
+
+  .stamp-byline {
+    font-size:10px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    letter-spacing:0.3px;
+    opacity:0.9;
+  }
+  .size-sm .stamp-byline { font-size:8.5px; }
+  .size-lg .stamp-byline { font-size:11px; }
+
+  .stamp-mark {
+    position:absolute;
+    top:6px; right:6px;
+    width:20px; height:20px;
+    border:1px solid currentColor;
+    border-radius:3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:9px;
+    font-weight:700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    z-index:1;
+  }
+  .size-sm .stamp-mark { width:16px; height:16px; font-size:7.5px; }
+  .size-lg .stamp-mark { width:23px; height:23px; font-size:10px; }
+
+  /* ---------- Hover caption: a floating card, centered + width-capped so it
+     can never bleed into a neighboring stamp regardless of grid position ---------- */
+  .stamp-caption {
+    position:absolute;
+    top:calc(100% + 14px);
+    left:50%;
+    transform:translateX(-50%) translateY(-4px);
+    width:176px;
+    text-align:left;
+    opacity:0;
+    pointer-events:none;
+    transition: opacity .2s ease, transform .2s ease;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    background: rgba(10,10,10,0.9);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 6px;
+    padding: 10px 12px;
+    z-index: 25;
+  }
+  .stamp:hover .stamp-caption { opacity:1; transform:translateX(-50%) translateY(0); }
+  .cap-kicker-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+  .cap-kicker {
+    font-size:9.5px;
+    letter-spacing:1.4px;
+    text-transform:uppercase;
+    font-weight:700;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color: var(--accent, #c9634f);
+    white-space:nowrap;
+  }
+  .cap-rule { flex:1; height:1px; background: var(--accent, #c9634f); opacity:0.45; }
+  .cap-title { font-size:13.5px; font-weight:500; color:#d4d4d4; line-height:1.3; }
+  .cap-meta {
+    font-size:9.5px;
+    letter-spacing:0.5px;
+    text-transform:uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color:#666;
+    margin-top:6px;
+  }
+  .cap-filler {
+    margin-top:7px;
+    padding-top:7px;
+    border-top:1px solid rgba(255,255,255,0.08);
+    font-size:11px;
+    font-style:italic;
+    color:#7a7a7a;
+    line-height:1.4;
+  }
+
+  /* ---------- Sidebar ---------- */
+  #overlay {
+    position:fixed; inset:0;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    opacity:0; pointer-events:none;
+    transition: opacity .3s ease;
+    z-index:30;
+  }
+  #overlay.open { opacity:1; pointer-events:auto; }
+
+  #sidebar {
+    position:fixed;
+    top:0; right:0;
+    height:100vh;
+    width:400px;
+    max-width:88vw;
+    background:#111;
+    border-left:1px solid #262626;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.2,.8,.2,1);
+    z-index:40;
+    overflow-y:auto;
+    color:#eee;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+  }
+  #sidebar.open { transform: translateX(0); }
+
+  .sb-stamp-wrap { padding:60px 40px 20px; display:flex; justify-content:center; }
+  .sb-stamp-wrap .stamp { position:relative; }
+  .sb-stamp-wrap .stamp-lift { transform: scale(1.5); }
+  .sb-stamp-wrap .stamp:hover .stamp-lift { transform: scale(1.5); }
+  .sb-stamp-wrap .stamp-caption { display:none; }
+
+  .sb-close {
+    position:absolute; top:20px; left:24px;
+    background:none; border:none; color:#777;
+    font-size:22px; cursor:pointer; line-height:1; z-index:2;
+  }
+  .sb-close:hover { color:#fff; }
+
+  .sb-body { padding:20px 40px 60px; }
+  .sb-kicker {
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color:#888; margin-bottom:10px;
+  }
+  .sb-title { font-family:'Georgia', serif; font-size:26px; font-weight:600; line-height:1.35; margin-bottom:18px; }
+  .sb-desc { font-size:14px; line-height:1.85; color:#b5b5b5; margin-bottom:28px; }
+  .sb-meta { display:grid; gap:14px; }
+  .sb-meta-item { border-top:1px solid #262626; padding-top:12px; }
+  .sb-meta-label {
+    font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    color:#666; margin-bottom:4px;
+  }
+  .sb-meta-value { font-size:14px; color:#f0f0f0; }
+
+  #hint {
+    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
+    color:#555; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    pointer-events:none; z-index:5; transition:opacity .6s ease;
+  }
+</style>
+</head>
+<body>
+
+  <!-- shared perforated-edge shape, ONE definition referenced by every stamp -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <clipPath id="stampClip" clipPathUnits="objectBoundingBox">
+        <path id="stampClipPath" fill-rule="evenodd"></path>
+      </clipPath>
+    </defs>
+  </svg>
+
+  <nav id="top-pill-nav">
+    <a href="../" class="pill-main">&larr; wander ~ field notes</a>
+    <span class="pill-slash">/</span>
+    <span class="pill-current">eUrope</span>
+  </nav>
+  <a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
+
+  <div id="viewport">
+    <div id="canvas"></div>
+  </div>
+  <div id="hint">drag to explore · infinite in every direction</div>
+
+  <div id="overlay" onclick="closeSidebar()"></div>
+  <div id="sidebar">
+    <button class="sb-close" onclick="closeSidebar()">✕</button>
+    <div id="sidebarInner"></div>
+  </div>
+
+<script>
+/* ============ perforated stamp shape: ONE fractional (objectBoundingBox) path,
+   reused by every stamp of every size via clip-path url() -- no per-stamp SVG ============ */
+function buildClipPathFrac(w, h, pitchTarget, rRatio){
+  const nx = Math.max(2, Math.round(w / pitchTarget));
+  const ny = Math.max(2, Math.round(h / pitchTarget));
+  const px = w / nx, py = h / ny;
+  const r = (Math.min(px, py) / 2) * rRatio;
+  const rx = r / w, ry = r / h;
+  const fx = v => v / w, fy = v => v / h;
+  const ellipse = (cx, cy) => {
+    const cxf = fx(cx), cyf = fy(cy);
+    return `M${(cxf-rx).toFixed(5)},${cyf.toFixed(5)} ` +
+           `A${rx.toFixed(5)},${ry.toFixed(5)} 0 1,0 ${(cxf+rx).toFixed(5)},${cyf.toFixed(5)} ` +
+           `A${rx.toFixed(5)},${ry.toFixed(5)} 0 1,0 ${(cxf-rx).toFixed(5)},${cyf.toFixed(5)} Z `;
+  };
+  let d = `M0,0 H1 V1 H0 Z `;
+  for (let k = 0; k <= nx; k++) { d += ellipse(k*px, 0); d += ellipse(k*px, h); }
+  for (let k = 0; k <= ny; k++) { d += ellipse(0, k*py); d += ellipse(w, k*py); }
+  return d;
+}
+document.getElementById('stampClipPath').setAttribute(
+  'd', buildClipPathFrac(164, 134, 6, 0.78)
+);
+
+/* ============ data: Amsterdam · Berlin · Prague ============ */
+const palette = [
+  {paper:'#c23b2c', ink:'#f4ede0'}, {paper:'#e9e2cf', ink:'#2c3e4a'},
+  {paper:'#274b6b', ink:'#e9e2cf'}, {paper:'#2f7d6b', ink:'#f4ede0'},
+  {paper:'#d98e2f', ink:'#241a0f'}, {paper:'#3a3a3a', ink:'#e9e2cf'},
+  {paper:'#c9c2ae', ink:'#1a1a1a'}, {paper:'#8c4a32', ink:'#f4ede0'},
+  {paper:'#3b5336', ink:'#f4ede0'}, {paper:'#523f6d', ink:'#f4ede0'},
+  {paper:'#b57c30', ink:'#241a0f'}, {paper:'#335c67', ink:'#f4ede0'},
+];
+
+function svgArt(seed, colorB){
+  const shapes = [
+    `<circle cx="90" cy="55" r="42" fill="${colorB}" opacity="0.3"/>`,
+    `<path d="M0,150 L60,90 L120,140 L180,80 L180,150 Z" fill="${colorB}" opacity="0.26"/>`,
+    `<rect x="18" y="18" width="144" height="3" fill="${colorB}" opacity="0.35"/>`,
+    `<circle cx="36" cy="115" r="9" fill="${colorB}" opacity="0.4"/><circle cx="148" cy="28" r="5" fill="${colorB}" opacity="0.4"/>`,
+  ];
+  const s = shapes[seed % shapes.length];
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='150'>${s}</svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}`;
+}
+
+const items = [
+  { kicker:'AMSTERDAM 01', title:'Canal Ring at Dusk', byline:'Grachtengordel', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'Golden hour along the 17th-century canal belt — houseboats, bicycles, and gabled facades doubled in still water.' },
+  { kicker:'AMSTERDAM 02', title:'Anne Frank House', byline:'Prinsengracht', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'A quiet, difficult hour behind the bookcase — one of the most important stops in the city.' },
+  { kicker:'AMSTERDAM 03', title:'Rijksmuseum Morning', byline:'Museumplein', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'Early entry to beat the crowds to The Night Watch, then coffee in the sculpture garden.' },
+  { kicker:'BERLIN 01', title:'East Side Gallery', byline:'Friedrichshain', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'A mile and a half of Wall left standing, repainted by artists from around the world after 1990.' },
+  { kicker:'BERLIN 02', title:'Museum Island', byline:'Mitte', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Five museums on one small island in the Spree — the Pergamon alone is worth the whole day.' },
+  { kicker:'BERLIN 03', title:'Mauerpark Sunday', byline:'Prenzlauer Berg', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Flea market stalls, karaoke in the amphitheater, and currywurst eaten standing up.' },
+  { kicker:'PRAGUE 01', title:'Charles Bridge at Sunrise', byline:'Staré Město', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Empty of tour groups for about twenty minutes — just statues, mist, and the castle above the river.' },
+  { kicker:'PRAGUE 02', title:'The Astronomical Clock', byline:'Old Town Square', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Six hundred years old and still drawing a crowd on the hour for its walk of apostles.' },
+  { kicker:'PRAGUE 03', title:'Up to the Castle', byline:'Hradčany', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'The climb past Golden Lane rewards you with the best rooftop view in the city.' },
+];
+
+const SIZES = { sm: [140,117], md: [180,150], lg: [224,187] };
+function sizeFor(idx){
+  const pattern = ['md','sm','lg','sm','md','lg','lg','sm','md','md','sm','lg'];
+  return pattern[idx % pattern.length];
+}
+
+function captionHTML(item, pal){
+  const filler = item.title.length < 20
+    ? `<div class="cap-filler">${item.desc.split('.')[0]}.</div>`
+    : '';
+  return `
+    <div class="stamp-caption" style="--accent:${pal.paper};">
+      <div class="cap-kicker-row">
+        <span class="cap-kicker">${item.kicker}</span>
+        <span class="cap-rule"></span>
+      </div>
+      <div class="cap-title">${item.title}</div>
+      <div class="cap-meta">${item.location.split(',')[0]} · ${item.date}</div>
+      ${filler}
+    </div>`;
+}
+
+/* ============ tile unit: strict aligned grid, sized to keep captions clear of neighbors ============ */
+const CELL_W = 300, CELL_H = 300;
+const COLS = 6, ROWS_PER_UNIT = 4;
+const unitW = COLS * CELL_W;
+const unitH = ROWS_PER_UNIT * CELL_H;
+
+function stampHTML(idx, centerX, centerY){
+  const item = items[idx % items.length];
+  const pal = palette[idx % palette.length];
+  const sizeKey = sizeFor(idx);
+  const [w, h] = SIZES[sizeKey];
+  const x = centerX - w/2, y = centerY - h/2;
+  return `
+    <div class="stamp size-${sizeKey}" data-idx="${idx}" style="left:${x}px; top:${y}px; --paper:${pal.paper}; --ink:${pal.ink};">
+      <div class="stamp-lift">
+        <div class="stamp-shadow"></div>
+        <div class="stamp-paper"></div>
+        <div class="stamp-inner">
+          <img class="stamp-art" src="${svgArt(idx, pal.ink)}" alt="">
+          <div class="stamp-mark">${item.mark}</div>
+          <div class="stamp-top"><div class="stamp-kicker">${item.kicker}</div></div>
+          <div class="stamp-bottom">
+            <div class="stamp-title">${item.title}</div>
+            <div class="stamp-byline">${item.byline}</div>
+          </div>
+        </div>
+      </div>
+      ${captionHTML(item, pal)}
+    </div>`;
+}
+
+let tileTemplateHTML = '';
+{
+  let idx = 0, html = '';
+  for (let r = 0; r < ROWS_PER_UNIT; r++) {
+    for (let c = 0; c < COLS; c++) {
+      const centerX = c * CELL_W + CELL_W/2;
+      const centerY = r * CELL_H + CELL_H/2;
+      html += stampHTML(idx, centerX, centerY);
+      idx++;
+    }
+  }
+  tileTemplateHTML = html;
+}
+
+const canvasEl = document.getElementById('canvas');
+const viewportEl = document.getElementById('viewport');
+
+function buildTiles(){
+  canvasEl.innerHTML = '';
+  const nx = Math.ceil(window.innerWidth / unitW) + 4;
+  const ny = Math.ceil(window.innerHeight / unitH) + 4;
+  for (let ty = -2; ty < ny - 2; ty++) {
+    for (let tx = -2; tx < nx - 2; tx++) {
+      const tile = document.createElement('div');
+      tile.className = 'tile';
+      tile.style.transform = `translate(${tx * unitW}px, ${ty * unitH}px)`;
+      tile.innerHTML = tileTemplateHTML;
+      canvasEl.appendChild(tile);
+    }
+  }
+}
+buildTiles();
+
+/* ============ drag-to-pan with momentum ============ */
+let panX = 0, panY = 0;
+let isDown = false, startX, startY, startPanX, startPanY, dragMoved = false;
+let lastX = 0, lastY = 0, velocityX = 0, velocityY = 0, lastTime = 0;
+let animId = null;
+
+function applyPan(){
+  const wrappedX = ((panX % unitW) + unitW) % unitW;
+  const wrappedY = ((panY % unitH) + unitH) % unitH;
+  canvasEl.style.transform = `translate(${wrappedX}px, ${wrappedY}px)`;
+}
+applyPan();
+
+function pointerDown(x, y){
+  if (animId) cancelAnimationFrame(animId);
+  isDown = true; dragMoved = false;
+  startX = x; startY = y;
+  startPanX = panX; startPanY = panY;
+  lastX = x; lastY = y;
+  lastTime = performance.now();
+  velocityX = 0; velocityY = 0;
+  viewportEl.classList.add('dragging');
+}
+function pointerMove(x, y){
+  if (!isDown) return;
+  const dx = x - startX, dy = y - startY;
+  if (Math.abs(dx) + Math.abs(dy) > 4) dragMoved = true;
+  const now = performance.now();
+  const dt = now - lastTime;
+  if (dt > 0) { velocityX = (x - lastX) / dt * 16; velocityY = (y - lastY) / dt * 16; }
+  lastX = x; lastY = y; lastTime = now;
+  panX = startPanX + dx;
+  panY = startPanY + dy;
+  applyPan();
+  const hint = document.getElementById('hint');
+  if (hint) hint.style.opacity = 0;
+}
+function pointerUp(){
+  if (!isDown) return;
+  isDown = false;
+  viewportEl.classList.remove('dragging');
+  function step(){
+    if (Math.abs(velocityX) > 0.2 || Math.abs(velocityY) > 0.2) {
+      panX += velocityX; panY += velocityY;
+      velocityX *= 0.92; velocityY *= 0.92;
+      applyPan();
+      animId = requestAnimationFrame(step);
+    }
+  }
+  animId = requestAnimationFrame(step);
+}
+
+viewportEl.addEventListener('mousedown', e => pointerDown(e.clientX, e.clientY));
+window.addEventListener('mousemove', e => pointerMove(e.clientX, e.clientY));
+window.addEventListener('mouseup', pointerUp);
+viewportEl.addEventListener('touchstart', e => { const t = e.touches[0]; pointerDown(t.clientX, t.clientY); }, {passive:true});
+viewportEl.addEventListener('touchmove', e => { const t = e.touches[0]; pointerMove(t.clientX, t.clientY); }, {passive:true});
+viewportEl.addEventListener('touchend', pointerUp);
+viewportEl.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  panX -= e.deltaX; panY -= e.deltaY;
+  applyPan();
+  const hint = document.getElementById('hint');
+  if (hint) hint.style.opacity = 0;
+}, {passive:false});
+
+let resizeTimer;
+window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(buildTiles, 150); });
+
+/* ============ sidebar ============ */
+canvasEl.addEventListener('click', (e) => {
+  if (dragMoved) return;
+  const stampEl = e.target.closest('.stamp');
+  if (!stampEl) return;
+  const idx = +stampEl.dataset.idx;
+  openSidebar(items[idx % items.length], palette[idx % palette.length]);
+});
+
+function openSidebar(item, pal){
+  const inner = document.getElementById('sidebarInner');
+  inner.innerHTML = `
+    <div class="sb-stamp-wrap">
+      <div class="stamp size-md" style="position:relative; left:0; top:0; --paper:${pal.paper}; --ink:${pal.ink};">
+        <div class="stamp-lift">
+          <div class="stamp-shadow"></div>
+          <div class="stamp-paper"></div>
+          <div class="stamp-inner">
+            <div class="stamp-mark">${item.mark}</div>
+            <div class="stamp-top"><div class="stamp-kicker">${item.kicker}</div></div>
+            <div class="stamp-bottom">
+              <div class="stamp-title">${item.title}</div>
+              <div class="stamp-byline">${item.byline}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-kicker">${item.kicker}</div>
+      <div class="sb-title">${item.title}</div>
+      <div class="sb-desc">${item.desc}</div>
+      <div class="sb-meta">
+        <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${item.location}</div></div>
+        <div class="sb-meta-item"><div class="sb-meta-label">Date</div><div class="sb-meta-value">${item.date}</div></div>
+        <div class="sb-meta-item"><div class="sb-meta-label">Neighborhood</div><div class="sb-meta-value">${item.byline}</div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+</script>
+</body>
+</html>
