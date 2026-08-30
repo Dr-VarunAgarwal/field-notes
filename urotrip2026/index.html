@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Travel Stamps</title>
+<title>eUrotrip</title>
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
 
@@ -90,7 +90,35 @@
   }
   #contact-badge:hover { transform: scale(1.08); border-color: rgba(255, 255, 255, 0.3); }
 
-  /* ---------- Stamp ---------- */
+  /* ---------- View Toggle (top right, left of contact badge) ---------- */
+  #view-toggle {
+    position: fixed;
+    top: 24px;
+    right: 72px;
+    z-index: 20;
+    height: 36px;
+    padding: 0 16px;
+    background: rgba(35, 35, 35, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #c9634f;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  }
+  #view-toggle:hover { transform: scale(1.05); border-color: rgba(255, 255, 255, 0.3); color: #e57c68; }
+
+  /* ============ STAMP VIEW ============ */
   .stamp {
     position:absolute;
     cursor:pointer;
@@ -108,8 +136,6 @@
   .stamp:hover .stamp-lift { transform: scale(1.08) translateY(-3px); }
   .stamp:hover { z-index:20; }
 
-  /* shadow is its own clipped layer (identical shape to the paper), never a filter on top
-     of a clip-path -- that combination is what produced the stray rectangle before */
   .stamp-shadow {
     position:absolute;
     inset:8px;
@@ -189,8 +215,6 @@
   .size-sm .stamp-mark { width:16px; height:16px; font-size:7.5px; }
   .size-lg .stamp-mark { width:23px; height:23px; font-size:10px; }
 
-  /* ---------- Hover caption: a floating card, centered + width-capped so it
-     can never bleed into a neighboring stamp regardless of grid position ---------- */
   .stamp-caption {
     position:absolute;
     top:calc(100% + 14px);
@@ -239,6 +263,133 @@
     line-height:1.4;
   }
 
+  .sb-stamp-wrap { padding:60px 40px 20px; display:flex; justify-content:center; }
+  .sb-stamp-wrap .stamp { position:relative; }
+  .sb-stamp-wrap .stamp-lift { transform: scale(1.5); }
+  .sb-stamp-wrap .stamp:hover .stamp-lift { transform: scale(1.5); }
+  .sb-stamp-wrap .stamp-caption { display:none; }
+
+  /* ============ POSTCARD VIEW ============ */
+  .postcard {
+    position:absolute;
+    width:340px;
+    height:250px;
+    cursor:pointer;
+    z-index:1;
+    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));
+    transition: z-index 0s, filter 0.3s ease;
+  }
+  .postcard-lift {
+    position:absolute;
+    inset:0;
+    background: #f4f1ea;
+    border-radius: 2px;
+    padding: 14px;
+    display:flex;
+    flex-direction:column;
+    transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1);
+    border: 1px solid rgba(0,0,0,0.05);
+  }
+
+  .postcard:hover { z-index:20; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)); }
+  .postcard:hover .postcard-lift {
+    transform: scale(1.04) translateY(-8px);
+  }
+
+  .pc-photo {
+    width: 100%;
+    height: 160px;
+    background: #ccc;
+    object-fit: cover;
+    border: 1px solid rgba(0,0,0,0.1);
+  }
+
+  .pc-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding-top: 10px;
+  }
+  .pc-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    line-height: 1.1;
+  }
+  .pc-byline {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 10px;
+    color: #666;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* mini postage stamp nested on a postcard — own namespaced classes so
+     they never collide with the full-size .stamp-* rules above */
+  .pc-stamp-wrapper {
+    position:absolute;
+    top: 6px;
+    right: 6px;
+    transform: scale(0.35) rotate(4deg);
+    transform-origin: top right;
+    pointer-events: none;
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+  }
+  .pc-stamp-box {
+    position:relative;
+    width:180px; height:150px;
+  }
+  .pc-stamp-paper {
+    position:absolute;
+    inset:0;
+    color: var(--paper, #ece6d8);
+  }
+  .pc-stamp-paper svg { display:block; width:100%; height:100%; }
+  .pc-stamp-inner {
+    position:absolute;
+    inset:22px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    padding:9px 10px;
+    color: var(--ink, #1a1a1a);
+  }
+  .pc-stamp-art {
+    position:absolute;
+    inset:0; width:100%; height:100%;
+    object-fit:cover; display:block; z-index:0;
+  }
+  .pc-stamp-top { position:relative; z-index:1; }
+  .pc-stamp-kicker {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size:10.5px; letter-spacing:1.4px;
+    text-transform:uppercase; font-weight:600; opacity:0.85;
+  }
+  .pc-stamp-mark {
+    position:absolute;
+    top:6px; right:6px; width:20px; height:20px;
+    border:1px solid currentColor; border-radius:3px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; font-weight:700; font-family: ui-monospace, monospace; z-index:1;
+  }
+
+  .sb-postcard-wrap {
+    padding:80px 40px 30px;
+    display:flex;
+    justify-content:center;
+  }
+  .sb-postcard-wrap .postcard {
+    position:relative; left:0; top:0;
+    transform: scale(0.9);
+    cursor: default;
+    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
+  }
+  .sb-postcard-wrap .postcard:hover { filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); }
+  .sb-postcard-wrap .postcard:hover .postcard-lift { transform: none; }
+
   /* ---------- Sidebar ---------- */
   #overlay {
     position:fixed; inset:0;
@@ -255,7 +406,7 @@
     position:fixed;
     top:0; right:0;
     height:100vh;
-    width:400px;
+    width:420px;
     max-width:88vw;
     background:#111;
     border-left:1px solid #262626;
@@ -267,12 +418,6 @@
     font-family: -apple-system, 'Helvetica Neue', sans-serif;
   }
   #sidebar.open { transform: translateX(0); }
-
-  .sb-stamp-wrap { padding:60px 40px 20px; display:flex; justify-content:center; }
-  .sb-stamp-wrap .stamp { position:relative; }
-  .sb-stamp-wrap .stamp-lift { transform: scale(1.5); }
-  .sb-stamp-wrap .stamp:hover .stamp-lift { transform: scale(1.5); }
-  .sb-stamp-wrap .stamp-caption { display:none; }
 
   .sb-close {
     position:absolute; top:20px; left:24px;
@@ -308,7 +453,7 @@
 </head>
 <body>
 
-  <!-- shared perforated-edge shape, ONE definition referenced by every stamp -->
+  <!-- shared perforated-edge shape for the full-size stamp view -->
   <svg width="0" height="0" style="position:absolute">
     <defs>
       <clipPath id="stampClip" clipPathUnits="objectBoundingBox">
@@ -322,6 +467,7 @@
     <span class="pill-slash">/</span>
     <span class="pill-current">eUrope</span>
   </nav>
+  <button id="view-toggle" type="button" aria-label="Switch view"></button>
   <a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
 
   <div id="viewport">
@@ -336,8 +482,7 @@
   </div>
 
 <script>
-/* ============ perforated stamp shape: ONE fractional (objectBoundingBox) path,
-   reused by every stamp of every size via clip-path url() -- no per-stamp SVG ============ */
+/* ============ perforated stamp shape (full-size stamp view) ============ */
 function buildClipPathFrac(w, h, pitchTarget, rRatio){
   const nx = Math.max(2, Math.round(w / pitchTarget));
   const ny = Math.max(2, Math.round(h / pitchTarget));
@@ -360,7 +505,41 @@ document.getElementById('stampClipPath').setAttribute(
   'd', buildClipPathFrac(164, 134, 6, 0.78)
 );
 
-/* ============ data: Amsterdam · Berlin · Prague ============ */
+/* ============ perforated stamp shape (mini stamp on a postcard) ============ */
+function generatePaperSVG(w, h){
+  const pitch = 14;
+  const r = 3.5;
+  const nx = Math.floor(w / pitch);
+  const ny = Math.floor(h / pitch);
+  const actualPitchX = w / nx;
+  const actualPitchY = h / ny;
+
+  let d = `M 0,0 `;
+  for(let i=1; i<=nx; i++){
+    const cx = i * actualPitchX - (actualPitchX/2);
+    d += `L ${cx - r},0 A ${r},${r} 0 0,0 ${cx + r},0 `;
+  }
+  d += `L ${w},0 `;
+  for(let i=1; i<=ny; i++){
+    const cy = i * actualPitchY - (actualPitchY/2);
+    d += `L ${w},${cy - r} A ${r},${r} 0 0,0 ${w},${cy + r} `;
+  }
+  d += `L ${w},${h} `;
+  for(let i=nx; i>=1; i--){
+    const cx = i * actualPitchX - (actualPitchX/2);
+    d += `L ${cx + r},${h} A ${r},${r} 0 0,0 ${cx - r},${h} `;
+  }
+  d += `L 0,${h} `;
+  for(let i=ny; i>=1; i--){
+    const cy = i * actualPitchY - (actualPitchY/2);
+    d += `L 0,${cy + r} A ${r},${r} 0 0,0 0,${cy - r} `;
+  }
+  d += `Z`;
+  return `<svg viewBox="0 0 ${w} ${h}" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="${d}"/></svg>`;
+}
+const pcStampSVG = generatePaperSVG(180, 150);
+
+/* ============ shared data: Amsterdam · Berlin · Prague ============ */
 const palette = [
   {paper:'#c23b2c', ink:'#f4ede0'}, {paper:'#e9e2cf', ink:'#2c3e4a'},
   {paper:'#274b6b', ink:'#e9e2cf'}, {paper:'#2f7d6b', ink:'#f4ede0'},
@@ -376,6 +555,7 @@ function svgArt(seed, colorB){
     `<path d="M0,150 L60,90 L120,140 L180,80 L180,150 Z" fill="${colorB}" opacity="0.26"/>`,
     `<rect x="18" y="18" width="144" height="3" fill="${colorB}" opacity="0.35"/>`,
     `<circle cx="36" cy="115" r="9" fill="${colorB}" opacity="0.4"/><circle cx="148" cy="28" r="5" fill="${colorB}" opacity="0.4"/>`,
+    `<path d="M40,40 Q90,10 140,40 T140,110 Q90,140 40,110 Z" fill="${colorB}" opacity="0.25"/>`,
   ];
   const s = shapes[seed % shapes.length];
   const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='150'>${s}</svg>`;
@@ -383,9 +563,29 @@ function svgArt(seed, colorB){
 }
 
 const items = [
-  { kicker:'AMSTERDAM 01', title:'Canal Ring at Dusk', byline:'Grachtengordel', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'Golden hour along the 17th-century canal belt — houseboats, bicycles, and gabled facades doubled in still water.' },
-  { kicker:'AMSTERDAM 02', title:'Anne Frank House', byline:'Prinsengracht', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'A quiet, difficult hour behind the bookcase — one of the most important stops in the city.' },
-  { kicker:'AMSTERDAM 03', title:'Rijksmuseum Morning', byline:'Museumplein', mark:'AM', location:'Amsterdam, Netherlands', date:'Jun 2026', desc:'Early entry to beat the crowds to The Night Watch, then coffee in the sculpture garden.' },
+  { kicker:'AMSTERDAM 01', title:'Red Cabbages and Garlic', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Vincent van Gogh, 1887 — thick, confident strokes on cabbage and garlic bulbs, painted during his Paris years.', photo:'img/01-red-cabbages-garlic.jpg' },
+  { kicker:'AMSTERDAM 02', title:'The Bedroom', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh\'s 1888 canvas of his room in Arles — tilted floor, mismatched chairs, and all.', photo:'img/02-the-bedroom.jpg' },
+  { kicker:'AMSTERDAM 03', title:'Irises', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted in the asylum garden at Saint-Rémy, 1890 — from his last, most prolific year of work.', photo:'img/03-irises.jpg' },
+  { kicker:'AMSTERDAM 04', title:'The Sower', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Two takes on Van Gogh\'s recurring "Sower" theme, reworked after Millet, hung side by side.', photo:'img/04-the-sower.jpg' },
+  { kicker:'AMSTERDAM 05', title:'Daubigny\'s Garden', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'One of Van Gogh\'s final paintings, 1890 — the garden of a fellow painter he never got to meet.', photo:'img/05-daubignys-garden.jpg' },
+  { kicker:'AMSTERDAM 06', title:'The Flower Car', byline:'Museumplein', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A hand-painted homage parked right outside the museum doors.', photo:'img/06-flower-car.jpg', orientation:'portrait' },
+  { kicker:'AMSTERDAM 07', title:'Through the Window', byline:'En route', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Shooting the city on the move, mirror and all.', photo:'img/07-through-the-window.jpg' },
+  { kicker:'AMSTERDAM 08', title:'Along the Grachtengordel', byline:'Canal Ring', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The 17th-century canal belt, houseboats and all, mid-stroll.', photo:'img/08-canal-ring.jpg' },
+  { kicker:'AMSTERDAM 09', title:'The Sea', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jan Toorop, 1899 — waves rendered almost as pure texture.', photo:'img/09-the-sea-toorop.jpg' },
+  { kicker:'AMSTERDAM 10', title:'Fishing Fleet at Low Tide', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A beach crowded with boats, baskets, and buyers — the signature just out of focus.', photo:'img/10-fishing-fleet.jpg' },
+  { kicker:'AMSTERDAM 11', title:'Rue Nôtre-Dame, Parijs', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Johan Barthold Jongkind, 1864 — a sun-and-shadow study of a Paris street, a forerunner to Impressionism.', photo:'img/11-rue-notre-dame.jpg' },
+  { kicker:'AMSTERDAM 12', title:'Portrait with a Dog', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A quiet portrait, dog included — caught between galleries.', photo:'img/12-portrait-with-dog.jpg', orientation:'portrait' },
+  { kicker:'AMSTERDAM 13', title:'Z.M. Stoomschip Medusa', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The Dutch steamship Medusa forcing the Straits of Shimonoseki, 11 July 1863 — the title inscribed right on the canvas.', photo:'img/13-stoomschip-medusa.jpg' },
+  { kicker:'AMSTERDAM 14', title:'Stained Glass Portrait', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A robed figure in leaded glass, colors glowing with the gallery light behind.', photo:'img/14-stained-glass-portrait.jpg' },
+  { kicker:'AMSTERDAM 15', title:'Still Life with Flowers in a Glass Vase', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Rachel Ruysch, c. 1690–1720 — a dense floral arrangement by one of the era\'s few celebrated female masters.', photo:'img/15-still-life-flowers.jpg' },
+  { kicker:'AMSTERDAM 16', title:'Still Life with Cheese', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Floris Claesz van Dijck, c. 1615 — precise, almost tactile cheese and fruit, from a pioneer of Dutch still life.', photo:'img/16-still-life-cheese.jpg' },
+  { kicker:'AMSTERDAM 17', title:'River Landscape with Riders', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Aelbert Cuyp\'s golden-hour river scene, riders heading home.', photo:'img/17-river-landscape-riders.jpg' },
+  { kicker:'AMSTERDAM 18', title:'Fleet in the Harbor', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Sails and smoke over a crowded harbor — one more maritime scene among many.', photo:'img/18-fleet-in-harbor.jpg' },
+  { kicker:'AMSTERDAM 19', title:'Wooded Landscape with Merrymakers in a Cart', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Meindert Hobbema, c. 1665 — a cart and company rolling past sunlit trees.', photo:'img/19-wooded-landscape-cart.jpg' },
+  { kicker:'AMSTERDAM 20', title:'Gallery of Honour', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The museum\'s grand central hall, mid-afternoon crowd and all.', photo:'img/20-gallery-of-honour.jpg' },
+  { kicker:'AMSTERDAM 21', title:'Bone Study', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A skeletal composition tucked into a side gallery — details lost to the low light.', photo:'img/21-bone-study.jpg' },
+  { kicker:'AMSTERDAM 22', title:'View of Zuidelande', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Ferdinand Hart Nibbrig\'s pointillist view over Zuidelande, on the island of Walcheren.', photo:'img/22-view-of-zuidelande.jpg' },
+  { kicker:'AMSTERDAM 23', title:'1 Mei', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'An interwar May Day poster, red hand raised — political art from a polarized decade.', photo:'img/23-1-mei-poster.jpg' },
   { kicker:'BERLIN 01', title:'East Side Gallery', byline:'Friedrichshain', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'A mile and a half of Wall left standing, repainted by artists from around the world after 1990.' },
   { kicker:'BERLIN 02', title:'Museum Island', byline:'Mitte', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Five museums on one small island in the Spree — the Pergamon alone is worth the whole day.' },
   { kicker:'BERLIN 03', title:'Mauerpark Sunday', byline:'Prenzlauer Berg', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Flea market stalls, karaoke in the amphitheater, and currywurst eaten standing up.' },
@@ -394,12 +594,12 @@ const items = [
   { kicker:'PRAGUE 03', title:'Up to the Castle', byline:'Hradčany', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'The climb past Golden Lane rewards you with the best rooftop view in the city.' },
 ];
 
-const SIZES = { sm: [140,117], md: [180,150], lg: [224,187] };
-function sizeFor(idx){
+/* ============ STAMP VIEW: tile builder ============ */
+const STAMP_SIZES = { sm: [140,117], md: [180,150], lg: [224,187] };
+function stampSizeFor(idx){
   const pattern = ['md','sm','lg','sm','md','lg','lg','sm','md','md','sm','lg'];
   return pattern[idx % pattern.length];
 }
-
 function captionHTML(item, pal){
   const filler = item.title.length < 20
     ? `<div class="cap-filler">${item.desc.split('.')[0]}.</div>`
@@ -415,18 +615,11 @@ function captionHTML(item, pal){
       ${filler}
     </div>`;
 }
-
-/* ============ tile unit: strict aligned grid, sized to keep captions clear of neighbors ============ */
-const CELL_W = 300, CELL_H = 300;
-const COLS = 6, ROWS_PER_UNIT = 4;
-const unitW = COLS * CELL_W;
-const unitH = ROWS_PER_UNIT * CELL_H;
-
 function stampHTML(idx, centerX, centerY){
   const item = items[idx % items.length];
   const pal = palette[idx % palette.length];
-  const sizeKey = sizeFor(idx);
-  const [w, h] = SIZES[sizeKey];
+  const sizeKey = stampSizeFor(idx);
+  const [w, h] = STAMP_SIZES[sizeKey];
   const x = centerX - w/2, y = centerY - h/2;
   return `
     <div class="stamp size-${sizeKey}" data-idx="${idx}" style="left:${x}px; top:${y}px; --paper:${pal.paper}; --ink:${pal.ink};">
@@ -447,24 +640,86 @@ function stampHTML(idx, centerX, centerY){
     </div>`;
 }
 
-let tileTemplateHTML = '';
-{
-  let idx = 0, html = '';
-  for (let r = 0; r < ROWS_PER_UNIT; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const centerX = c * CELL_W + CELL_W/2;
-      const centerY = r * CELL_H + CELL_H/2;
-      html += stampHTML(idx, centerX, centerY);
-      idx++;
-    }
-  }
-  tileTemplateHTML = html;
+/* ============ POSTCARD VIEW: tile builder ============ */
+function pcStampBadgeHTML(idx, pal, rot){
+  const item = items[idx % items.length];
+  return `
+    <div class="pc-stamp-wrapper" style="transform: scale(0.32) rotate(${rot}deg);">
+       <div class="pc-stamp-box" style="--paper:${pal.paper}; --ink:${pal.ink};">
+         <div class="pc-stamp-paper">${pcStampSVG}</div>
+         <div class="pc-stamp-inner">
+           <img class="pc-stamp-art" src="${svgArt(idx, pal.ink)}" alt="">
+           <div class="pc-stamp-mark">${item.mark}</div>
+           <div class="pc-stamp-top"><div class="pc-stamp-kicker">${item.kicker}</div></div>
+         </div>
+       </div>
+    </div>`;
 }
+const POSTCARD_DIMS = {
+  landscape: { w:340, h:250, photoH:160 },
+  portrait:  { w:230, h:320, photoH:210 },
+};
+function postcardHTML(idx, centerX, centerY){
+  const item = items[idx % items.length];
+  const pal = palette[idx % palette.length];
+
+  const rot = (Math.sin(idx * 13) * 6).toFixed(1);
+  const ox = Math.sin(idx * 7) * 20;
+  const oy = Math.cos(idx * 11) * 20;
+
+  const dims = POSTCARD_DIMS[item.orientation === 'portrait' ? 'portrait' : 'landscape'];
+  const { w, h, photoH } = dims;
+  const x = centerX - w/2 + ox;
+  const y = centerY - h/2 + oy;
+
+  const stampRot = (Math.cos(idx * 5) * 8).toFixed(1);
+
+  return `
+    <div class="postcard" data-idx="${idx}" style="left:${x}px; top:${y}px; width:${w}px; height:${h}px; transform: rotate(${rot}deg);">
+      <div class="postcard-lift">
+        <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${photoH}px;">
+        <div class="pc-content">
+          <div class="pc-title">${item.title}</div>
+          <div class="pc-byline">${item.location.split(',')[0]} · ${item.date}</div>
+        </div>
+        ${pcStampBadgeHTML(idx, pal, stampRot)}
+      </div>
+    </div>`;
+}
+
+/* ============ view switching + shared drag-canvas engine ============ */
+const VIEWS = {
+  stamps:    { cellW:300, cellH:300, cols:6, rows:4, build:stampHTML },
+  postcards: { cellW:420, cellH:340, cols:5, rows:3, build:postcardHTML },
+};
+let currentView = 'postcards';
 
 const canvasEl = document.getElementById('canvas');
 const viewportEl = document.getElementById('viewport');
+const toggleBtn = document.getElementById('view-toggle');
+
+function otherView(){ return currentView === 'postcards' ? 'stamps' : 'postcards'; }
+function updateToggleLabel(){ toggleBtn.textContent = otherView(); }
+
+function buildTileTemplate(){
+  const v = VIEWS[currentView];
+  let idx = 0, html = '';
+  for (let r = 0; r < v.rows; r++) {
+    for (let c = 0; c < v.cols; c++) {
+      const centerX = c * v.cellW + v.cellW/2;
+      const centerY = r * v.cellH + v.cellH/2;
+      html += v.build(idx, centerX, centerY);
+      idx++;
+    }
+  }
+  return html;
+}
 
 function buildTiles(){
+  const v = VIEWS[currentView];
+  const unitW = v.cols * v.cellW;
+  const unitH = v.rows * v.cellH;
+  const tileTemplateHTML = buildTileTemplate();
   canvasEl.innerHTML = '';
   const nx = Math.ceil(window.innerWidth / unitW) + 4;
   const ny = Math.ceil(window.innerHeight / unitH) + 4;
@@ -478,15 +733,27 @@ function buildTiles(){
     }
   }
 }
+
+toggleBtn.addEventListener('click', () => {
+  currentView = otherView();
+  updateToggleLabel();
+  buildTiles();
+});
+updateToggleLabel();
 buildTiles();
 
-/* ============ drag-to-pan with momentum ============ */
+/* ============ drag-to-pan with momentum (shared by both views) ============ */
 let panX = 0, panY = 0;
 let isDown = false, startX, startY, startPanX, startPanY, dragMoved = false;
 let lastX = 0, lastY = 0, velocityX = 0, velocityY = 0, lastTime = 0;
 let animId = null;
 
+function currentUnit(){
+  const v = VIEWS[currentView];
+  return { unitW: v.cols * v.cellW, unitH: v.rows * v.cellH };
+}
 function applyPan(){
+  const { unitW, unitH } = currentUnit();
   const wrappedX = ((panX % unitW) + unitW) % unitW;
   const wrappedY = ((panY % unitH) + unitH) % unitH;
   canvasEl.style.transform = `translate(${wrappedX}px, ${wrappedY}px)`;
@@ -553,12 +820,17 @@ window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer
 canvasEl.addEventListener('click', (e) => {
   if (dragMoved) return;
   const stampEl = e.target.closest('.stamp');
-  if (!stampEl) return;
-  const idx = +stampEl.dataset.idx;
-  openSidebar(items[idx % items.length], palette[idx % palette.length]);
+  const postcardEl = e.target.closest('.postcard');
+  if (stampEl) {
+    const idx = +stampEl.dataset.idx;
+    openStampSidebar(items[idx % items.length], palette[idx % palette.length]);
+  } else if (postcardEl) {
+    const idx = +postcardEl.dataset.idx;
+    openPostcardSidebar(items[idx % items.length], palette[idx % palette.length], idx);
+  }
 });
 
-function openSidebar(item, pal){
+function openStampSidebar(item, pal){
   const inner = document.getElementById('sidebarInner');
   inner.innerHTML = `
     <div class="sb-stamp-wrap">
@@ -591,6 +863,38 @@ function openSidebar(item, pal){
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('overlay').classList.add('open');
 }
+
+function openPostcardSidebar(item, pal, idx){
+  const inner = document.getElementById('sidebarInner');
+  const dims = POSTCARD_DIMS[item.orientation === 'portrait' ? 'portrait' : 'landscape'];
+  inner.innerHTML = `
+    <div class="sb-postcard-wrap">
+      <div class="postcard" style="transform:rotate(0deg); width:${dims.w}px; height:${dims.h}px;">
+        <div class="postcard-lift" style="transform:none; cursor:default;">
+          <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${dims.photoH}px;">
+          <div class="pc-content">
+            <div class="pc-title">${item.title}</div>
+            <div class="pc-byline">${item.location.split(',')[0]} · ${item.date}</div>
+          </div>
+          ${pcStampBadgeHTML(idx, pal, -2)}
+        </div>
+      </div>
+    </div>
+    <div class="sb-body">
+      <div class="sb-kicker">${item.kicker}</div>
+      <div class="sb-title">${item.title}</div>
+      <div class="sb-desc">${item.desc}</div>
+      <div class="sb-meta">
+        <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${item.location}</div></div>
+        <div class="sb-meta-item"><div class="sb-meta-label">Date</div><div class="sb-meta-value">${item.date}</div></div>
+        <div class="sb-meta-item"><div class="sb-meta-label">Neighborhood</div><div class="sb-meta-value">${item.byline}</div></div>
+      </div>
+    </div>
+  `;
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+
 function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
