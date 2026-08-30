@@ -317,6 +317,13 @@
     color: #1a1a1a;
     line-height: 1.1;
   }
+  .pc-artist {
+    font-family: 'Georgia', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: #555;
+    margin-top: 3px;
+  }
   .pc-byline {
     font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
     font-size: 10px;
@@ -563,28 +570,28 @@ function svgArt(seed, colorB){
 }
 
 const items = [
-  { kicker:'AMSTERDAM 01', title:'Red Cabbages and Garlic', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Vincent van Gogh, 1887 — thick, confident strokes on cabbage and garlic bulbs, painted during his Paris years.', photo:'img/01-red-cabbages-garlic.jpg' },
-  { kicker:'AMSTERDAM 02', title:'The Bedroom', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh\'s 1888 canvas of his room in Arles — tilted floor, mismatched chairs, and all.', photo:'img/02-the-bedroom.jpg' },
-  { kicker:'AMSTERDAM 03', title:'Irises', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted in the asylum garden at Saint-Rémy, 1890 — from his last, most prolific year of work.', photo:'img/03-irises.jpg' },
-  { kicker:'AMSTERDAM 04', title:'The Sower', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Two takes on Van Gogh\'s recurring "Sower" theme, reworked after Millet, hung side by side.', photo:'img/04-the-sower.jpg' },
-  { kicker:'AMSTERDAM 05', title:'Daubigny\'s Garden', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'One of Van Gogh\'s final paintings, 1890 — the garden of a fellow painter he never got to meet.', photo:'img/05-daubignys-garden.jpg' },
+  { kicker:'AMSTERDAM 01', title:'Red Cabbages and Garlic', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Vincent van Gogh, 1887 — thick, confident strokes on cabbage and garlic bulbs, painted during his Paris years.', photo:'img/01-red-cabbages-garlic.jpg' },
+  { kicker:'AMSTERDAM 02', title:'The Bedroom', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh\'s 1888 canvas of his room in Arles — tilted floor, mismatched chairs, and all.', photo:'img/02-the-bedroom.jpg' },
+  { kicker:'AMSTERDAM 03', title:'Irises', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted in the asylum garden at Saint-Rémy, 1890 — from his last, most prolific year of work.', photo:'img/03-irises.jpg' },
+  { kicker:'AMSTERDAM 04', title:'The Sower', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Two takes on Van Gogh\'s recurring "Sower" theme, reworked after Millet, hung side by side.', photo:'img/04-the-sower.jpg' },
+  { kicker:'AMSTERDAM 05', title:'Daubigny\'s Garden', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'One of Van Gogh\'s final paintings, 1890 — the garden of a fellow painter he never got to meet.', photo:'img/05-daubignys-garden.jpg' },
   { kicker:'AMSTERDAM 06', title:'The Flower Car', byline:'Museumplein', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A hand-painted homage parked right outside the museum doors.', photo:'img/06-flower-car.jpg', orientation:'portrait' },
   { kicker:'AMSTERDAM 07', title:'Through the Window', byline:'En route', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Shooting the city on the move, mirror and all.', photo:'img/07-through-the-window.jpg' },
   { kicker:'AMSTERDAM 08', title:'Along the Grachtengordel', byline:'Canal Ring', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The 17th-century canal belt, houseboats and all, mid-stroll.', photo:'img/08-canal-ring.jpg' },
-  { kicker:'AMSTERDAM 09', title:'The Sea', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jan Toorop, 1899 — waves rendered almost as pure texture.', photo:'img/09-the-sea-toorop.jpg' },
+  { kicker:'AMSTERDAM 09', title:'The Sea', artist:'Jan Toorop', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jan Toorop, 1899 — waves rendered almost as pure texture.', photo:'img/09-the-sea-toorop.jpg' },
   { kicker:'AMSTERDAM 10', title:'Fishing Fleet at Low Tide', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A beach crowded with boats, baskets, and buyers — the signature just out of focus.', photo:'img/10-fishing-fleet.jpg' },
-  { kicker:'AMSTERDAM 11', title:'Rue Nôtre-Dame, Parijs', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Johan Barthold Jongkind, 1864 — a sun-and-shadow study of a Paris street, a forerunner to Impressionism.', photo:'img/11-rue-notre-dame.jpg' },
+  { kicker:'AMSTERDAM 11', title:'Rue Nôtre-Dame, Parijs', artist:'Johan Barthold Jongkind', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Johan Barthold Jongkind, 1864 — a sun-and-shadow study of a Paris street, a forerunner to Impressionism.', photo:'img/11-rue-notre-dame.jpg' },
   { kicker:'AMSTERDAM 12', title:'Portrait with a Dog', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A quiet portrait, dog included — caught between galleries.', photo:'img/12-portrait-with-dog.jpg', orientation:'portrait' },
   { kicker:'AMSTERDAM 13', title:'Z.M. Stoomschip Medusa', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The Dutch steamship Medusa forcing the Straits of Shimonoseki, 11 July 1863 — the title inscribed right on the canvas.', photo:'img/13-stoomschip-medusa.jpg' },
   { kicker:'AMSTERDAM 14', title:'Stained Glass Portrait', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A robed figure in leaded glass, colors glowing with the gallery light behind.', photo:'img/14-stained-glass-portrait.jpg' },
-  { kicker:'AMSTERDAM 15', title:'Still Life with Flowers in a Glass Vase', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Rachel Ruysch, c. 1690–1720 — a dense floral arrangement by one of the era\'s few celebrated female masters.', photo:'img/15-still-life-flowers.jpg' },
-  { kicker:'AMSTERDAM 16', title:'Still Life with Cheese', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Floris Claesz van Dijck, c. 1615 — precise, almost tactile cheese and fruit, from a pioneer of Dutch still life.', photo:'img/16-still-life-cheese.jpg' },
-  { kicker:'AMSTERDAM 17', title:'River Landscape with Riders', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Aelbert Cuyp\'s golden-hour river scene, riders heading home.', photo:'img/17-river-landscape-riders.jpg' },
+  { kicker:'AMSTERDAM 15', title:'Still Life with Flowers in a Glass Vase', artist:'Rachel Ruysch', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Rachel Ruysch, c. 1690–1720 — a dense floral arrangement by one of the era\'s few celebrated female masters.', photo:'img/15-still-life-flowers.jpg' },
+  { kicker:'AMSTERDAM 16', title:'Still Life with Cheese', artist:'Floris Claesz van Dijck', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Floris Claesz van Dijck, c. 1615 — precise, almost tactile cheese and fruit, from a pioneer of Dutch still life.', photo:'img/16-still-life-cheese.jpg' },
+  { kicker:'AMSTERDAM 17', title:'River Landscape with Riders', artist:'Aelbert Cuyp', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Aelbert Cuyp\'s golden-hour river scene, riders heading home.', photo:'img/17-river-landscape-riders.jpg' },
   { kicker:'AMSTERDAM 18', title:'Fleet in the Harbor', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Sails and smoke over a crowded harbor — one more maritime scene among many.', photo:'img/18-fleet-in-harbor.jpg' },
-  { kicker:'AMSTERDAM 19', title:'Wooded Landscape with Merrymakers in a Cart', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Meindert Hobbema, c. 1665 — a cart and company rolling past sunlit trees.', photo:'img/19-wooded-landscape-cart.jpg' },
+  { kicker:'AMSTERDAM 19', title:'Wooded Landscape with Merrymakers in a Cart', artist:'Meindert Hobbema', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Meindert Hobbema, c. 1665 — a cart and company rolling past sunlit trees.', photo:'img/19-wooded-landscape-cart.jpg' },
   { kicker:'AMSTERDAM 20', title:'Gallery of Honour', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The museum\'s grand central hall, mid-afternoon crowd and all.', photo:'img/20-gallery-of-honour.jpg' },
   { kicker:'AMSTERDAM 21', title:'Bone Study', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A skeletal composition tucked into a side gallery — details lost to the low light.', photo:'img/21-bone-study.jpg' },
-  { kicker:'AMSTERDAM 22', title:'View of Zuidelande', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Ferdinand Hart Nibbrig\'s pointillist view over Zuidelande, on the island of Walcheren.', photo:'img/22-view-of-zuidelande.jpg' },
+  { kicker:'AMSTERDAM 22', title:'View of Zuidelande', artist:'Ferdinand Hart Nibbrig', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Ferdinand Hart Nibbrig\'s pointillist view over Zuidelande, on the island of Walcheren.', photo:'img/22-view-of-zuidelande.jpg' },
   { kicker:'AMSTERDAM 23', title:'1 Mei', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'An interwar May Day poster, red hand raised — political art from a polarized decade.', photo:'img/23-1-mei-poster.jpg' },
   { kicker:'BERLIN 01', title:'East Side Gallery', byline:'Friedrichshain', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'A mile and a half of Wall left standing, repainted by artists from around the world after 1990.' },
   { kicker:'BERLIN 02', title:'Museum Island', byline:'Mitte', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Five museums on one small island in the Spree — the Pergamon alone is worth the whole day.' },
@@ -680,7 +687,8 @@ function postcardHTML(idx, centerX, centerY){
         <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${photoH}px;">
         <div class="pc-content">
           <div class="pc-title">${item.title}</div>
-          <div class="pc-byline">${item.location.split(',')[0]} · ${item.date}</div>
+          ${item.artist ? `<div class="pc-artist">${item.artist}</div>` : ''}
+          <div class="pc-byline">${item.byline} · ${item.date}</div>
         </div>
         ${pcStampBadgeHTML(idx, pal, stampRot)}
       </div>
@@ -874,7 +882,8 @@ function openPostcardSidebar(item, pal, idx){
           <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${dims.photoH}px;">
           <div class="pc-content">
             <div class="pc-title">${item.title}</div>
-            <div class="pc-byline">${item.location.split(',')[0]} · ${item.date}</div>
+            ${item.artist ? `<div class="pc-artist">${item.artist}</div>` : ''}
+            <div class="pc-byline">${item.byline} · ${item.date}</div>
           </div>
           ${pcStampBadgeHTML(idx, pal, -2)}
         </div>
@@ -885,6 +894,7 @@ function openPostcardSidebar(item, pal, idx){
       <div class="sb-title">${item.title}</div>
       <div class="sb-desc">${item.desc}</div>
       <div class="sb-meta">
+        ${item.artist ? `<div class="sb-meta-item"><div class="sb-meta-label">Artist</div><div class="sb-meta-value">${item.artist}</div></div>` : ''}
         <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${item.location}</div></div>
         <div class="sb-meta-item"><div class="sb-meta-label">Date</div><div class="sb-meta-value">${item.date}</div></div>
         <div class="sb-meta-item"><div class="sb-meta-label">Neighborhood</div><div class="sb-meta-value">${item.byline}</div></div>
