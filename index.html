@@ -286,11 +286,12 @@
     font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0 0;
   }
 
-  /* ---------- albums / walks — tinted like every other section on this
-     page (sidebar sky, gift-shop white, itinerary olive), so the two
-     photo-format sections read as distinct at a glance ---------- */
+  /* ---------- albums / walks / postcards — tinted like every other
+     section on this page (sidebar sky, gift-shop white, itinerary olive),
+     so the three photo-format sections read as distinct at a glance ---------- */
   .albums{ background:rgba(185,203,243,0.28); }
   .walks{ background:rgba(255,107,74,0.10); }
+  .postcards{ background:rgba(224,168,71,0.14); }
 
   /* ---------- gift shop ---------- */
   .gift-shop{ background:var(--card); }
@@ -574,6 +575,12 @@
       <div class="grid" id="walks-grid"></div>
     </section>
 
+    <section class="section postcards">
+      <h2>Postcards</h2>
+      <p class="lede">Drag-canvas scenes, filled in as a trip actually happens — not a finished album.</p>
+      <div class="grid" id="postcards-grid"></div>
+    </section>
+
     <section class="section gift-shop">
       <p class="eyebrow">wander / a closer look</p>
       <h2>Exit through the gift shop</h2>
@@ -676,6 +683,7 @@ const PLACES = [
   {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Amsterdam, Berlin, Prague — a postcard-and-stamp drag canvas filling in as the trip actually happens. Amsterdam\'s done; the rest is still on the way.', count:'45 postcards', region:'🇳🇱🇩🇪🇨🇿'},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Parvati Valley', slug:'manali', status:'story', count:''},
@@ -686,8 +694,9 @@ const PLACES = [
 ];
 
 const live = PLACES.filter(p => p.status === 'live');
-const liveAlbums = live.filter(p => p.kind !== 'walk');
+const liveAlbums = live.filter(p => p.kind !== 'walk' && p.kind !== 'postcards');
 const liveWalks = live.filter(p => p.kind === 'walk');
+const livePostcards = live.filter(p => p.kind === 'postcards');
 const draft = PLACES.filter(p => p.status === 'draft');
 
 /* ============================================================
@@ -826,6 +835,16 @@ document.getElementById('grid').innerHTML = liveAlbums.map(p => `
 document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
   <a class="place-card" href="${p.slug}/">
     ${coverHTML(p, {pill:'Walk'})}
+    <p class="meta-line">${p.count}</p>
+    <p class="name">${p.name}</p>
+    <p class="blurb">${p.blurb}</p>
+  </a>
+`).join('');
+
+// postcards grid — live places built as drag-canvas stamp/postcard scenes
+document.getElementById('postcards-grid').innerHTML = livePostcards.map(p => `
+  <a class="place-card" href="${p.slug}/">
+    ${coverHTML(p, {pill:'Postcards'})}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>
