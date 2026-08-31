@@ -433,6 +433,27 @@
   }
   .sb-close:hover { color:#fff; }
 
+  /* ---------- Lightbox (fullscreen photo, opened from the sidebar) ---------- */
+  #lightbox {
+    position:fixed; inset:0; z-index:100;
+    background:rgba(0,0,0,0.92);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  #lightbox.open { opacity:1; pointer-events:auto; }
+  #lightbox img {
+    max-width:92vw; max-height:92vh; object-fit:contain;
+    box-shadow:0 20px 60px rgba(0,0,0,0.6);
+  }
+  #lightbox .lb-close {
+    position:absolute; top:20px; right:24px;
+    background:none; border:none; color:#ccc;
+    font-size:28px; cursor:pointer; line-height:1;
+  }
+  #lightbox .lb-close:hover { color:#fff; }
+  .sb-postcard-wrap .pc-photo { cursor:zoom-in; }
+
   .sb-body { padding:20px 40px 60px; }
   .sb-kicker {
     font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
@@ -474,7 +495,6 @@
     <span class="pill-slash">/</span>
     <span class="pill-current">eUrope</span>
   </nav>
-  <button id="view-toggle" type="button" aria-label="Switch view"></button>
   <a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
 
   <div id="viewport">
@@ -486,6 +506,10 @@
   <div id="sidebar">
     <button class="sb-close" onclick="closeSidebar()">✕</button>
     <div id="sidebarInner"></div>
+  </div>
+  <div id="lightbox" onclick="closeLightbox()">
+    <button class="lb-close">✕</button>
+    <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
   </div>
 
 <script>
@@ -622,6 +646,10 @@ const items = [
   { kicker:'PRAGUE 02', title:'The Astronomical Clock', byline:'Old Town Square', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Six hundred years old and still drawing a crowd on the hour for its walk of apostles.' },
   { kicker:'PRAGUE 03', title:'Up to the Castle', byline:'Hradčany', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'The climb past Golden Lane rewards you with the best rooftop view in the city.' },
 ];
+// Berlin/Prague entries have no photo yet (trip hasn't happened) -- keep them
+// in `items` for later, but the canvas only draws from ones with a real photo
+// so they don't show up as empty placeholder frames.
+const photoItems = items.filter(i => i.photo);
 
 /* ============ STAMP VIEW: tile builder ============ */
 const STAMP_SIZES = { sm: [140,117], md: [180,150], lg: [224,187] };
@@ -671,7 +699,7 @@ function stampHTML(idx, centerX, centerY){
 
 /* ============ POSTCARD VIEW: tile builder ============ */
 function pcStampBadgeHTML(idx, pal, rot){
-  const item = items[idx % items.length];
+  const item = photoItems[idx % photoItems.length];
   return `
     <div class="pc-stamp-wrapper" style="transform: scale(0.32) rotate(${rot}deg);">
        <div class="pc-stamp-box" style="--paper:${pal.paper}; --ink:${pal.ink};">
@@ -689,7 +717,7 @@ const POSTCARD_DIMS = {
   portrait:  { w:230, h:320, photoH:210 },
 };
 function postcardHTML(idx, centerX, centerY){
-  const item = items[idx % items.length];
+  const item = photoItems[idx % photoItems.length];
   const pal = palette[idx % palette.length];
 
   const rot = (Math.sin(idx * 13) * 6).toFixed(1);
@@ -717,19 +745,14 @@ function postcardHTML(idx, centerX, centerY){
     </div>`;
 }
 
-/* ============ view switching + shared drag-canvas engine ============ */
+/* ============ shared drag-canvas engine ============ */
 const VIEWS = {
-  stamps:    { cellW:300, cellH:300, cols:6, rows:4, build:stampHTML },
   postcards: { cellW:520, cellH:460, cols:5, rows:3, build:postcardHTML },
 };
-let currentView = 'postcards';
+const currentView = 'postcards';
 
 const canvasEl = document.getElementById('canvas');
 const viewportEl = document.getElementById('viewport');
-const toggleBtn = document.getElementById('view-toggle');
-
-function otherView(){ return currentView === 'postcards' ? 'stamps' : 'postcards'; }
-function updateToggleLabel(){ toggleBtn.textContent = otherView(); }
 
 /* each tile position gets its own base offset into `items`, rather than
    every tile repeating the same fixed slice — otherwise only the first
@@ -777,12 +800,6 @@ function buildTiles(){
   }
 }
 
-toggleBtn.addEventListener('click', () => {
-  currentView = otherView();
-  updateToggleLabel();
-  buildTiles();
-});
-updateToggleLabel();
 buildTiles();
 
 /* ============ drag-to-pan with momentum (shared by both views) ============ */
@@ -862,14 +879,10 @@ window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer
 /* ============ sidebar ============ */
 canvasEl.addEventListener('click', (e) => {
   if (dragMoved) return;
-  const stampEl = e.target.closest('.stamp');
   const postcardEl = e.target.closest('.postcard');
-  if (stampEl) {
-    const idx = +stampEl.dataset.idx;
-    openStampSidebar(items[idx % items.length], palette[idx % palette.length]);
-  } else if (postcardEl) {
+  if (postcardEl) {
     const idx = +postcardEl.dataset.idx;
-    openPostcardSidebar(items[idx % items.length], palette[idx % palette.length], idx);
+    openPostcardSidebar(photoItems[idx % photoItems.length], palette[idx % palette.length], idx);
   }
 });
 
@@ -938,13 +951,26 @@ function openPostcardSidebar(item, pal, idx){
   `;
   document.getElementById('sidebar').classList.add('open');
   document.getElementById('overlay').classList.add('open');
+  inner.querySelector('.pc-photo').addEventListener('click', () => openLightbox(item.photo));
 }
 
 function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSidebar(); });
+
+function openLightbox(src){
+  document.getElementById('lightboxImg').src = src;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox(){
+  document.getElementById('lightbox').classList.remove('open');
+}
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (document.getElementById('lightbox').classList.contains('open')) closeLightbox();
+  else closeSidebar();
+});
 </script>
 </body>
 </html>
