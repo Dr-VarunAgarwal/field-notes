@@ -720,7 +720,7 @@ function postcardHTML(idx, centerX, centerY){
 /* ============ view switching + shared drag-canvas engine ============ */
 const VIEWS = {
   stamps:    { cellW:300, cellH:300, cols:6, rows:4, build:stampHTML },
-  postcards: { cellW:420, cellH:340, cols:5, rows:3, build:postcardHTML },
+  postcards: { cellW:520, cellH:460, cols:5, rows:3, build:postcardHTML },
 };
 let currentView = 'postcards';
 
@@ -733,7 +733,18 @@ function updateToggleLabel(){ toggleBtn.textContent = otherView(); }
 
 /* each tile position gets its own base offset into `items`, rather than
    every tile repeating the same fixed slice — otherwise only the first
-   rows*cols items could ever appear, no matter how far you drag */
+   rows*cols items could ever appear, no matter how far you drag.
+   The offset comes from a hash of (tx,ty), not linear arithmetic — a
+   constant per-tile step (old: (ty*10000+tx)*cellsPerUnit) is only ever
+   as scrambled as gcd(step, items.length) allows, so with real item
+   counts it fell into a short, visibly repeating cycle every few tiles. */
+function hashTile(tx, ty){
+  let h = (tx * 374761393 + ty * 668265263) | 0;
+  h = Math.imul(h ^ (h >>> 15), 2246822519);
+  h = Math.imul(h ^ (h >>> 13), 3266489917);
+  h ^= h >>> 16;
+  return h >>> 0;
+}
 function buildTileHTML(v, baseIdx){
   let idx = baseIdx, html = '';
   for (let r = 0; r < v.rows; r++) {
@@ -751,7 +762,6 @@ function buildTiles(){
   const v = VIEWS[currentView];
   const unitW = v.cols * v.cellW;
   const unitH = v.rows * v.cellH;
-  const cellsPerUnit = v.rows * v.cols;
   canvasEl.innerHTML = '';
   const nx = Math.ceil(window.innerWidth / unitW) + 4;
   const ny = Math.ceil(window.innerHeight / unitH) + 4;
@@ -760,7 +770,7 @@ function buildTiles(){
       const tile = document.createElement('div');
       tile.className = 'tile';
       tile.style.transform = `translate(${tx * unitW}px, ${ty * unitH}px)`;
-      const tileOffset = (ty * 10000 + tx + 1000000) * cellsPerUnit;
+      const tileOffset = hashTile(tx, ty);
       tile.innerHTML = buildTileHTML(v, tileOffset);
       canvasEl.appendChild(tile);
     }
