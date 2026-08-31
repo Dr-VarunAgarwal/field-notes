@@ -781,13 +781,20 @@ function buildTileHTML(v, baseIdx){
   return html;
 }
 
-function buildTiles(){
+let lastNx = -1, lastNy = -1;
+function buildTiles(force){
   const v = VIEWS[currentView];
   const unitW = v.cols * v.cellW;
   const unitH = v.rows * v.cellH;
-  canvasEl.innerHTML = '';
   const nx = Math.ceil(window.innerWidth / unitW) + 4;
   const ny = Math.ceil(window.innerHeight / unitH) + 4;
+  // Mobile browser chrome (address bar) collapsing/expanding during a drag
+  // fires `resize` constantly, even though the tile grid it needs almost
+  // never actually changes -- skip the rebuild (which flickers, since it
+  // wipes ~300 DOM nodes) unless the grid size genuinely changed.
+  if (!force && nx === lastNx && ny === lastNy) return;
+  lastNx = nx; lastNy = ny;
+  canvasEl.innerHTML = '';
   for (let ty = -2; ty < ny - 2; ty++) {
     for (let tx = -2; tx < nx - 2; tx++) {
       const tile = document.createElement('div');
@@ -800,7 +807,7 @@ function buildTiles(){
   }
 }
 
-buildTiles();
+buildTiles(true);
 
 /* ============ drag-to-pan with momentum (shared by both views) ============ */
 let panX = 0, panY = 0;
