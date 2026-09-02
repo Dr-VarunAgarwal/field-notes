@@ -187,25 +187,22 @@
   .count b{color:var(--chalk);}
 
   main{padding:6px 14px 80px; max-width:1150px; margin:0 auto;}
+  /* .wall uses JS masonry (see layoutMasonry()), not CSS columns/grid —
+     native column-count balances by total height, which produces large
+     dead gaps once card heights get as varied as this collection's mix
+     of landscape and portrait photos. position:relative + per-card
+     absolute placement avoids that regardless of height variance. */
   .wall{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:26px;
+    position:relative;
     padding-top:18px;
   }
   @media(min-width:640px){
-    .wall{
-      display:block; column-count:2; column-gap:30px; padding-top:28px;
-    }
-    .card{ break-inside:avoid; width:100%; margin-bottom:34px; }
+    .wall{ padding-top:28px; }
   }
-  @media(min-width:980px){
-    .wall{ column-count:3; }
-  }
-
   .card{
+    position:absolute; top:0; left:0;
     opacity:0; transform:translateY(calc(28px + var(--y,0px))) rotate(var(--r,0deg));
-    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease;
+    transition:opacity .6s ease, transform .6s cubic-bezier(.2,.7,.3,1), box-shadow .25s ease, left .25s ease, top .25s ease, width .25s ease;
     cursor:pointer;
   }
   .card.in{opacity:1; transform:translateY(var(--y,0px)) rotate(var(--r,0deg));}
@@ -238,16 +235,6 @@
   .frame.color-framed .tape{ background: var(--frame-color, var(--tape)); opacity:0.85; }
 
   body.mode-simple .card{ --r:0deg !important; --y:0px !important; }
-  body.mode-simple .wall{
-    display:grid !important; column-count:unset !important;
-    grid-template-columns:1fr; gap:26px;
-  }
-  @media(min-width:640px){
-    body.mode-simple .wall{grid-template-columns:1fr 1fr; gap:34px 24px;}
-  }
-  @media(min-width:980px){
-    body.mode-simple .wall{grid-template-columns:1fr 1fr 1fr;}
-  }
   body.mode-simple .frame.color-framed{
     border-color:var(--line);
     box-shadow:0 18px 40px -20px rgba(0,0,0,0.7);
@@ -805,6 +792,7 @@ function renderWall(){
   });
 
   applyColorFrames();
+  layoutMasonry();
 
   requestAnimationFrame(()=>{
     const obs = new IntersectionObserver((entries)=>{
@@ -813,6 +801,56 @@ function renderWall(){
     wall.querySelectorAll('.card').forEach(c=>obs.observe(c));
   });
 }
+
+/* ============================================================
+   Masonry layout — plain JS instead of CSS column-count. Native
+   multi-column balances columns by total content height, which looks
+   fine when cards are roughly the same height but leaves large dead
+   gaps once heights vary a lot (this collection mixes landscape and
+   much-taller portrait photos). Cards are measured in normal flow at
+   their target column width, then placed into whichever column is
+   currently shortest — classic "shortest column next" masonry — and
+   .wall gets an explicit height so the page doesn't leave blank space
+   below the shortest column either.
+   ============================================================ */
+function layoutMasonry(){
+  const wall = document.getElementById('wall');
+  const cards = [...wall.querySelectorAll('.card')];
+  if(!cards.length){ wall.style.height = '0px'; return; }
+
+  const isSimple = document.body.classList.contains('mode-simple');
+  const width = wall.clientWidth;
+  let columns, gap;
+  if(width >= 980){ columns = 3; gap = isSimple ? 24 : 30; }
+  else if(width >= 640){ columns = 2; gap = isSimple ? 24 : 30; }
+  else { columns = 1; gap = isSimple ? 26 : 26; }
+  const colWidth = (width - gap * (columns - 1)) / columns;
+
+  // measure natural height at the target width, normal flow, no reads/writes interleaved
+  cards.forEach(card => {
+    card.style.position = 'static';
+    card.style.width = colWidth + 'px';
+  });
+  const heights = cards.map(card => card.offsetHeight);
+
+  const colHeights = new Array(columns).fill(0);
+  cards.forEach((card, i) => {
+    let col = 0;
+    for(let c = 1; c < columns; c++){ if(colHeights[c] < colHeights[col]) col = c; }
+    card.style.position = 'absolute';
+    card.style.left = (col * (colWidth + gap)) + 'px';
+    card.style.top = colHeights[col] + 'px';
+    colHeights[col] += heights[i] + gap;
+  });
+
+  wall.style.height = (Math.max(...colHeights) - gap) + 'px';
+}
+
+let masonryResizeTimer = null;
+window.addEventListener('resize', () => {
+  clearTimeout(masonryResizeTimer);
+  masonryResizeTimer = setTimeout(layoutMasonry, 150);
+});
 
 /* ============================================================
    Colour-sampled frames — refines each flagged card's frame colour by
@@ -963,6 +1001,7 @@ function setMode(mode){
   btn.classList.toggle('is-fun', mode === 'fun');
   btn.title = mode === 'fun' ? 'Fun layout — tap for simple' : 'Simple layout — tap for fun';
   try{ localStorage.setItem('wanderMode', mode); }catch(e){}
+  layoutMasonry();
 }
 document.getElementById('modeIconBtn').onclick = () => {
   const next = document.body.classList.contains('mode-simple') ? 'fun' : 'simple';
