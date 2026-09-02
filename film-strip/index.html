@@ -243,9 +243,9 @@
 <a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
 
 <div class="intro">
-  <p class="eyebrow">wander / draft treatment</p>
+  <p class="eyebrow">wander / on the road</p>
   <h1>A strip of negatives.</h1>
-  <p>Tap one to bring it up to the light — it develops into the full print. Placeholder frames for now, until a real roll gets scanned in.</p>
+  <p>Amsterdam, between the museums. Tap a frame to bring it up to the light — it develops into the full print. Berlin gets its own roll once that leg happens.</p>
 </div>
 
 <div class="strip-stage">
@@ -274,35 +274,19 @@
 
 <script>
 /* ============================================================
-   Placeholder frame art — abstract washes, not real photos.
-   Swap FRAMES for a real DATA array (per STANDARDS.md's schema:
-   id, img, location, notes, altText, date, order, colorFrame)
-   once a roll is scanned in, and this same negative/positive
-   mechanism carries over unchanged.
+   Roll 1 — Amsterdam, the frames that weren't a museum wall:
+   street corners and the walk between the Van Gogh Museum and
+   the Rijksmuseum. Museum pieces stay on the postcards page
+   (../urotrip2026/) — this roll is everything else.
+   A Berlin roll goes here once that leg of the trip happens.
    ============================================================ */
-const WASHES = ['#8a4a2c','#3d5a4a','#6b4f8a','#2f5266','#8a6a2a','#5a2f3d','#3a6b52'];
-
-function frameArt(seed){
-  const base = WASHES[seed % WASHES.length];
-  const blobs = [];
-  for(let i=0;i<4;i++){
-    const cx = ((seed*37 + i*53) % 100);
-    const cy = ((seed*67 + i*29) % 100);
-    const r = 18 + ((seed*13 + i*11) % 22);
-    blobs.push(`<circle cx="${cx}" cy="${cy}" r="${r}" fill="#000" opacity="${0.12 + (i%3)*0.06}"/>`);
-  }
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='240' height='320'>` +
-    `<rect width='100%' height='100%' fill='${base}'/>` +
-    blobs.map(b => `<g transform="scale(2.4,3.2)">${b}</g>`).join('') +
-    `</svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
-}
-
-const FRAMES = Array.from({length:12}, (_, i) => ({
-  id:i+1,
-  img:frameArt(i),
-  note:'awaiting a real roll'
-}));
+const FRAMES = [
+  { id:1, img:'img/01-flower-car.jpg', title:'The Flower Car', location:'Museumplein, Amsterdam', note:'A hand-painted homage parked right outside the museum doors.' },
+  { id:2, img:'img/02-through-the-window.jpg', title:'Through the Window', location:'En route, Amsterdam', note:'Shooting the city on the move, mirror and all.' },
+  { id:3, img:'img/03-canal-ring.jpg', title:'Along the Grachtengordel', location:'Canal Ring, Amsterdam', note:'The 17th-century canal belt, houseboats and all, mid-stroll.' },
+  { id:4, img:'img/04-guna-sticker.jpg', title:'Guna', location:'Street corner, Amsterdam', note:'A wheatpaste sticker stack on a lamppost, somewhere between the museums.' },
+  { id:5, img:'img/05-dr-falafel.jpg', title:'Dr. Falafel', location:'Street corner, Amsterdam', note:'Shopfront signage, spotted on the walk over.' },
+];
 
 /* ============================================================
    Render the strip
@@ -341,8 +325,8 @@ function openFrame(id){
   if(!f) return;
   const num = String(f.id).padStart(2,'0');
   lbImg.src = f.img;
-  lbEyebrow.textContent = `Frame ${num}`;
-  lbTitle.textContent = 'Untitled';
+  lbEyebrow.textContent = `Frame ${num} · ${f.location || ''}`;
+  lbTitle.textContent = f.title || 'Untitled';
   lbNote.textContent = f.note;
   lbWindow.classList.remove('developed');
   lightbox.classList.add('open');
