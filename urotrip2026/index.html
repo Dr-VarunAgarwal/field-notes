@@ -869,9 +869,40 @@ function pointerUp(){
 viewportEl.addEventListener('mousedown', e => pointerDown(e.clientX, e.clientY));
 window.addEventListener('mousemove', e => pointerMove(e.clientX, e.clientY));
 window.addEventListener('mouseup', pointerUp);
-viewportEl.addEventListener('touchstart', e => { const t = e.touches[0]; pointerDown(t.clientX, t.clientY); }, {passive:true});
-viewportEl.addEventListener('touchmove', e => { const t = e.touches[0]; pointerMove(t.clientX, t.clientY); }, {passive:true});
-viewportEl.addEventListener('touchend', pointerUp);
+
+/* Track one specific finger by identifier for the whole gesture. The old
+   handlers reacted to ANY touchstart/touchend, not just the one that
+   started the drag -- so a stray second contact (a resting thumb, a palm
+   brushing the screen while panning) fires its own touchend and calls
+   pointerUp() even though the real dragging finger is still down and
+   still moving. That kills isDown mid-drag, so every further move of the
+   real finger is silently ignored: the canvas freezes while the finger
+   keeps going. The next real touch then has to reconcile that gap in one
+   frame, snapping the canvas to a different part of the grid -- the
+   "random jump from one photo to another" flicker. */
+let activeTouchId = null;
+function findTouch(touchList){
+  for (const t of touchList) if (t.identifier === activeTouchId) return t;
+  return null;
+}
+viewportEl.addEventListener('touchstart', e => {
+  if (activeTouchId !== null) return;
+  const t = e.changedTouches[0];
+  activeTouchId = t.identifier;
+  pointerDown(t.clientX, t.clientY);
+}, {passive:true});
+viewportEl.addEventListener('touchmove', e => {
+  const t = findTouch(e.touches);
+  if (!t) return;
+  pointerMove(t.clientX, t.clientY);
+}, {passive:true});
+function touchEnd(e){
+  if (!findTouch(e.changedTouches)) return;
+  activeTouchId = null;
+  pointerUp();
+}
+viewportEl.addEventListener('touchend', touchEnd);
+viewportEl.addEventListener('touchcancel', touchEnd);
 viewportEl.addEventListener('wheel', (e) => {
   e.preventDefault();
   panX -= e.deltaX; panY -= e.deltaY;
