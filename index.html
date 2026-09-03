@@ -308,6 +308,46 @@
   }
   .tour-btn:hover{ background:var(--blue); color:#fff; }
 
+  .gift-cities{
+    display:flex; gap:0.9rem;
+    overflow-x:auto; overscroll-behavior-x:contain;
+    padding:0.2rem 0.1rem 1.5rem;
+    scroll-snap-type:x proximity; -webkit-overflow-scrolling:touch;
+  }
+  .gift-cities::-webkit-scrollbar{ display:none; }
+  .gift-cities{ scrollbar-width:none; }
+  .gift-city-card{
+    flex:0 0 172px; aspect-ratio:3/4; scroll-snap-align:start;
+    position:relative; border-radius:20px; overflow:hidden;
+    background:var(--ink);
+    display:flex; align-items:flex-end;
+    padding:1.1rem 1rem;
+    text-decoration:none;
+    transition:transform 0.2s ease;
+  }
+  .gift-city-card:hover{ transform:translateY(-5px); }
+  .gift-city-card::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:var(--bg-img); background-size:cover; background-position:center;
+    opacity:0.16; filter:saturate(1.3);
+  }
+  .gift-city-card .name{
+    position:relative; z-index:1;
+    font-family:"Fredoka", sans-serif; font-weight:700; text-transform:uppercase;
+    font-size:1.85rem; line-height:0.95; letter-spacing:-0.01em;
+    background-image:var(--bg-img); background-size:cover; background-position:center;
+    -webkit-background-clip:text; background-clip:text;
+    color:var(--cream); -webkit-text-fill-color:transparent;
+  }
+  .gift-city-card .count{
+    position:absolute; top:0.8rem; right:0.9rem; z-index:1;
+    color:rgba(243,236,222,0.75); font-size:0.68rem; letter-spacing:0.03em;
+  }
+  @supports not (background-clip: text){
+    .gift-city-card .name{ -webkit-text-fill-color:var(--cream); color:var(--cream); }
+  }
+
   /* ---------- itinerary ---------- */
   .itinerary{ background:var(--olive); color:var(--cream); }
   .itinerary h2{ color:var(--cream); }
@@ -584,7 +624,8 @@
     <section class="section gift-shop">
       <p class="eyebrow">wander / a closer look</p>
       <h2>Exit through the gift shop</h2>
-      <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. A curated set to start, with the full street-art compendium one tap away.</p>
+      <p>Specific pieces, singled out — the story behind particular murals, stickers and sculptures instead of the whole wall. Five cities in so far, sorted by where you were standing.</p>
+      <div class="gift-cities" id="gift-cities"></div>
       <a class="tour-btn" href="street-art/">Begin the tour →</a>
     </section>
 
@@ -683,7 +724,7 @@ const PLACES = [
   {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Three ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin. Prague still to come.', count:'3 sections', region:'🇳🇱🇩🇪🇨🇿'},
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Three ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin. Prague still to come.', count:'3 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague']},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Parvati Valley', slug:'manali', status:'story', count:''},
@@ -863,8 +904,32 @@ document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
   </li>
 `).join('');
 
-// ticker — every place, catalogued or upcoming, looped twice for seamless scroll
-const tickerItems = PLACES.map(p => `<span>${p.name} <span class="dot">·</span></span>`).join('');
+/* ============================================================
+   Gift-shop city cards — one per city on the street-art compendium
+   page, name clipped to show a piece from that city through the
+   letterforms. Counts/covers are hand-set here (no shared data
+   source with street-art/index.html's own DATA — same "no build
+   step" convention as everywhere else on this site).
+   ============================================================ */
+const GIFT_CITIES = [
+  {name:'Shoreditch', slug:'london', cover:'london/img/07-elephant-shutter.jpg', count:'73 pieces'},
+  {name:'Camden', slug:'camden', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', count:'11 pieces'},
+  {name:'Glasgow', slug:'glasgow', cover:'glasgow/img/17-red-haired-woman-mural.jpg', count:'9 pieces'},
+  {name:'Manchester', slug:'manchester', cover:'manchester/img/02-harlequin-bee.jpg', count:'14 pieces'},
+  {name:'Amsterdam', slug:'amsterdam', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', count:'55 pieces'},
+];
+document.getElementById('gift-cities').innerHTML = GIFT_CITIES.map(c => `
+  <a class="gift-city-card" href="street-art/?city=${c.slug}" style="--bg-img:url('${c.cover}')">
+    <span class="count">${c.count}</span>
+    <span class="name">${c.name}</span>
+  </a>
+`).join('');
+
+// ticker — every place, catalogued or upcoming, looped twice for seamless scroll.
+// A place can list `tickerNames` (e.g. a multi-city trip page) to show each
+// city separately instead of the umbrella page name.
+const tickerNames = PLACES.flatMap(p => p.tickerNames || [p.name]);
+const tickerItems = tickerNames.map(name => `<span>${name} <span class="dot">·</span></span>`).join('');
 document.getElementById('ticker').innerHTML = tickerItems + tickerItems;
 
 /* ============================================================

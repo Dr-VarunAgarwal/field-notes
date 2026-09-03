@@ -1025,6 +1025,16 @@ window.addEventListener('scroll', () => {
 let savedView = 'curated';
 try{ savedView = localStorage.getItem('giftShopView') || 'curated'; }catch(e){}
 curatedView = savedView === 'curated';
+
+// Deep link from the hub's gift-shop city cards (?city=amsterdam) — jump
+// straight to that city's full compendium rather than whatever curated/
+// city filter was left over from a previous visit.
+const linkedCity = new URLSearchParams(location.search).get('city');
+if(linkedCity && CITIES.some(c => c.id === linkedCity)){
+  activeCity = linkedCity;
+  curatedView = false;
+}
+
 document.getElementById('vtCurated').classList.toggle('active', curatedView);
 document.getElementById('vtAll').classList.toggle('active', !curatedView);
 
