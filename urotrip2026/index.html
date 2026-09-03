@@ -3,493 +3,133 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>eUrotrip</title>
+<title>eUrope · Wander</title>
 <style>
-  * { margin:0; padding:0; box-sizing:border-box; }
+  :root{
+    --bg:#0a0a0a; --card:#141414; --border:#262626;
+    --ink:#eee; --ink-soft:rgba(238,238,238,0.7); --ink-faint:#666;
+    --coral:#c9634f; --amber:#e2a13a;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:'Georgia', 'Times New Roman', serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
 
-  html, body {
-    height:100%;
-    background:#0a0a0a;
-    overflow:hidden;
-    font-family: 'Georgia', 'Times New Roman', serif;
-    -webkit-user-select:none;
-    user-select:none;
+  #top-pill-nav{
+    position:fixed; top:24px; left:24px; z-index:20;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px;
+    background:rgba(35,35,35,0.7);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:9999px;
+    font-size:11.5px; letter-spacing:1.2px;
   }
+  .pill-main{
+    text-decoration:none; color:var(--coral);
+    font-family:var(--mono); font-weight:500; text-transform:uppercase;
+    transition:color 0.2s ease;
+  }
+  .pill-main:hover{ color:#e57c68; }
+  .pill-slash{ color:#666; font-family:var(--mono); }
+  .pill-current{ font-family:'Georgia', serif; font-style:italic; color:#aaa; letter-spacing:0.5px; }
 
-  #viewport {
-    position:relative;
-    width:100vw;
-    height:100vh;
-    overflow:hidden;
-    cursor:grab;
-    touch-action:none;
-  }
-  #viewport.dragging { cursor:grabbing; }
-
-  #canvas {
-    position:absolute;
-    top:0; left:0;
-    will-change: transform;
-  }
-
-  .tile { position:absolute; top:0; left:0; }
-
-  /* ---------- Top-Left Pill Navigation ---------- */
-  #top-pill-nav {
-    position: fixed;
-    top: 24px;
-    left: 24px;
-    z-index: 20;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: rgba(35, 35, 35, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 9999px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    font-size: 11.5px;
-    letter-spacing: 1.2px;
-  }
-  .pill-main {
-    text-decoration: none;
-    color: #c9634f;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    font-weight: 500;
-    text-transform: uppercase;
-    transition: color 0.2s ease;
-  }
-  .pill-main:hover { color: #e57c68; }
-  .pill-slash { color: #666; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; }
-  .pill-current { font-family: 'Georgia', serif; font-style: italic; color: #aaa; letter-spacing: 0.5px; }
-
-  /* ---------- Contact Badge (Top Right) ---------- */
-  #contact-badge {
-    position: fixed;
-    top: 24px;
-    right: 24px;
-    z-index: 20;
-    width: 36px;
-    height: 36px;
-    background: rgba(35, 35, 35, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #eee;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 11px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, border-color 0.2s ease;
-  }
-  #contact-badge:hover { transform: scale(1.08); border-color: rgba(255, 255, 255, 0.3); }
-
-  /* ---------- View Toggle (top right, left of contact badge) ---------- */
-  #view-toggle {
-    position: fixed;
-    top: 24px;
-    right: 72px;
-    z-index: 20;
-    height: 36px;
-    padding: 0 16px;
-    background: rgba(35, 35, 35, 0.7);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 9999px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #c9634f;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-    cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    transition: transform 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-  }
-  #view-toggle:hover { transform: scale(1.05); border-color: rgba(255, 255, 255, 0.3); color: #e57c68; }
-
-  /* ============ STAMP VIEW ============ */
-  .stamp {
-    position:absolute;
-    cursor:pointer;
-    z-index:1;
-  }
-  .stamp.size-sm { width:140px; height:117px; --inner-inset:15px; }
-  .stamp.size-md { width:180px; height:150px; --inner-inset:22px; }
-  .stamp.size-lg { width:224px; height:187px; --inner-inset:28px; }
-
-  .stamp-lift {
-    position:absolute;
-    inset:0;
-    transition: transform .22s cubic-bezier(.2,.8,.2,1);
-  }
-  .stamp:hover .stamp-lift { transform: scale(1.08) translateY(-3px); }
-  .stamp:hover { z-index:20; }
-
-  .stamp-shadow {
-    position:absolute;
-    inset:8px;
-    background: rgba(0,0,0,0.55);
-    clip-path: url(#stampClip);
-    -webkit-clip-path: url(#stampClip);
-    transform: translateY(5px);
-    filter: blur(3px);
-  }
-
-  .stamp-paper {
-    position:absolute;
-    inset:8px;
-    background: var(--paper, #ece6d8);
-    clip-path: url(#stampClip);
-    -webkit-clip-path: url(#stampClip);
-  }
-
-  .stamp-inner {
-    position:absolute;
-    inset: var(--inner-inset, 22px);
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    padding:9px 10px;
-    color: var(--ink, #1a1a1a);
-  }
-
-  .stamp-art { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; z-index:0; }
-  .stamp-top, .stamp-bottom { position:relative; z-index:1; }
-
-  .stamp-kicker {
-    font-size:9.5px;
-    letter-spacing:1.4px;
-    text-transform:uppercase;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-weight:600;
-    opacity:0.85;
-  }
-  .size-sm .stamp-kicker { font-size:8px; letter-spacing:1px; }
-  .size-lg .stamp-kicker { font-size:10.5px; }
-
-  .stamp-title {
-    font-size:13.5px;
-    line-height:1.22;
-    font-weight:700;
-    margin-top:2px;
-    max-width:82%;
-  }
-  .size-sm .stamp-title { font-size:11px; max-width:88%; }
-  .size-lg .stamp-title { font-size:15.5px; }
-
-  .stamp-byline {
-    font-size:10px;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    letter-spacing:0.3px;
-    opacity:0.9;
-  }
-  .size-sm .stamp-byline { font-size:8.5px; }
-  .size-lg .stamp-byline { font-size:11px; }
-
-  .stamp-mark {
-    position:absolute;
-    top:6px; right:6px;
-    width:20px; height:20px;
-    border:1px solid currentColor;
-    border-radius:3px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:9px;
-    font-weight:700;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    z-index:1;
-  }
-  .size-sm .stamp-mark { width:16px; height:16px; font-size:7.5px; }
-  .size-lg .stamp-mark { width:23px; height:23px; font-size:10px; }
-
-  .stamp-caption {
-    position:absolute;
-    top:calc(100% + 14px);
-    left:50%;
-    transform:translateX(-50%) translateY(-4px);
-    width:176px;
-    text-align:left;
-    opacity:0;
-    pointer-events:none;
-    transition: opacity .2s ease, transform .2s ease;
-    font-family: -apple-system, 'Helvetica Neue', sans-serif;
-    background: rgba(10,10,10,0.9);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 6px;
-    padding: 10px 12px;
-    z-index: 25;
-  }
-  .stamp:hover .stamp-caption { opacity:1; transform:translateX(-50%) translateY(0); }
-  .cap-kicker-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
-  .cap-kicker {
-    font-size:9.5px;
-    letter-spacing:1.4px;
-    text-transform:uppercase;
-    font-weight:700;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color: var(--accent, #c9634f);
-    white-space:nowrap;
-  }
-  .cap-rule { flex:1; height:1px; background: var(--accent, #c9634f); opacity:0.45; }
-  .cap-title { font-size:13.5px; font-weight:500; color:#d4d4d4; line-height:1.3; }
-  .cap-meta {
-    font-size:9.5px;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color:#666;
-    margin-top:6px;
-  }
-  .cap-filler {
-    margin-top:7px;
-    padding-top:7px;
-    border-top:1px solid rgba(255,255,255,0.08);
-    font-size:11px;
-    font-style:italic;
-    color:#7a7a7a;
-    line-height:1.4;
-  }
-
-  .sb-stamp-wrap { padding:60px 40px 20px; display:flex; justify-content:center; }
-  .sb-stamp-wrap .stamp { position:relative; }
-  .sb-stamp-wrap .stamp-lift { transform: scale(1.5); }
-  .sb-stamp-wrap .stamp:hover .stamp-lift { transform: scale(1.5); }
-  .sb-stamp-wrap .stamp-caption { display:none; }
-
-  /* ============ POSTCARD VIEW ============ */
-  .postcard {
-    position:absolute;
-    width:340px;
-    height:250px;
-    cursor:pointer;
-    z-index:1;
-    filter: drop-shadow(0 12px 24px rgba(0,0,0,0.4));
-    transition: z-index 0s, filter 0.3s ease;
-  }
-  .postcard-lift {
-    position:absolute;
-    inset:0;
-    background: #f4f1ea;
-    border-radius: 2px;
-    padding: 14px;
-    display:flex;
-    flex-direction:column;
-    transition: transform 0.25s cubic-bezier(0.2,0.8,0.2,1);
-    border: 1px solid rgba(0,0,0,0.05);
-  }
-
-  .postcard:hover { z-index:20; filter: drop-shadow(0 20px 40px rgba(0,0,0,0.6)); }
-  .postcard:hover .postcard-lift {
-    transform: scale(1.04) translateY(-8px);
-  }
-
-  .pc-photo {
-    width: 100%;
-    height: 160px;
-    background: #ccc;
-    object-fit: cover;
-    border: 1px solid rgba(0,0,0,0.1);
-  }
-
-  .pc-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding-top: 10px;
-  }
-  .pc-title {
-    font-size: 18px;
-    font-weight: 700;
-    color: #1a1a1a;
-    line-height: 1.1;
-  }
-  .pc-artist {
-    font-family: 'Georgia', serif;
-    font-style: italic;
-    font-size: 12.5px;
-    color: #555;
-    margin-top: 3px;
-  }
-  .pc-byline {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size: 10px;
-    color: #666;
-    margin-top: 6px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  /* mini postage stamp nested on a postcard — own namespaced classes so
-     they never collide with the full-size .stamp-* rules above */
-  .pc-stamp-wrapper {
-    position:absolute;
-    top: 6px;
-    right: 6px;
-    transform: scale(0.35) rotate(4deg);
-    transform-origin: top right;
-    pointer-events: none;
-    filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-  }
-  .pc-stamp-box {
-    position:relative;
-    width:180px; height:150px;
-  }
-  .pc-stamp-paper {
-    position:absolute;
-    inset:0;
-    color: var(--paper, #ece6d8);
-  }
-  .pc-stamp-paper svg { display:block; width:100%; height:100%; }
-  .pc-stamp-inner {
-    position:absolute;
-    inset:22px;
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    justify-content:space-between;
-    padding:9px 10px;
-    color: var(--ink, #1a1a1a);
-  }
-  .pc-stamp-art {
-    position:absolute;
-    inset:0; width:100%; height:100%;
-    object-fit:cover; display:block; z-index:0;
-  }
-  .pc-stamp-top { position:relative; z-index:1; }
-  .pc-stamp-kicker {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    font-size:10.5px; letter-spacing:1.4px;
-    text-transform:uppercase; font-weight:600; opacity:0.85;
-  }
-  .pc-stamp-mark {
-    position:absolute;
-    top:6px; right:6px; width:20px; height:20px;
-    border:1px solid currentColor; border-radius:3px;
+  #contact-badge{
+    position:fixed; top:24px; right:24px; z-index:20;
+    width:36px; height:36px;
+    background:rgba(35,35,35,0.7);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:50%;
     display:flex; align-items:center; justify-content:center;
-    font-size:10px; font-weight:700; font-family: ui-monospace, monospace; z-index:1;
+    color:#eee; font-family:var(--mono); font-size:11px; font-weight:600;
+    text-decoration:none;
+    transition:transform 0.2s ease, border-color 0.2s ease;
+  }
+  #contact-badge:hover{ transform:scale(1.08); border-color:rgba(255,255,255,0.3); }
+
+  .intro{
+    max-width:640px; margin:0 auto;
+    padding:120px 24px 16px;
+    text-align:center;
+  }
+  .intro .eyebrow{
+    font-size:10.5px; letter-spacing:2px; text-transform:uppercase;
+    font-family:var(--mono); color:var(--coral); margin:0 0 0.8rem;
+  }
+  .intro h1{
+    font-style:italic; font-weight:500;
+    font-size:clamp(2.2rem, 6vw, 3rem); line-height:1.1;
+    margin:0 0 0.9rem;
+  }
+  .intro p{
+    font-size:13.5px; line-height:1.75; color:var(--ink-soft);
+    margin:0 auto; max-width:48ch;
   }
 
-  .sb-postcard-wrap {
-    padding:80px 40px 30px;
-    display:flex;
-    justify-content:center;
+  .sections{
+    max-width:920px; margin:0 auto;
+    padding:48px 24px 100px;
+    display:grid; grid-template-columns:1fr; gap:24px;
   }
-  .sb-postcard-wrap .postcard {
-    position:relative; left:0; top:0;
-    transform: scale(0.9);
-    cursor: default;
-    filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5));
-  }
-  .sb-postcard-wrap .postcard:hover { filter: drop-shadow(0 15px 30px rgba(0,0,0,0.5)); }
-  .sb-postcard-wrap .postcard:hover .postcard-lift { transform: none; }
+  @media(min-width:720px){ .sections{ grid-template-columns:1fr 1fr; } }
 
-  /* ---------- Sidebar ---------- */
-  #overlay {
-    position:fixed; inset:0;
-    background:rgba(0,0,0,0.6);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    opacity:0; pointer-events:none;
-    transition: opacity .3s ease;
-    z-index:30;
+  .section-card{
+    position:relative;
+    display:block; text-decoration:none; color:inherit;
+    background:var(--card); border:1px solid var(--border); border-radius:14px;
+    overflow:hidden;
+    transition:transform 0.2s ease, border-color 0.2s ease;
   }
-  #overlay.open { opacity:1; pointer-events:auto; }
+  .section-card:hover{ transform:translateY(-3px); border-color:#3a3a3a; }
+  .section-card .cover{
+    position:relative; aspect-ratio:4/3; overflow:hidden; background:#000;
+  }
+  .section-card .cover img{
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform 0.4s ease;
+  }
+  .section-card:hover .cover img{ transform:scale(1.04); }
+  .section-card .cover::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 40%, rgba(10,10,10,0.85) 100%);
+  }
+  .section-card .tag{
+    position:absolute; top:14px; left:14px; z-index:2;
+    font-family:var(--mono); font-size:9.5px; letter-spacing:1.4px; text-transform:uppercase;
+    font-weight:700; padding:4px 11px; border-radius:100px;
+    color:#fff;
+  }
+  .section-card.coral .tag{ background:var(--coral); }
+  .section-card.amber .tag{ background:var(--amber); color:#241a0f; }
+  .section-card .label{
+    position:absolute; left:20px; right:20px; bottom:16px; z-index:2;
+    font-style:italic; font-weight:500; font-size:1.5rem; line-height:1.15;
+  }
+  .section-card .body{ padding:16px 20px 22px; }
+  .section-card .body p{
+    font-family:-apple-system, 'Helvetica Neue', sans-serif;
+    font-size:12.5px; line-height:1.6; color:var(--ink-soft); margin:0 0 10px;
+  }
+  .section-card .count{
+    font-family:var(--mono); font-size:10px; letter-spacing:0.8px; text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+  .section-card.coral .count{ color:var(--coral); opacity:0.85; }
+  .section-card.amber .count{ color:var(--amber); opacity:0.85; }
 
-  #sidebar {
-    position:fixed;
-    top:0; right:0;
-    height:100vh;
-    width:420px;
-    max-width:88vw;
-    background:#111;
-    border-left:1px solid #262626;
-    transform: translateX(100%);
-    transition: transform .35s cubic-bezier(.2,.8,.2,1);
-    z-index:40;
-    overflow-y:auto;
-    color:#eee;
-    font-family: -apple-system, 'Helvetica Neue', sans-serif;
-  }
-  #sidebar.open { transform: translateX(0); }
-
-  .sb-close {
-    position:absolute; top:20px; left:24px;
-    background:none; border:none; color:#777;
-    font-size:22px; cursor:pointer; line-height:1; z-index:2;
-  }
-  .sb-close:hover { color:#fff; }
-
-  /* ---------- Lightbox (fullscreen photo, opened from the sidebar) ---------- */
-  #lightbox {
-    position:fixed; inset:0; z-index:100;
-    background:rgba(0,0,0,0.92);
-    display:flex; align-items:center; justify-content:center;
-    opacity:0; pointer-events:none;
-    transition:opacity .25s ease;
-  }
-  #lightbox.open { opacity:1; pointer-events:auto; }
-  #lightbox img {
-    max-width:92vw; max-height:92vh; object-fit:contain;
-    box-shadow:0 20px 60px rgba(0,0,0,0.6);
-  }
-  #lightbox .lb-close {
-    position:absolute; top:20px; right:24px;
-    background:none; border:none; color:#ccc;
-    font-size:28px; cursor:pointer; line-height:1;
-  }
-  #lightbox .lb-close:hover { color:#fff; }
-  .sb-postcard-wrap .pc-photo { cursor:zoom-in; }
-
-  .sb-body { padding:20px 40px 60px; }
-  .sb-kicker {
-    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color:#888; margin-bottom:10px;
-  }
-  .sb-title { font-family:'Georgia', serif; font-size:26px; font-weight:600; line-height:1.35; margin-bottom:18px; }
-  .sb-desc { font-size:14px; line-height:1.85; color:#b5b5b5; margin-bottom:28px; }
-  .sb-meta { display:grid; gap:14px; }
-  .sb-meta-item { border-top:1px solid #262626; padding-top:12px; }
-  .sb-meta-label {
-    font-size:10.5px; letter-spacing:1px; text-transform:uppercase;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    color:#666; margin-bottom:4px;
-  }
-  .sb-meta-value { font-size:14px; color:#f0f0f0; }
-
-  #hint {
-    position:fixed; bottom:24px; left:50%; transform:translateX(-50%);
-    color:#555; font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
-    font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    pointer-events:none; z-index:5; transition:opacity .6s ease;
+  footer{
+    text-align:center; padding:0 24px 60px;
+    font-family:var(--mono); font-size:10.5px; color:var(--ink-faint);
   }
 </style>
 </head>
 <body>
-
-  <!-- shared perforated-edge shape for the full-size stamp view -->
-  <svg width="0" height="0" style="position:absolute">
-    <defs>
-      <clipPath id="stampClip" clipPathUnits="objectBoundingBox">
-        <path id="stampClipPath" fill-rule="evenodd"></path>
-      </clipPath>
-    </defs>
-  </svg>
 
   <nav id="top-pill-nav">
     <a href="../" class="pill-main">&larr; wander ~ field notes</a>
@@ -498,559 +138,39 @@
   </nav>
   <a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
 
-  <div id="viewport">
-    <div id="canvas"></div>
-  </div>
-  <div id="hint">drag to explore · infinite in every direction</div>
-
-  <div id="overlay" onclick="closeSidebar()"></div>
-  <div id="sidebar">
-    <button class="sb-close" onclick="closeSidebar()">✕</button>
-    <div id="sidebarInner"></div>
-  </div>
-  <div id="lightbox" onclick="closeLightbox()">
-    <button class="lb-close">✕</button>
-    <img id="lightboxImg" src="" alt="" onclick="event.stopPropagation()">
+  <div class="intro">
+    <p class="eyebrow">wander / europe trip</p>
+    <h1>eUrope.</h1>
+    <p>Amsterdam, Berlin, Prague — however it ends up getting told. Museum walls in one format, everything else the camera caught in another.</p>
   </div>
 
-<script>
-/* ============ perforated stamp shape (full-size stamp view) ============ */
-function buildClipPathFrac(w, h, pitchTarget, rRatio){
-  const nx = Math.max(2, Math.round(w / pitchTarget));
-  const ny = Math.max(2, Math.round(h / pitchTarget));
-  const px = w / nx, py = h / ny;
-  const r = (Math.min(px, py) / 2) * rRatio;
-  const rx = r / w, ry = r / h;
-  const fx = v => v / w, fy = v => v / h;
-  const ellipse = (cx, cy) => {
-    const cxf = fx(cx), cyf = fy(cy);
-    return `M${(cxf-rx).toFixed(5)},${cyf.toFixed(5)} ` +
-           `A${rx.toFixed(5)},${ry.toFixed(5)} 0 1,0 ${(cxf+rx).toFixed(5)},${cyf.toFixed(5)} ` +
-           `A${rx.toFixed(5)},${ry.toFixed(5)} 0 1,0 ${(cxf-rx).toFixed(5)},${cyf.toFixed(5)} Z `;
-  };
-  let d = `M0,0 H1 V1 H0 Z `;
-  for (let k = 0; k <= nx; k++) { d += ellipse(k*px, 0); d += ellipse(k*px, h); }
-  for (let k = 0; k <= ny; k++) { d += ellipse(0, k*py); d += ellipse(w, k*py); }
-  return d;
-}
-document.getElementById('stampClipPath').setAttribute(
-  'd', buildClipPathFrac(164, 134, 6, 0.78)
-);
-
-/* ============ perforated stamp shape (mini stamp on a postcard) ============ */
-function generatePaperSVG(w, h){
-  const pitch = 14;
-  const r = 3.5;
-  const nx = Math.floor(w / pitch);
-  const ny = Math.floor(h / pitch);
-  const actualPitchX = w / nx;
-  const actualPitchY = h / ny;
-
-  let d = `M 0,0 `;
-  for(let i=1; i<=nx; i++){
-    const cx = i * actualPitchX - (actualPitchX/2);
-    d += `L ${cx - r},0 A ${r},${r} 0 0,0 ${cx + r},0 `;
-  }
-  d += `L ${w},0 `;
-  for(let i=1; i<=ny; i++){
-    const cy = i * actualPitchY - (actualPitchY/2);
-    d += `L ${w},${cy - r} A ${r},${r} 0 0,0 ${w},${cy + r} `;
-  }
-  d += `L ${w},${h} `;
-  for(let i=nx; i>=1; i--){
-    const cx = i * actualPitchX - (actualPitchX/2);
-    d += `L ${cx + r},${h} A ${r},${r} 0 0,0 ${cx - r},${h} `;
-  }
-  d += `L 0,${h} `;
-  for(let i=ny; i>=1; i--){
-    const cy = i * actualPitchY - (actualPitchY/2);
-    d += `L 0,${cy + r} A ${r},${r} 0 0,0 0,${cy - r} `;
-  }
-  d += `Z`;
-  return `<svg viewBox="0 0 ${w} ${h}" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="${d}"/></svg>`;
-}
-const pcStampSVG = generatePaperSVG(180, 150);
-
-/* ============ shared data: Amsterdam · Berlin · Prague ============ */
-const palette = [
-  {paper:'#c23b2c', ink:'#f4ede0'}, {paper:'#e9e2cf', ink:'#2c3e4a'},
-  {paper:'#274b6b', ink:'#e9e2cf'}, {paper:'#2f7d6b', ink:'#f4ede0'},
-  {paper:'#d98e2f', ink:'#241a0f'}, {paper:'#3a3a3a', ink:'#e9e2cf'},
-  {paper:'#c9c2ae', ink:'#1a1a1a'}, {paper:'#8c4a32', ink:'#f4ede0'},
-  {paper:'#3b5336', ink:'#f4ede0'}, {paper:'#523f6d', ink:'#f4ede0'},
-  {paper:'#b57c30', ink:'#241a0f'}, {paper:'#335c67', ink:'#f4ede0'},
-];
-
-function svgArt(seed, colorB){
-  const shapes = [
-    `<circle cx="90" cy="55" r="42" fill="${colorB}" opacity="0.3"/>`,
-    `<path d="M0,150 L60,90 L120,140 L180,80 L180,150 Z" fill="${colorB}" opacity="0.26"/>`,
-    `<rect x="18" y="18" width="144" height="3" fill="${colorB}" opacity="0.35"/>`,
-    `<circle cx="36" cy="115" r="9" fill="${colorB}" opacity="0.4"/><circle cx="148" cy="28" r="5" fill="${colorB}" opacity="0.4"/>`,
-    `<path d="M40,40 Q90,10 140,40 T140,110 Q90,140 40,110 Z" fill="${colorB}" opacity="0.25"/>`,
-  ];
-  const s = shapes[seed % shapes.length];
-  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='180' height='150'>${s}</svg>`;
-  return `data:image/svg+xml;base64,${btoa(svg)}`;
-}
-
-const items = [
-  { kicker:'AMSTERDAM 01', title:'Red Cabbages and Garlic', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Vincent van Gogh, 1887 — thick, confident strokes on cabbage and garlic bulbs, painted during his Paris years.', photo:'img/01-red-cabbages-garlic.jpg' },
-  { kicker:'AMSTERDAM 02', title:'The Bedroom', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh\'s 1888 canvas of his room in Arles — tilted floor, mismatched chairs, and all.', photo:'img/02-the-bedroom.jpg' },
-  { kicker:'AMSTERDAM 03', title:'Irises', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted in the asylum garden at Saint-Rémy, 1890 — from his last, most prolific year of work.', photo:'img/03-irises.jpg' },
-  { kicker:'AMSTERDAM 04', title:'The Sower', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Two takes on Van Gogh\'s recurring "Sower" theme, reworked after Millet, hung side by side.', photo:'img/04-the-sower.jpg' },
-  { kicker:'AMSTERDAM 05', title:'Daubigny\'s Garden', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'One of Van Gogh\'s final paintings, 1890 — the garden of a fellow painter he never got to meet.', photo:'img/05-daubignys-garden.jpg' },
-  { kicker:'AMSTERDAM 06', title:'The Sea', artist:'Jan Toorop', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jan Toorop, 1899 — waves rendered almost as pure texture.', photo:'img/09-the-sea-toorop.jpg' },
-  { kicker:'AMSTERDAM 07', title:'Fishing Fleet at Low Tide', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A beach crowded with boats, baskets, and buyers — the signature just out of focus.', photo:'img/10-fishing-fleet.jpg' },
-  { kicker:'AMSTERDAM 08', title:'Rue Nôtre-Dame, Parijs', artist:'Johan Barthold Jongkind', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Johan Barthold Jongkind, 1864 — a sun-and-shadow study of a Paris street, a forerunner to Impressionism.', photo:'img/11-rue-notre-dame.jpg' },
-  { kicker:'AMSTERDAM 09', title:'Portrait with a Dog', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A quiet portrait, dog included — caught between galleries.', photo:'img/12-portrait-with-dog.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 10', title:'Z.M. Stoomschip Medusa', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The Dutch steamship Medusa forcing the Straits of Shimonoseki, 11 July 1863 — the title inscribed right on the canvas.', photo:'img/13-stoomschip-medusa.jpg' },
-  { kicker:'AMSTERDAM 11', title:'Stained Glass Portrait', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A robed figure in leaded glass, colors glowing with the gallery light behind.', photo:'img/14-stained-glass-portrait.jpg' },
-  { kicker:'AMSTERDAM 12', title:'Still Life with Flowers in a Glass Vase', artist:'Rachel Ruysch', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Rachel Ruysch, c. 1690–1720 — a dense floral arrangement by one of the era\'s few celebrated female masters.', photo:'img/15-still-life-flowers.jpg' },
-  { kicker:'AMSTERDAM 13', title:'Still Life with Cheese', artist:'Floris Claesz van Dijck', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Floris Claesz van Dijck, c. 1615 — precise, almost tactile cheese and fruit, from a pioneer of Dutch still life.', photo:'img/16-still-life-cheese.jpg' },
-  { kicker:'AMSTERDAM 14', title:'River Landscape with Riders', artist:'Aelbert Cuyp', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Aelbert Cuyp\'s golden-hour river scene, riders heading home.', photo:'img/17-river-landscape-riders.jpg' },
-  { kicker:'AMSTERDAM 15', title:'Fleet in the Harbor', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Sails and smoke over a crowded harbor — one more maritime scene among many.', photo:'img/18-fleet-in-harbor.jpg' },
-  { kicker:'AMSTERDAM 16', title:'Wooded Landscape with Merrymakers in a Cart', artist:'Meindert Hobbema', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Meindert Hobbema, c. 1665 — a cart and company rolling past sunlit trees.', photo:'img/19-wooded-landscape-cart.jpg' },
-  { kicker:'AMSTERDAM 17', title:'Gallery of Honour', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'The museum\'s grand central hall, mid-afternoon crowd and all.', photo:'img/20-gallery-of-honour.jpg' },
-  { kicker:'AMSTERDAM 18', title:'Bone Study', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A skeletal composition tucked into a side gallery — details lost to the low light.', photo:'img/21-bone-study.jpg' },
-  { kicker:'AMSTERDAM 19', title:'View of Zuidelande', artist:'Ferdinand Hart Nibbrig', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Ferdinand Hart Nibbrig\'s pointillist view over Zuidelande, on the island of Walcheren.', photo:'img/22-view-of-zuidelande.jpg' },
-  { kicker:'AMSTERDAM 20', title:'1 Mei', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'An interwar May Day poster, red hand raised — political art from a polarized decade.', photo:'img/23-1-mei-poster.jpg' },
-  { kicker:'AMSTERDAM 21', title:'Seascape near Les Saintes-Maries-de-la-Mer', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1888 — sketched on a rare seaside trip, the only seascape he painted after leaving the Netherlands.', photo:'img/24-seascape-les-saintes-maries.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 22', title:'Self-Portrait', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1887 — one of over two dozen self-portraits, painted using himself as the only model he didn\'t have to pay.', photo:'img/25-self-portrait-1887.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 23', title:'Self-Portrait with Straw Hat', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1887 — given its own pedestal in the gallery, straw hat and all.', photo:'img/26-self-portrait-straw-hat.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 24', title:'Self-Portrait with Grey Felt Hat', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1887–88 — painted in the same burst of self-portraits as the straw hat version.', photo:'img/27-self-portrait-grey-felt-hat.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 25', title:'Sunflowers', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1889 — the museum\'s single most famous painting, signed simply "Vincent" on the vase.', photo:'img/28-sunflowers.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 26', title:'Skull', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1887 — a "colourless" subject he used to study form over a corpse, not a person.', photo:'img/29-skull.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 27', title:'Women by the Waterside, with Pitchers', artist:'Émile Bernard', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Émile Bernard, 1895 — a friend and correspondent of Van Gogh\'s, working in flat, Symbolist color.', photo:'img/30-women-by-the-waterside.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 28', title:'A Crab on its Back', artist:'Vincent van Gogh', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Van Gogh, 1887 — a small, strange still life from his Paris years.', photo:'img/31-crab-on-its-back.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 29', title:'Red Cliffs near Anthéor', artist:'Louis Valtat', byline:'Van Gogh Museum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Louis Valtat, c. 1903 — a Fauvist-adjacent view of the Mediterranean coast.', photo:'img/32-red-cliffs-antheor.jpg' },
-  { kicker:'AMSTERDAM 30', title:'Steps of an Unnamed City', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'An Orientalist genre scene — the wall label sat just out of frame, so this one stays anonymous.', photo:'img/35-orientalist-steps.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 31', title:'Portrait of Alexandrine Patchenko', artist:'Marie Bashkirtseff', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Marie Bashkirtseff\'s portrait of her sister-in-law — Bashkirtseff died of tuberculosis at 25, after a diary that later made her famous as a writer.', photo:'img/36-portrait-alexandrine-patchenko.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 32', title:'Riverside View, Brazil', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A 17th-century Dutch-Brazil landscape, tropical flora framing a distant river village — label out of frame, artist unconfirmed.', photo:'img/37-riverside-view-brazil.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 33', title:'Four Ships Bound for the Spice Islands', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Inscribed right on the canvas: four ships sailed 1 May 1598 to fetch spices, and returned to Amsterdam 19 July 1599.', photo:'img/38-four-ships-spice-voyage.jpg' },
-  { kicker:'AMSTERDAM 34', title:'The Milkmaid', artist:'Johannes Vermeer', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Vermeer, c. 1660 — maybe the single most famous object in the building.', photo:'img/39-the-milkmaid.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 35', title:'Two Children with a Cat', artist:'Judith Leyster', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Judith Leyster, 1629 — one of very few women admitted to the Haarlem painters\' guild in her lifetime.', photo:'img/40-two-children-with-a-cat.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 36', title:'L\'homme carré', artist:'Karel Appel', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Karel Appel, 1953 — "The Square Man," named for the canvas format rather than the figure.', photo:'img/41-lhomme-carre.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 37', title:'Untitled Figure', artist:'Karel Appel', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A second Appel from the same year, 1953 — thick, urgent paint, signed bottom left; no title placard in frame.', photo:'img/42-appel-untitled-figure.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 38', title:'Abstraction de la réalité', artist:'Nicolaas Warb', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted by Sophia Warburg, who worked under the pseudonym "Nicolaas Warb" after changing her own name during the Second World War.', photo:'img/43-abstraction-de-la-realite.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 39', title:'Ribbons', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A swirl of interlocking color bands — no label in frame, artist unconfirmed.', photo:'img/44-ribbons.jpg', orientation:'portrait' },
-  { kicker:'AMSTERDAM 40', title:'Rockpool', artist:'Jacobien de Rooij', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jacobien de Rooij (b. 1947) — tide pools inspired by the west coast of Ireland, in dense, textured color.', photo:'img/45-rockpool.jpg', orientation:'portrait' },
-  { kicker:'BERLIN 01', title:'East Side Gallery', byline:'Friedrichshain', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'A mile and a half of Wall left standing, repainted by artists from around the world after 1990.' },
-  { kicker:'BERLIN 02', title:'Museum Island', byline:'Mitte', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Five museums on one small island in the Spree — the Pergamon alone is worth the whole day.' },
-  { kicker:'BERLIN 03', title:'Mauerpark Sunday', byline:'Prenzlauer Berg', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Flea market stalls, karaoke in the amphitheater, and currywurst eaten standing up.' },
-  { kicker:'PRAGUE 01', title:'Charles Bridge at Sunrise', byline:'Staré Město', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Empty of tour groups for about twenty minutes — just statues, mist, and the castle above the river.' },
-  { kicker:'PRAGUE 02', title:'The Astronomical Clock', byline:'Old Town Square', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Six hundred years old and still drawing a crowd on the hour for its walk of apostles.' },
-  { kicker:'PRAGUE 03', title:'Up to the Castle', byline:'Hradčany', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'The climb past Golden Lane rewards you with the best rooftop view in the city.' },
-];
-// Berlin/Prague entries have no photo yet (trip hasn't happened) -- keep them
-// in `items` for later, but the canvas only draws from ones with a real photo
-// so they don't show up as empty placeholder frames.
-const photoItems = items.filter(i => i.photo);
-
-/* ============ STAMP VIEW: tile builder ============ */
-const STAMP_SIZES = { sm: [140,117], md: [180,150], lg: [224,187] };
-function stampSizeFor(idx){
-  const pattern = ['md','sm','lg','sm','md','lg','lg','sm','md','md','sm','lg'];
-  return pattern[idx % pattern.length];
-}
-function captionHTML(item, pal){
-  const filler = item.title.length < 20
-    ? `<div class="cap-filler">${item.desc.split('.')[0]}.</div>`
-    : '';
-  return `
-    <div class="stamp-caption" style="--accent:${pal.paper};">
-      <div class="cap-kicker-row">
-        <span class="cap-kicker">${item.kicker}</span>
-        <span class="cap-rule"></span>
+  <div class="sections">
+    <a class="section-card coral" href="postcards/">
+      <div class="cover">
+        <span class="tag">Postcards</span>
+        <img src="img/28-sunflowers.jpg" alt="">
+        <span class="label">Museum walls.</span>
       </div>
-      <div class="cap-title">${item.title}</div>
-      <div class="cap-meta">${item.location.split(',')[0]} · ${item.date}</div>
-      ${filler}
-    </div>`;
-}
-function stampHTML(idx, centerX, centerY){
-  const item = items[idx % items.length];
-  const pal = palette[idx % palette.length];
-  const sizeKey = stampSizeFor(idx);
-  const [w, h] = STAMP_SIZES[sizeKey];
-  const x = centerX - w/2, y = centerY - h/2;
-  return `
-    <div class="stamp size-${sizeKey}" data-idx="${idx}" style="left:${x}px; top:${y}px; --paper:${pal.paper}; --ink:${pal.ink};">
-      <div class="stamp-lift">
-        <div class="stamp-shadow"></div>
-        <div class="stamp-paper"></div>
-        <div class="stamp-inner">
-          <img class="stamp-art" src="${svgArt(idx, pal.ink)}" alt="">
-          <div class="stamp-mark">${item.mark}</div>
-          <div class="stamp-top"><div class="stamp-kicker">${item.kicker}</div></div>
-          <div class="stamp-bottom">
-            <div class="stamp-title">${item.title}</div>
-            <div class="stamp-byline">${item.byline}</div>
-          </div>
-        </div>
+      <div class="body">
+        <p>A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.</p>
+        <span class="count">40 pieces, Amsterdam</span>
       </div>
-      ${captionHTML(item, pal)}
-    </div>`;
-}
+    </a>
 
-/* ============ POSTCARD VIEW: tile builder ============ */
-function pcStampBadgeHTML(idx, pal, rot){
-  const item = photoItems[idx % photoItems.length];
-  return `
-    <div class="pc-stamp-wrapper" style="transform: scale(0.32) rotate(${rot}deg);">
-       <div class="pc-stamp-box" style="--paper:${pal.paper}; --ink:${pal.ink};">
-         <div class="pc-stamp-paper">${pcStampSVG}</div>
-         <div class="pc-stamp-inner">
-           <img class="pc-stamp-art" src="${svgArt(idx, pal.ink)}" alt="">
-           <div class="pc-stamp-mark">${item.mark}</div>
-           <div class="pc-stamp-top"><div class="pc-stamp-kicker">${item.kicker}</div></div>
-         </div>
-       </div>
-    </div>`;
-}
-const POSTCARD_DIMS = {
-  landscape: { w:340, h:250, photoH:160 },
-  portrait:  { w:230, h:320, photoH:210 },
-};
-function postcardHTML(idx, centerX, centerY){
-  const item = photoItems[idx % photoItems.length];
-  const pal = palette[idx % palette.length];
-
-  const rot = (Math.sin(idx * 13) * 6).toFixed(1);
-  const ox = Math.sin(idx * 7) * 20;
-  const oy = Math.cos(idx * 11) * 20;
-
-  const dims = POSTCARD_DIMS[item.orientation === 'portrait' ? 'portrait' : 'landscape'];
-  const { w, h, photoH } = dims;
-  const x = centerX - w/2 + ox;
-  const y = centerY - h/2 + oy;
-
-  const stampRot = (Math.cos(idx * 5) * 8).toFixed(1);
-
-  return `
-    <div class="postcard" data-idx="${idx}" style="left:${x}px; top:${y}px; width:${w}px; height:${h}px; transform: rotate(${rot}deg);">
-      <div class="postcard-lift">
-        <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${photoH}px;">
-        <div class="pc-content">
-          <div class="pc-title">${item.title}</div>
-          ${item.artist ? `<div class="pc-artist">${item.artist}</div>` : ''}
-          <div class="pc-byline">${item.byline} · ${item.date}</div>
-        </div>
-        ${pcStampBadgeHTML(idx, pal, stampRot)}
+    <a class="section-card amber" href="../film-strip/">
+      <div class="cover">
+        <span class="tag">On Film</span>
+        <img src="../film-strip/img/06-canal-at-dusk.jpg" alt="">
+        <span class="label">Everywhere else.</span>
       </div>
-    </div>`;
-}
-
-/* ============ shared drag-canvas engine ============ */
-const VIEWS = {
-  postcards: { cellW:520, cellH:460, cols:5, rows:3, build:postcardHTML },
-};
-const currentView = 'postcards';
-
-const canvasEl = document.getElementById('canvas');
-const viewportEl = document.getElementById('viewport');
-
-/* each tile position gets its own base offset into `items`, rather than
-   every tile repeating the same fixed slice — otherwise only the first
-   rows*cols items could ever appear, no matter how far you drag.
-   The offset comes from a hash of (tx,ty), not linear arithmetic — a
-   constant per-tile step (old: (ty*10000+tx)*cellsPerUnit) is only ever
-   as scrambled as gcd(step, items.length) allows, so with real item
-   counts it fell into a short, visibly repeating cycle every few tiles. */
-function hashTile(tx, ty){
-  let h = (tx * 374761393 + ty * 668265263) | 0;
-  h = Math.imul(h ^ (h >>> 15), 2246822519);
-  h = Math.imul(h ^ (h >>> 13), 3266489917);
-  h ^= h >>> 16;
-  return h >>> 0;
-}
-function buildTileHTML(v, baseIdx){
-  let idx = baseIdx, html = '';
-  for (let r = 0; r < v.rows; r++) {
-    for (let c = 0; c < v.cols; c++) {
-      const centerX = c * v.cellW + v.cellW/2;
-      const centerY = r * v.cellH + v.cellH/2;
-      html += v.build(idx, centerX, centerY);
-      idx++;
-    }
-  }
-  return html;
-}
-
-let lastNx = -1, lastNy = -1;
-function buildTiles(force){
-  const v = VIEWS[currentView];
-  const unitW = v.cols * v.cellW;
-  const unitH = v.rows * v.cellH;
-  const nx = Math.ceil(window.innerWidth / unitW) + 4;
-  const ny = Math.ceil(window.innerHeight / unitH) + 4;
-  // Mobile browser chrome (address bar) collapsing/expanding during a drag
-  // fires `resize` constantly, even though the tile grid it needs almost
-  // never actually changes -- skip the rebuild (which flickers, since it
-  // wipes ~300 DOM nodes) unless the grid size genuinely changed.
-  if (!force && nx === lastNx && ny === lastNy) return;
-  lastNx = nx; lastNy = ny;
-  canvasEl.innerHTML = '';
-  for (let ty = -2; ty < ny - 2; ty++) {
-    for (let tx = -2; tx < nx - 2; tx++) {
-      const tile = document.createElement('div');
-      tile.className = 'tile';
-      tile.style.transform = `translate(${tx * unitW}px, ${ty * unitH}px)`;
-      const tileOffset = hashTile(tx, ty);
-      tile.innerHTML = buildTileHTML(v, tileOffset);
-      canvasEl.appendChild(tile);
-    }
-  }
-}
-
-buildTiles(true);
-
-/* ============ drag-to-pan with momentum (shared by both views) ============ */
-let panX = 0, panY = 0;
-let isDown = false, startX, startY, startPanX, startPanY, dragMoved = false;
-let lastX = 0, lastY = 0, velocityX = 0, velocityY = 0, lastTime = 0;
-let animId = null;
-
-function currentUnit(){
-  const v = VIEWS[currentView];
-  return { unitW: v.cols * v.cellW, unitH: v.rows * v.cellH };
-}
-function applyPan(){
-  const { unitW, unitH } = currentUnit();
-  const wrappedX = ((panX % unitW) + unitW) % unitW;
-  const wrappedY = ((panY % unitH) + unitH) % unitH;
-  canvasEl.style.transform = `translate(${wrappedX}px, ${wrappedY}px)`;
-}
-applyPan();
-
-function pointerDown(x, y){
-  if (animId) cancelAnimationFrame(animId);
-  if (wheelRafId) { cancelAnimationFrame(wheelRafId); wheelRafId = null; }
-  isDown = true; dragMoved = false;
-  startX = x; startY = y;
-  startPanX = panX; startPanY = panY;
-  lastX = x; lastY = y;
-  lastTime = performance.now();
-  velocityX = 0; velocityY = 0;
-  viewportEl.classList.add('dragging');
-}
-function pointerMove(x, y){
-  if (!isDown) return;
-  const dx = x - startX, dy = y - startY;
-  if (Math.abs(dx) + Math.abs(dy) > 4) dragMoved = true;
-  const now = performance.now();
-  const dt = now - lastTime;
-  if (dt > 0) { velocityX = (x - lastX) / dt * 16; velocityY = (y - lastY) / dt * 16; }
-  lastX = x; lastY = y; lastTime = now;
-  panX = startPanX + dx;
-  panY = startPanY + dy;
-  applyPan();
-  const hint = document.getElementById('hint');
-  if (hint) hint.style.opacity = 0;
-}
-function pointerUp(){
-  if (!isDown) return;
-  isDown = false;
-  viewportEl.classList.remove('dragging');
-  function step(){
-    if (Math.abs(velocityX) > 0.2 || Math.abs(velocityY) > 0.2) {
-      panX += velocityX; panY += velocityY;
-      velocityX *= 0.92; velocityY *= 0.92;
-      applyPan();
-      animId = requestAnimationFrame(step);
-    }
-  }
-  animId = requestAnimationFrame(step);
-}
-
-viewportEl.addEventListener('mousedown', e => pointerDown(e.clientX, e.clientY));
-window.addEventListener('mousemove', e => pointerMove(e.clientX, e.clientY));
-window.addEventListener('mouseup', pointerUp);
-
-/* Track one specific finger by identifier for the whole gesture. The old
-   handlers reacted to ANY touchstart/touchend, not just the one that
-   started the drag -- so a stray second contact (a resting thumb, a palm
-   brushing the screen while panning) fires its own touchend and calls
-   pointerUp() even though the real dragging finger is still down and
-   still moving. That kills isDown mid-drag, so every further move of the
-   real finger is silently ignored: the canvas freezes while the finger
-   keeps going. The next real touch then has to reconcile that gap in one
-   frame, snapping the canvas to a different part of the grid -- the
-   "random jump from one photo to another" flicker. */
-let activeTouchId = null;
-function findTouch(touchList){
-  for (const t of touchList) if (t.identifier === activeTouchId) return t;
-  return null;
-}
-viewportEl.addEventListener('touchstart', e => {
-  if (activeTouchId !== null) return;
-  const t = e.changedTouches[0];
-  activeTouchId = t.identifier;
-  pointerDown(t.clientX, t.clientY);
-}, {passive:true});
-viewportEl.addEventListener('touchmove', e => {
-  const t = findTouch(e.touches);
-  if (!t) return;
-  pointerMove(t.clientX, t.clientY);
-}, {passive:true});
-function touchEnd(e){
-  if (!findTouch(e.changedTouches)) return;
-  activeTouchId = null;
-  pointerUp();
-}
-viewportEl.addEventListener('touchend', touchEnd);
-viewportEl.addEventListener('touchcancel', touchEnd);
-/* Wheel input (a mouse's scroll wheel especially) reports its delta in
-   large, discrete chunks -- a single notch is commonly ~100-120px, close
-   to a full cellW/cellH. Applying that straight to panX/panY snapped the
-   canvas to a totally different part of the grid in one synchronous step
-   with no frames in between: not a pan, a jump-cut -- the "flicker".
-   Ease toward an accumulating target instead, so even a big single-notch
-   delta plays out over a few frames like the drag-momentum above does. */
-let wheelTargetX = 0, wheelTargetY = 0, wheelRafId = null;
-function wheelStep(){
-  const dx = wheelTargetX - panX, dy = wheelTargetY - panY;
-  if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
-    panX = wheelTargetX; panY = wheelTargetY;
-    applyPan();
-    wheelRafId = null;
-    return;
-  }
-  panX += dx * 0.25;
-  panY += dy * 0.25;
-  applyPan();
-  wheelRafId = requestAnimationFrame(wheelStep);
-}
-viewportEl.addEventListener('wheel', (e) => {
-  e.preventDefault();
-  if (animId) { cancelAnimationFrame(animId); animId = null; }
-  if (wheelRafId === null) { wheelTargetX = panX; wheelTargetY = panY; }
-  wheelTargetX -= e.deltaX;
-  wheelTargetY -= e.deltaY;
-  if (wheelRafId === null) wheelRafId = requestAnimationFrame(wheelStep);
-  const hint = document.getElementById('hint');
-  if (hint) hint.style.opacity = 0;
-}, {passive:false});
-
-let resizeTimer;
-window.addEventListener('resize', () => { clearTimeout(resizeTimer); resizeTimer = setTimeout(buildTiles, 150); });
-
-/* ============ sidebar ============ */
-canvasEl.addEventListener('click', (e) => {
-  if (dragMoved) return;
-  const postcardEl = e.target.closest('.postcard');
-  if (postcardEl) {
-    const idx = +postcardEl.dataset.idx;
-    openPostcardSidebar(photoItems[idx % photoItems.length], palette[idx % palette.length], idx);
-  }
-});
-
-function openStampSidebar(item, pal){
-  const inner = document.getElementById('sidebarInner');
-  inner.innerHTML = `
-    <div class="sb-stamp-wrap">
-      <div class="stamp size-md" style="position:relative; left:0; top:0; --paper:${pal.paper}; --ink:${pal.ink};">
-        <div class="stamp-lift">
-          <div class="stamp-shadow"></div>
-          <div class="stamp-paper"></div>
-          <div class="stamp-inner">
-            <div class="stamp-mark">${item.mark}</div>
-            <div class="stamp-top"><div class="stamp-kicker">${item.kicker}</div></div>
-            <div class="stamp-bottom">
-              <div class="stamp-title">${item.title}</div>
-              <div class="stamp-byline">${item.byline}</div>
-            </div>
-          </div>
-        </div>
+      <div class="body">
+        <p>A strip of negatives that develop into color on tap — the streets and corners between the museums. Berlin gets its own roll once that leg happens.</p>
+        <span class="count">Amsterdam roll, growing</span>
       </div>
-    </div>
-    <div class="sb-body">
-      <div class="sb-kicker">${item.kicker}</div>
-      <div class="sb-title">${item.title}</div>
-      <div class="sb-desc">${item.desc}</div>
-      <div class="sb-meta">
-        <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${item.location}</div></div>
-        <div class="sb-meta-item"><div class="sb-meta-label">Date</div><div class="sb-meta-value">${item.date}</div></div>
-        <div class="sb-meta-item"><div class="sb-meta-label">Neighborhood</div><div class="sb-meta-value">${item.byline}</div></div>
-      </div>
-    </div>
-  `;
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
+    </a>
+  </div>
 
-let currentPhotoIdx = null;
-function openPostcardSidebar(item, pal, idx){
-  currentPhotoIdx = photoItems.indexOf(item);
-  const inner = document.getElementById('sidebarInner');
-  const dims = POSTCARD_DIMS[item.orientation === 'portrait' ? 'portrait' : 'landscape'];
-  inner.innerHTML = `
-    <div class="sb-postcard-wrap">
-      <div class="postcard" style="transform:rotate(0deg); width:${dims.w}px; height:${dims.h}px;">
-        <div class="postcard-lift" style="transform:none; cursor:default;">
-          <img class="pc-photo" src="${item.photo || svgArt(idx + 10, '#999')}" alt="" style="height:${dims.photoH}px;">
-          <div class="pc-content">
-            <div class="pc-title">${item.title}</div>
-            ${item.artist ? `<div class="pc-artist">${item.artist}</div>` : ''}
-            <div class="pc-byline">${item.byline} · ${item.date}</div>
-          </div>
-          ${pcStampBadgeHTML(idx, pal, -2)}
-        </div>
-      </div>
-    </div>
-    <div class="sb-body">
-      <div class="sb-kicker">${item.kicker}</div>
-      <div class="sb-title">${item.title}</div>
-      <div class="sb-desc">${item.desc}</div>
-      <div class="sb-meta">
-        ${item.artist ? `<div class="sb-meta-item"><div class="sb-meta-label">Artist</div><div class="sb-meta-value">${item.artist}</div></div>` : ''}
-        <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${item.location}</div></div>
-        <div class="sb-meta-item"><div class="sb-meta-label">Date</div><div class="sb-meta-value">${item.date}</div></div>
-        <div class="sb-meta-item"><div class="sb-meta-label">Neighborhood</div><div class="sb-meta-value">${item.byline}</div></div>
-      </div>
-    </div>
-  `;
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-  inner.querySelector('.pc-photo').addEventListener('click', () => openLightbox(item.photo));
-}
+  <footer>lucidité — wander, catalogued as I go</footer>
 
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-  currentPhotoIdx = null;
-}
-
-function openLightbox(src){
-  document.getElementById('lightboxImg').src = src;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox(){
-  document.getElementById('lightbox').classList.remove('open');
-}
-
-/* Arrow-key nav through photoItems, from anywhere on the page -- works
-   whether just the sidebar is open or the fullscreen lightbox on top of
-   it, matching the pattern film-strip's lightbox already uses. */
-function openAdjacentPhoto(step){
-  if (currentPhotoIdx === null) return;
-  const n = photoItems.length;
-  currentPhotoIdx = ((currentPhotoIdx + step) % n + n) % n;
-  const item = photoItems[currentPhotoIdx];
-  const pal = palette[currentPhotoIdx % palette.length];
-  openPostcardSidebar(item, pal, currentPhotoIdx);
-  if (document.getElementById('lightbox').classList.contains('open')) {
-    openLightbox(item.photo);
-  }
-}
-document.addEventListener('keydown', e => {
-  if (currentPhotoIdx === null) return;
-  if (e.key === 'ArrowRight') { e.preventDefault(); openAdjacentPhoto(1); return; }
-  if (e.key === 'ArrowLeft') { e.preventDefault(); openAdjacentPhoto(-1); return; }
-  if (e.key !== 'Escape') return;
-  if (document.getElementById('lightbox').classList.contains('open')) closeLightbox();
-  else closeSidebar();
-});
-</script>
 </body>
 </html>
