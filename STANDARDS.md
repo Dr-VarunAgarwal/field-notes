@@ -88,9 +88,11 @@ whether it should also be added to these arrays in `index.html`:
 - The ticker pulls from all of `PLACES` (live + draft) automatically —
   nothing to do there beyond adding the place.
 
-**`kind` — `'album'` vs `'walk'`** (decided 2026-08-22): every live
-place is one of two formats, and the hub splits them into separate
-"Albums" / "Photo Walks" grid sections accordingly.
+**`kind`** (decided 2026-08-22, extended since): every live place is
+one of a small set of page formats; the hub groups matching kinds into
+their own section. Reach for `'album'` by default — the others are
+for a batch that genuinely doesn't fit a grid, not a rotation to cycle
+through for variety.
 - `kind:'album'` (the default — most places) — a grid gallery page
   (filter chips, click-to-open drawer), like `london/`, `camden/`,
   `khajuraho/`, `udupi/`, `glasgow/`, `concerts/`. Built by copying an
@@ -102,8 +104,41 @@ place is one of two formats, and the hub splits them into separate
   copying `skye/index.html`'s structure (masthead, intro, route-map
   figure, `.day` sections, DATA-by-id hydration script) rather than a
   grid album's.
-- The walk's `count` field reads as `'N days · M photos'` instead of
-  an album's `'M pieces'`, since a walk isn't really counted by piece.
+- `kind:'postcards'` — an infinite drag-to-pan canvas of postcard/stamp
+  tiles that hash-tile forever in every direction, like
+  `urotrip2026/postcards/` ("eUrope"). For a trip still in progress and
+  filling in live, or one better read as scattered ephemera than a
+  chronological gallery. `photoItems` (the subset of `items` with a
+  real `photo`) is what actually renders, so a leg not yet reached can
+  sit in `items` without showing as an empty tile. Built by copying
+  `urotrip2026/postcards/index.html`'s structure.
+- `kind:'film-strip'` — a single horizontal roll of negatives (tap a
+  frame to "develop" it into the real color print via a CSS filter
+  transition), like `film-strip/` ("On Film"). For candid/street shots
+  that aren't gallery pieces, as a companion to a `'postcards'` page
+  covering the same trip's museum/gallery material. Built by copying
+  `film-strip/index.html`'s structure.
+- `kind:'contactsheet'` — a vertical stack of horizontal filmstrips
+  ("rolls"): every frame from a shoot, in the order it was actually
+  taken, not curated into a grid. A handful get circled in red grease
+  pencil (`keeper:true`) — those are the only frames that open; at
+  most one per roll can also be `hero:true` (bracket-cropped corners,
+  "the one to print big"). Everything else sits dimmed and inert — the
+  pass-over made visible rather than thrown away. Reserve this for a
+  batch that's dense and unglamorous rather than a highlight-reel trip;
+  showing the editorial judgment is the point, not a sixth way to
+  browse a gallery. First live instance: `urotrip2026/berlin/`. Built
+  by copying that page's structure.
+- A page doesn't have to sit at the hub's top level to carry a `kind`
+  — `urotrip2026/postcards/`, `film-strip/`, and `urotrip2026/berlin/`
+  are all sub-pages of the single `urotrip2026` ("eUrope") hub entry,
+  cross-linked from that trip's own landing page (`urotrip2026/`)
+  rather than each getting its own `PLACES` card. Use this when several
+  formats genuinely belong to one trip, not as a way to avoid deciding
+  which format a standalone place should use.
+- `count` conventions: walk reads `'N days · M photos'`; postcards
+  reads `'N postcards'`; contact sheet should read `'N rolls · M
+  frames · K kept'`; everything else reads `'M pieces'`.
 
 ## 6. Feeding a new place into `street-art/index.html`
 
@@ -263,6 +298,46 @@ pass.
   (murals, paste-ups, stencils, stickers, sculptural pieces), copy them
   in by hand per §6's id-offset/city-chip rules. Leave out
   museum/scenery/food shots.
+- `urotrip2026/postcards/index.html` ("eUrope", `kind:'postcards'`) —
+  `items` array: `kicker, title, artist`(optional), `byline, mark`
+  (2-letter city code), `location, date, desc, photo`(optional — omit
+  for a place not visited yet), `orientation`('portrait', optional,
+  default landscape). `photoItems` filters to entries with a real
+  `photo` so an unvisited city doesn't render as an empty tile.
+  Frame/stamp art for a piece with no real photo yet is a generated
+  placeholder (`svgArt`), not a blank box. Tiling is an infinite
+  hash-based grid (`hashTile`), not a fixed page of results — dragging
+  never runs out of tiles to reveal.
+- `film-strip/index.html` ("On Film", `kind:'film-strip'`) — `FRAMES`
+  array: `id, img, title, location, note`. Negative filters
+  (`invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(1.08)
+  brightness(1.03)` plus an amber `mix-blend-mode:multiply` mask) sit
+  on the image via CSS, not baked into the file — the lightbox
+  "develops" a frame by removing both on open (`.developed` class,
+  `transition` on `filter`/`opacity`, ~1.1s). Ids can skip numbers
+  (frames dropped after review) — `FRAMES` doesn't need to be
+  contiguous, `openAdjacentFrame` walks the array, not the numbering.
+- `urotrip2026/berlin/index.html` (`kind:'contactsheet'`) — `ROLLS`
+  array, each `{id, label, place, date, frames:[...]}`. Each frame:
+  `no` (film edge code, sequential per roll, e.g. `'13A'`), `img`,
+  `keeper`(bool — circled, clickable, opens the sidebar), `hero`(bool,
+  at most one `true` per roll — bracket-cropped, "print this one big"),
+  `title, location, dateFull, desc, cutNote`(optional, Varun's own
+  words on why a passed-over frame got cut — blank unless there's
+  something worth saying; shown only on that frame's hover tooltip, not
+  as visible copy). No `altText`/`tags`/`colorFrame` yet — add them
+  if/when a real batch actually needs filtering or accessible
+  descriptions beyond `title`. The hover caption is one fixed
+  `#tooltip` element repositioned via `getBoundingClientRect()` on
+  `mouseenter`, not a per-frame CSS `:hover` child — the filmstrip's
+  `overflow-x:auto` forces `overflow-y` to compute as `auto` too,
+  clipping anything that pokes out vertically (a caption meant to float
+  above its frame included). The perforation rows scroll as one piece
+  with the frames (`.filmstrip-wrap` itself is the scroll container,
+  sized via `width:max-content` on an inner wrapper) rather than
+  sitting fixed while only the photos scroll underneath them — they're
+  the same physical strip. Currently placeholder frames (generated
+  art, invented titles) awaiting the real Berlin batch.
 - `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
   (§7 above) — the Stories ring feed. **Known rule (decided
   2026-08-22):** Stories must be a curated, distinct edit — a handful of
