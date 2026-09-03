@@ -293,7 +293,6 @@ const FRAMES = [
   { id:4, img:'img/04-guna-sticker.jpg', title:'Guna', location:'Street corner, Amsterdam', note:'A wheatpaste sticker stack on a lamppost, somewhere between the museums.' },
   { id:5, img:'img/05-dr-falafel.jpg', title:'Dr. Falafel', location:'Street corner, Amsterdam', note:'Shopfront signage, spotted on the walk over.' },
   { id:6, img:'img/06-canal-at-dusk.jpg', title:'Along the Canal', location:'Canal Ring, Amsterdam', note:'Petunias in the foreground, boats and bikes lining both sides.' },
-  { id:7, img:'img/07-little-blue-car.jpg', title:'Almond Blossoms, Curbside', location:'Amsterdam', note:'Another Van Gogh-wrapped car — same Almond Blossom print as frame 01 — parked on Johannes Vermeerplein.' },
   { id:8, img:'img/08-crane.jpg', title:'Crane', location:'Amsterdam', note:'A tower crane over an unfinished concrete frame.' },
   { id:9, img:'img/09-sticker-box.jpg', title:'Sticker Box', location:'Street corner, Amsterdam', note:'A utility cabinet gone thick with years of stickers.' },
   { id:10, img:'img/10-steeple-late.jpg', title:'Steeple', location:'Amsterdam', note:'A church spire over a street lined with parked cars, walking back after dark.' },
@@ -304,11 +303,9 @@ const FRAMES = [
   { id:15, img:'img/15-passing-through.jpg', title:'Passing Through', location:'Amsterdam harbor', note:'A dog on its own errand across the footbridge.' },
   { id:16, img:'img/16-gulls.jpg', title:'Gulls', location:'Amsterdam harbor', note:'Lined up on the railing, facing the wind.' },
   { id:17, img:'img/17-canal-ring-morning.jpg', title:'By the Water', location:'Amsterdam', note:'Sint-Nicolaaskerk across the water, a tour boat waiting for its next group.' },
-  { id:18, img:'img/18-on-the-water.jpg', title:'Headphones On', location:'Amsterdam', note:'A street-corner selfie, waiting for the light to change.' },
   { id:19, img:'img/19-rowers.jpg', title:'Freewilly', location:'Amsterdam', note:'A flower-draped boat and its orange-suited crew, docked for the day.' },
   { id:20, img:'img/20-stencil.jpg', title:'On the Garage Door', location:'Street corner, Amsterdam', note:'A faded dance-school mural, half worn away.' },
   { id:21, img:'img/21-alley-cat.jpg', title:'Alley Cat', location:'Amsterdam', note:'Unbothered, mid-stride across the cobbles.' },
-  { id:22, img:'img/22-doorstep.jpg', title:'Doorstep', location:'Amsterdam', note:'Potted greenery doing its best on a narrow stoop.' },
   { id:23, img:'img/23-parked.jpg', title:'Parked', location:'Amsterdam', note:'Handlebar to handlebar at a lock in the canal, a church dome behind them.' },
   { id:24, img:'img/24-under-the-bridge.jpg', title:'Under the Bridge', location:'Amsterdam', note:'One of the grand old bridges, crowned lampposts and all.' },
   { id:25, img:'img/25-rain-on-the-glass.jpg', title:'The Bridge Swings', location:'Amsterdam', note:'A lift bridge caught through the tour boat\'s window, a cyclist crossing as the light changes.' },
@@ -318,11 +315,11 @@ const FRAMES = [
   { id:29, img:'img/29-evening-canal.jpg', title:'Canal Houses', location:'Amsterdam', note:'A row of gabled facades, small boats moored below.' },
   { id:30, img:'img/30-wet-reflections.jpg', title:'Crossing', location:'Amsterdam', note:'Bike in hand, halfway across the bridge.' },
   { id:31, img:'img/31-tram.jpg', title:'Tram', location:'Amsterdam', note:'One of the city’s workhorses, caught mid-route.' },
-  { id:32, img:'img/32-sky-over-the-park.jpg', title:'Sky Over the Park', location:'A park, Amsterdam', note:'A plane cutting through the clouds over the treeline.' },
-  { id:33, img:'img/33-evening-walk.jpg', title:'Evening Walk', location:'A park, Amsterdam', note:'A last loop of the path before dark.' },
-  { id:34, img:'img/34-goose.jpg', title:'Goose', location:'A park, Amsterdam', note:'Holding its ground on the path.' },
-  { id:35, img:'img/35-feeding-the-ducks.jpg', title:'Feeding the Ducks', location:'A park, Amsterdam', note:'An outstretched hand, mid-negotiation.' },
-  { id:36, img:'img/36-roses.jpg', title:'Roses', location:'A park, Amsterdam', note:'Still blooming red this late in the season.' },
+  { id:32, img:'img/32-sky-over-the-park.jpg', title:'Sky Over the Park', location:'Vondelpark, Amsterdam', note:'A plane cutting through the clouds over the treeline.' },
+  { id:33, img:'img/33-evening-walk.jpg', title:'Evening Walk', location:'Vondelpark, Amsterdam', note:'A last loop of the path before dark.' },
+  { id:34, img:'img/34-goose.jpg', title:'Goose', location:'Vondelpark, Amsterdam', note:'Holding its ground on the path.' },
+  { id:35, img:'img/35-feeding-the-ducks.jpg', title:'Feeding the Ducks', location:'Vondelpark, Amsterdam', note:'An outstretched hand, mid-negotiation.' },
+  { id:36, img:'img/36-roses.jpg', title:'Roses', location:'Vondelpark, Amsterdam', note:'Still blooming red this late in the season.' },
 ];
 
 /* ============================================================
@@ -356,10 +353,12 @@ const lbEyebrow = document.getElementById('lbEyebrow');
 const lbTitle = document.getElementById('lbTitle');
 const lbNote = document.getElementById('lbNote');
 let developTimer = null;
+let currentFrameId = null;
 
 function openFrame(id){
   const f = FRAMES.find(x => x.id === id);
   if(!f) return;
+  currentFrameId = id;
   const num = String(f.id).padStart(2,'0');
   lbImg.src = f.img;
   lbEyebrow.textContent = `Frame ${num} · ${f.location || ''}`;
@@ -368,6 +367,7 @@ function openFrame(id){
   lbWindow.classList.remove('developed');
   lightbox.classList.add('open');
   document.querySelector(`.frame[data-id="${id}"]`)?.classList.add('frame--seen');
+  document.querySelector(`.frame[data-id="${id}"]`)?.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'});
 
   clearTimeout(developTimer);
   developTimer = setTimeout(() => lbWindow.classList.add('developed'), 260);
@@ -375,6 +375,14 @@ function openFrame(id){
 function closeLightbox(){
   lightbox.classList.remove('open');
   clearTimeout(developTimer);
+  currentFrameId = null;
+}
+function openAdjacentFrame(step){
+  if(currentFrameId === null) return;
+  const idx = FRAMES.findIndex(f => f.id === currentFrameId);
+  if(idx === -1) return;
+  const next = FRAMES[(idx + step + FRAMES.length) % FRAMES.length];
+  openFrame(next.id);
 }
 
 stripEl.addEventListener('click', e => {
@@ -392,7 +400,12 @@ stripEl.addEventListener('keydown', e => {
 });
 document.getElementById('lb-close').addEventListener('click', closeLightbox);
 lightbox.addEventListener('click', e => { if(e.target === lightbox) closeLightbox(); });
-document.addEventListener('keydown', e => { if(e.key === 'Escape') closeLightbox(); });
+document.addEventListener('keydown', e => {
+  if(!lightbox.classList.contains('open')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowRight'){ e.preventDefault(); openAdjacentFrame(1); }
+  else if(e.key === 'ArrowLeft'){ e.preventDefault(); openAdjacentFrame(-1); }
+});
 </script>
 
 </body>
