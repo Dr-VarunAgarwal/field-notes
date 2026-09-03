@@ -576,8 +576,8 @@
     </section>
 
     <section class="section postcards">
-      <h2>Postcards</h2>
-      <p class="lede">Drag-canvas scenes, filled in as a trip actually happens — not a finished album.</p>
+      <h2>On the Road</h2>
+      <p class="lede">Trip pages filled in as they actually happen, sorted into whatever sections fit — not a finished album.</p>
       <div class="grid" id="postcards-grid"></div>
     </section>
 
@@ -683,7 +683,7 @@ const PLACES = [
   {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Museum walls from the trip — Van Gogh Museum and the Rijksmuseum, so far — as a drag-canvas of postcards. Berlin and Prague still to come.', count:'40 postcards', region:'🇳🇱🇩🇪🇨🇿'},
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Two ways into the trip so far — postcards from the museum walls, a film strip of everywhere else. Berlin and Prague still to come.', count:'2 sections', region:'🇳🇱🇩🇪🇨🇿'},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Parvati Valley', slug:'manali', status:'story', count:''},
@@ -841,10 +841,11 @@ document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
   </a>
 `).join('');
 
-// postcards grid — live places built as drag-canvas stamp/postcard scenes
+// "on the road" grid — live trip pages with their own sections/formats,
+// not one consistent kind (no pill, same as a plain Albums card)
 document.getElementById('postcards-grid').innerHTML = livePostcards.map(p => `
   <a class="place-card" href="${p.slug}/">
-    ${coverHTML(p, {pill:'Postcards'})}
+    ${coverHTML(p)}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
     <p class="blurb">${p.blurb}</p>
