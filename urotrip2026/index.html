@@ -107,6 +107,12 @@
   }
   .section-card.coral .tag{ background:var(--coral); }
   .section-card.amber .tag{ background:var(--amber); color:#241a0f; }
+  .section-card.crimson .tag{ background:#c0392b; }
+  .cover.no-photo{
+    background:
+      radial-gradient(ellipse at 30% 20%, rgba(226,73,47,0.25), transparent 60%),
+      linear-gradient(160deg, #2a0f0d, #170808);
+  }
   .section-card .label{
     position:absolute; left:20px; right:20px; bottom:16px; z-index:2;
     font-style:italic; font-weight:500; font-size:1.5rem; line-height:1.15;
@@ -122,6 +128,7 @@
   }
   .section-card.coral .count{ color:var(--coral); opacity:0.85; }
   .section-card.amber .count{ color:var(--amber); opacity:0.85; }
+  .section-card.crimson .count{ color:#e2492f; opacity:0.85; }
 
   footer{
     text-align:center; padding:0 24px 60px;
@@ -164,8 +171,19 @@
         <span class="label">Everywhere else.</span>
       </div>
       <div class="body">
-        <p>A strip of negatives that develop into color on tap — the streets and corners between the museums. Berlin gets its own roll once that leg happens.</p>
+        <p>A strip of negatives that develop into color on tap — the streets and corners between the museums, Amsterdam so far.</p>
         <span class="count">Amsterdam roll, growing</span>
+      </div>
+    </a>
+
+    <a class="section-card crimson" href="berlin/">
+      <div class="cover no-photo">
+        <span class="tag">Contact Sheet</span>
+        <span class="label">Berlin, unedited.</span>
+      </div>
+      <div class="body">
+        <p>The whole roll, not just the keepers — every frame circled in grease pencil or passed over, left visible either way.</p>
+        <span class="count">Placeholder batch, 15 frames</span>
       </div>
     </a>
   </div>
