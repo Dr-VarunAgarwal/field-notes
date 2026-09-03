@@ -441,3 +441,50 @@ building new pages.
 - Not covered yet (basics-first): `STORIES` slides (still edited only
   by re-adding through `log/`, not fixed in place), bulk/multi-entry
   edits, and new fields beyond what an entry already has.
+
+## 10. Tracking unfinished work — `test/index.html`
+
+Unlinked from the site nav and blocked in `robots.txt` — same
+hidden-URL pattern as `log/`/`edit/` (§7). Bookmark it instead of
+hunting for draft URLs or trying to remember what's still pending; a
+chat session's own memory of "what's left to do" doesn't survive past
+that session, but this page does.
+
+Three kinds of entries, each its own `<section>`, `.item` cards
+(name, a status badge, a one-line description, the path):
+- **Draft pages** (`badge draft`) — a real page exists but isn't
+  finished — missing real content, still mid-design, or (like the
+  Berlin contact sheet) shipped as a structural placeholder on
+  purpose. The description should say what's actually there today vs.
+  what's still missing, not just "in progress."
+- **Live, still evolving** (`badge live`) — already linked from the
+  real site, but changing often enough that "what's actually on it
+  right now" is worth a running note (e.g. a landing page's section
+  count, which has grown across separate sessions without every
+  session remembering to check here).
+- **Editor tools** (`badge tool`) — `log/`, `edit/`, any future
+  one-off admin page.
+
+**Rule: when you ship something unfinished, add or update its entry
+here in the same commit.** A placeholder batch, a page with no real
+photos yet, a landing page whose card copy just changed — anything a
+future session would otherwise have to rediscover by diffing the
+repo. Update the existing entry rather than creating a duplicate if
+the page is already listed. Remove an entry once the work is actually
+done — this page is a snapshot of what's still open, not a changelog
+of everything that ever happened, and a stale entry (see: On Film's
+old "Berlin gets its own roll here" line, left unedited through a
+later session that moved Berlin elsewhere) is actively misleading to
+whoever reads it next.
+
+**Fourth section, `Notes`** — for something worth doing that doesn't
+have a page yet at all: an idea, a decision still to make, a cleanup
+noticed in passing. Plain `<ul class="notes">` list items, not
+`.item` cards — there's nowhere to link to yet, so no href, no badge,
+no hover affordance (a dashed border on `.notes li` marks that
+distinction: unfinished-with-a-destination stays a solid-bordered
+`.item`, unfinished-with-no-destination-yet gets the dashed one).
+Write the note the moment you notice the thing, with enough context
+that a cold read (a future session, or a future you) understands why
+it matters — not just "fix postcards," but what's wrong with it and
+why it's still open.
