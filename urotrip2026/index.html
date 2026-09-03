@@ -825,6 +825,7 @@ applyPan();
 
 function pointerDown(x, y){
   if (animId) cancelAnimationFrame(animId);
+  if (wheelRafId) { cancelAnimationFrame(wheelRafId); wheelRafId = null; }
   isDown = true; dragMoved = false;
   startX = x; startY = y;
   startPanX = panX; startPanY = panY;
@@ -899,10 +900,34 @@ function touchEnd(e){
 }
 viewportEl.addEventListener('touchend', touchEnd);
 viewportEl.addEventListener('touchcancel', touchEnd);
+/* Wheel input (a mouse's scroll wheel especially) reports its delta in
+   large, discrete chunks -- a single notch is commonly ~100-120px, close
+   to a full cellW/cellH. Applying that straight to panX/panY snapped the
+   canvas to a totally different part of the grid in one synchronous step
+   with no frames in between: not a pan, a jump-cut -- the "flicker".
+   Ease toward an accumulating target instead, so even a big single-notch
+   delta plays out over a few frames like the drag-momentum above does. */
+let wheelTargetX = 0, wheelTargetY = 0, wheelRafId = null;
+function wheelStep(){
+  const dx = wheelTargetX - panX, dy = wheelTargetY - panY;
+  if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) {
+    panX = wheelTargetX; panY = wheelTargetY;
+    applyPan();
+    wheelRafId = null;
+    return;
+  }
+  panX += dx * 0.25;
+  panY += dy * 0.25;
+  applyPan();
+  wheelRafId = requestAnimationFrame(wheelStep);
+}
 viewportEl.addEventListener('wheel', (e) => {
   e.preventDefault();
-  panX -= e.deltaX; panY -= e.deltaY;
-  applyPan();
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+  if (wheelRafId === null) { wheelTargetX = panX; wheelTargetY = panY; }
+  wheelTargetX -= e.deltaX;
+  wheelTargetY -= e.deltaY;
+  if (wheelRafId === null) wheelRafId = requestAnimationFrame(wheelStep);
   const hint = document.getElementById('hint');
   if (hint) hint.style.opacity = 0;
 }, {passive:false});
