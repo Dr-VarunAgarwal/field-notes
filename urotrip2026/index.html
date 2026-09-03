@@ -979,7 +979,9 @@ function openStampSidebar(item, pal){
   document.getElementById('overlay').classList.add('open');
 }
 
+let currentPhotoIdx = null;
 function openPostcardSidebar(item, pal, idx){
+  currentPhotoIdx = photoItems.indexOf(item);
   const inner = document.getElementById('sidebarInner');
   const dims = POSTCARD_DIMS[item.orientation === 'portrait' ? 'portrait' : 'landscape'];
   inner.innerHTML = `
@@ -1016,6 +1018,7 @@ function openPostcardSidebar(item, pal, idx){
 function closeSidebar(){
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
+  currentPhotoIdx = null;
 }
 
 function openLightbox(src){
@@ -1025,7 +1028,25 @@ function openLightbox(src){
 function closeLightbox(){
   document.getElementById('lightbox').classList.remove('open');
 }
+
+/* Arrow-key nav through photoItems, from anywhere on the page -- works
+   whether just the sidebar is open or the fullscreen lightbox on top of
+   it, matching the pattern film-strip's lightbox already uses. */
+function openAdjacentPhoto(step){
+  if (currentPhotoIdx === null) return;
+  const n = photoItems.length;
+  currentPhotoIdx = ((currentPhotoIdx + step) % n + n) % n;
+  const item = photoItems[currentPhotoIdx];
+  const pal = palette[currentPhotoIdx % palette.length];
+  openPostcardSidebar(item, pal, currentPhotoIdx);
+  if (document.getElementById('lightbox').classList.contains('open')) {
+    openLightbox(item.photo);
+  }
+}
 document.addEventListener('keydown', e => {
+  if (currentPhotoIdx === null) return;
+  if (e.key === 'ArrowRight') { e.preventDefault(); openAdjacentPhoto(1); return; }
+  if (e.key === 'ArrowLeft') { e.preventDefault(); openAdjacentPhoto(-1); return; }
   if (e.key !== 'Escape') return;
   if (document.getElementById('lightbox').classList.contains('open')) closeLightbox();
   else closeSidebar();
