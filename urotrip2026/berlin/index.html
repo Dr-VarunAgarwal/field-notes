@@ -11,11 +11,11 @@
 <meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/berlin/">
 <meta property="og:title" content="Berlin · Wander">
 <meta property="og:description" content="A contact sheet from Berlin — every frame from the roll, not just the ones that made the cut.">
-<!-- og:image/twitter:image intentionally omitted: no real Berlin photo exists yet (§3). Add both,
-     pointing at the strongest real frame, once the placeholder ROLLS below is replaced. -->
+<meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/berlin/img/12-skyline-fernsehturm.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Berlin · Wander">
 <meta name="twitter:description" content="A contact sheet from Berlin — every frame from the roll, not just the ones that made the cut.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/berlin/img/12-skyline-fernsehturm.jpg">
 <link rel="icon" href="../../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="../../favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="../../favicon-512.png">
@@ -350,7 +350,7 @@
   <h1>Berlin, contact sheet.</h1>
   <p>Every frame from the Berlin roll, in the order it was actually shot &mdash; not curated into a gallery. A few get circled in grease pencil; those are the only ones that open. Everything else stays visible, dimmed, passed over &mdash; the judgment call made in public instead of thrown away.</p>
   <div class="note">
-    <strong>Placeholder batch.</strong> These 15 frames are generated stand-ins holding the shape of the real roll. Swap <code>ROLLS</code> below for the real batch's EXIF-ordered frames, point <code>img</code> at the processed photos, and fill in <code>desc</code>/<code>location</code>/<code>dateFull</code> once that pass is done. See <code>STANDARDS.md</code> &sect;5 and &sect;8 for the full schema.
+    <strong>First 15 of the roll.</strong> Real photos now, evenly picked across one full day (Sept 1) out of ~200 shots — not the whole roll yet, and Roll 02 (East Side Gallery, Sept 2) hasn't been added at all. More to come.
   </div>
 </div>
 
@@ -376,33 +376,34 @@
 
 <script>
 /* ============================================================
-   Roll 1 — Berlin. Placeholder: 15 generated stand-in frames
-   holding the shape of the real batch (3 keepers incl. 1 hero,
-   out of 15 — swap in real photos/captions once that batch is
-   processed; see the note above and STANDARDS.md §5, §8).
+   Roll 1 — Berlin, Sept 1. First 15 real frames, evenly picked
+   across the full day (~200 shots) rather than the start of the
+   roll, so this excerpt still reads as "the whole day" rather
+   than just the morning. 3 keepers incl. 1 hero. Roll 02
+   (East Side Gallery, Sept 2) not started yet.
    ============================================================ */
 const ROLLS = [
   {
     id:'roll-01',
     label:'Roll 01',
     place:'Berlin',
-    date:'Jul 2026',
+    date:'Sep 2026',
     frames:[
-      {no:'01',  keeper:false, title:'Frame 1',  notes:''},
-      {no:'02',  keeper:false, title:'Frame 2',  notes:''},
-      {no:'03A', keeper:true,  title:'Frame 3',  notes:'', location:'Berlin', dateFull:'Jul 2026', desc:'Placeholder — replace with a real caption once this batch is processed.'},
-      {no:'04',  keeper:false, title:'Frame 4',  notes:''},
-      {no:'05',  keeper:false, title:'Frame 5',  notes:''},
-      {no:'06',  keeper:false, title:'Frame 6',  notes:''},
-      {no:'07A', keeper:true,  hero:true, title:'Frame 7', notes:'', location:'Berlin', dateFull:'Jul 2026', desc:'Placeholder — the frame that would get the hero/print treatment.'},
-      {no:'08',  keeper:false, title:'Frame 8',  notes:''},
-      {no:'09',  keeper:false, title:'Frame 9',  notes:''},
-      {no:'10',  keeper:false, title:'Frame 10', notes:''},
-      {no:'11A', keeper:true,  title:'Frame 11', notes:'', location:'Berlin', dateFull:'Jul 2026', desc:'Placeholder — replace with a real caption once this batch is processed.'},
-      {no:'12',  keeper:false, title:'Frame 12', notes:''},
-      {no:'13',  keeper:false, title:'Frame 13', notes:''},
-      {no:'14',  keeper:false, title:'Frame 14', notes:''},
-      {no:'15',  keeper:false, title:'Frame 15', notes:''},
+      {no:'01',  keeper:false, title:'In Transit', img:'img/01-in-transit.jpg'},
+      {no:'02',  keeper:false, title:'Rotes Rathaus', img:'img/02-rotes-rathaus.jpg'},
+      {no:'03A', keeper:true,  title:'Berliner Dom', img:'img/03-berliner-dom.jpg', location:'Berliner Dom, Berlin', dateFull:'Sep 2026', desc:'The cathedral\'s domes catching the afternoon light, Museum Island.'},
+      {no:'04',  keeper:false, title:'Altes Museum', img:'img/04-altes-museum.jpg'},
+      {no:'05',  keeper:false, title:'DHM Quadriga', img:'img/05-dhm-quadriga.jpg'},
+      {no:'06',  keeper:false, title:'Unter den Linden', img:'img/06-unter-den-linden.jpg'},
+      {no:'07',  keeper:false, title:'Street Corner', img:'img/07-street-corner.jpg'},
+      {no:'08',  keeper:false, title:'Bundeskanzleramt', img:'img/08-bundeskanzleramt.jpg'},
+      {no:'09A', keeper:true,  title:'Memorial to the Murdered Jews of Europe', img:'img/09-holocaust-memorial.jpg', location:'Memorial to the Murdered Jews of Europe, Berlin', dateFull:'Sep 2026', desc:'The stelae field near the Brandenburg Gate — no single view of it, the ground drops away as you walk in.'},
+      {no:'10',  keeper:false, title:'Side Street', img:'img/10-side-street.jpg'},
+      {no:'11',  keeper:false, title:'Trabi World', img:'img/11-trabi-world.jpg'},
+      {no:'12A', keeper:true,  hero:true, title:'Skyline, Fernsehturm', img:'img/12-skyline-fernsehturm.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'The TV Tower over the Spree — the one shot from the day that earns the print.'},
+      {no:'13',  keeper:false, title:'Rooftops', img:'img/13-rooftops.jpg'},
+      {no:'14',  keeper:false, title:'Evening Walk', img:'img/14-evening-walk.jpg'},
+      {no:'15',  keeper:false, title:'Picnic in the Grass', img:'img/15-picnic.jpg'},
     ]
   }
 ];
@@ -483,7 +484,7 @@ ROLLS.forEach((roll, ri) => {
     frameEl.dataset.seed = seed;
     frameEl.innerHTML = `
       <div class="frame-photo-wrap">
-        <img class="frame-photo" src="${placeholderArt(seed)}" alt="">
+        <img class="frame-photo" src="${f.img || placeholderArt(seed)}" alt="">
         ${f.keeper ? `<div class="frame-mark">${markSVG(seed)}</div>` : ''}
         ${f.hero ? `<span class="hero-corner tl"></span><span class="hero-corner tr"></span><span class="hero-corner bl"></span><span class="hero-corner br"></span>` : ''}
       </div>
@@ -530,9 +531,10 @@ const lightboxImg = document.getElementById('lightboxImg');
 
 function openSidebar(f, seed){
   const inner = document.getElementById('sidebarInner');
+  const src = f.img || placeholderArt(seed);
   inner.innerHTML = `
     <div class="sb-photo-wrap">
-      <img class="sb-photo" src="${placeholderArt(seed)}" alt="">
+      <img class="sb-photo" src="${src}" alt="">
     </div>
     <div class="sb-body">
       <div class="sb-kicker">Frame #${f.no}${f.hero ? ' &middot; hero print' : ''}</div>
@@ -546,7 +548,7 @@ function openSidebar(f, seed){
   `;
   sidebarEl.classList.add('open');
   overlayEl.classList.add('open');
-  inner.querySelector('.sb-photo').addEventListener('click', () => openLightbox(placeholderArt(seed)));
+  inner.querySelector('.sb-photo').addEventListener('click', () => openLightbox(src));
 }
 function closeSidebar(){
   sidebarEl.classList.remove('open');

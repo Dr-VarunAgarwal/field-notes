@@ -156,20 +156,20 @@
 
   <section>
     <h2>Draft pages</h2>
-    <a class="item" href="../film-strip/">
+    <a class="item" href="../urotrip2026/amsterdam-film/">
       <div class="item-top">
         <span class="item-name">On Film</span>
         <span class="badge draft">Draft</span>
       </div>
       <div class="item-desc">Negative/positive film-strip treatment. Roll 1 (Amsterdam street shots) is real. Berlin is not going here anymore — see Contact Sheet below.</div>
-      <div class="item-path">/film-strip/</div>
+      <div class="item-path">/urotrip2026/amsterdam-film/</div>
     </a>
     <a class="item" href="../urotrip2026/berlin/">
       <div class="item-top">
         <span class="item-name">Contact Sheet — Berlin</span>
         <span class="badge draft">Draft</span>
       </div>
-      <div class="item-desc">New kind:'contactsheet' format — whole roll visible, keepers circled in grease pencil. Currently 15 generated placeholder frames; needs the real EXIF-ordered batch, real captions, and og:image/twitter:image once a strong frame is picked.</div>
+      <div class="item-desc">kind:'contactsheet' format — whole roll visible, keepers circled in grease pencil. 15 real Sept 1 photos now (3 keepers + hero), evenly sampled from ~200 shots — not the full roll yet, and Roll 02 (East Side Gallery, Sept 2) hasn't been started.</div>
       <div class="item-path">/urotrip2026/berlin/</div>
     </a>
   </section>
@@ -189,8 +189,8 @@
   <section>
     <h2>Notes</h2>
     <ul class="notes">
-      <li>Berlin contact sheet needs the real batch: EXIF-ordered frames swapped into <code>ROLLS</code>, real photos in <code>img/</code>, real captions/locations, then <code>og:image</code>/<code>twitter:image</code> added once a strong frame exists.</li>
-      <li><code>urotrip2026/postcards/</code> still carries 3 stale Berlin stub entries (East Side Gallery, Museum Island, Mauerpark Sunday) from before the postcards/film-strip split. Worth reconciling once Berlin's real photos land — some may fit contact-sheet better than postcards.</li>
+      <li>Berlin contact sheet has its first 15 real frames (Sept 1, <code>berlin-sights</code> leg) — still needs the rest of that day's ~200 shots, plus Roll 02 (<code>berlin-eastside</code>, Sept 2, East Side Gallery, 116 shots) not started at all.</li>
+      <li><code>urotrip2026/amsterdam-postcards/</code> still carries 3 stale Berlin stub entries (East Side Gallery, Museum Island, Mauerpark Sunday) from before the postcards/film-strip split. Now that Berlin's contact sheet has real photos, these should probably just be deleted rather than filled in.</li>
       <li>Prague's format is still undecided — postcards, film-strip, contact-sheet, or something else. Look at the actual photos before picking rather than defaulting to whichever's freshest in mind.</li>
       <li><code>europe/_review-tools/europe-2026-photo-db.json</code> (referenced in film-strip's own code comment as the source for its Amsterdam frames) isn't committed anywhere in this repo — it's local/ephemeral review tooling. Worth deciding if that's fine long-term or if the processed output should live somewhere durable.</li>
     </ul>

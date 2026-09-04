@@ -44,6 +44,8 @@
   #top-pill-nav a:hover{ color:#f0b559; }
   #top-pill-nav .slash{ color:#5a5650; }
   #top-pill-nav .current{ font-family:'Newsreader', serif; font-style:italic; color:var(--ink-faint); letter-spacing:0.3px; }
+  #top-pill-nav .crumb{ font-family:'Newsreader', serif; font-style:italic; font-weight:400; text-transform:none; color:var(--ink-faint); letter-spacing:0.3px; transition:color 0.2s ease; }
+  #top-pill-nav .crumb:hover{ color:var(--ink-soft); }
 
   #contact-badge{
     position:fixed; top:20px; right:20px; z-index:20;
@@ -236,7 +238,9 @@
 <body>
 
 <nav id="top-pill-nav">
-  <a href="../">&larr; wander ~ field notes</a>
+  <a href="../../">&larr; wander ~ field notes</a>
+  <span class="slash">/</span>
+  <a href="../" class="crumb">eUrope</a>
   <span class="slash">/</span>
   <span class="current">On Film</span>
 </nav>
