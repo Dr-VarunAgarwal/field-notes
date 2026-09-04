@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard · Wander</title>
+<style>
+  :root{
+    --bg:#0d0d0d; --card:#161616; --border:#2a2a2a;
+    --ink:#eee; --ink-soft:#999; --ink-faint:#666;
+    --accent:#c9634f;
+    --live:#3b7a4a; --draft:#8a6a2a; --tool:#3a5a7a;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:var(--mono);
+    padding:32px 20px 80px;
+  }
+  a{ color:inherit; }
+  .wrap{ max-width:640px; margin:0 auto; }
+
+  header{ margin-bottom:36px; }
+  header .eyebrow{
+    font-size:10.5px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--accent); margin:0 0 0.5rem;
+  }
+  header h1{
+    font-family:'Georgia', serif; font-style:italic; font-weight:500;
+    font-size:1.7rem; margin:0 0 0.6rem; color:var(--ink);
+  }
+  header p{ font-size:12px; line-height:1.7; color:var(--ink-soft); margin:0; max-width:52ch; }
+
+  section{ margin-bottom:32px; }
+  section h2{
+    font-size:11px; letter-spacing:1.5px; text-transform:uppercase;
+    color:var(--ink-faint); margin:0 0 12px;
+    border-bottom:1px solid var(--border); padding-bottom:8px;
+  }
+
+  /* ---------- snapshot stats ---------- */
+  .stats{ display:flex; flex-wrap:wrap; gap:10px; }
+  .stat{
+    flex:1 1 130px;
+    background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:14px 16px;
+  }
+  .stat b{
+    display:block; font-size:1.6rem; font-family:'Georgia', serif; font-style:italic;
+    color:var(--ink); line-height:1;
+  }
+  .stat span{
+    display:block; margin-top:6px; font-size:10px; letter-spacing:0.4px;
+    color:var(--ink-faint); line-height:1.4;
+  }
+
+  /* ---------- live places table ---------- */
+  .places-wrap{ overflow-x:auto; }
+  .places{ width:100%; border-collapse:collapse; font-size:11.5px; }
+  .places th{
+    text-align:left; font-weight:600; letter-spacing:0.5px; text-transform:uppercase;
+    font-size:9.5px; color:var(--ink-faint); padding:0 10px 8px; border-bottom:1px solid var(--border);
+  }
+  .places td{ padding:9px 10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  .places tr:last-child td{ border-bottom:none; }
+  .places tr:hover td{ background:var(--card); }
+  .places a{ text-decoration:none; color:var(--ink); font-weight:600; }
+  .places a:hover{ color:var(--accent); }
+  .places .kind{ color:var(--ink-soft); }
+  .places .count{ color:var(--ink-faint); white-space:nowrap; }
+
+  .item{
+    display:block; text-decoration:none;
+    background:var(--card); border:1px solid var(--border); border-radius:8px;
+    padding:14px 16px; margin-bottom:10px;
+    transition:border-color 0.15s ease, transform 0.15s ease;
+  }
+  .item:hover{ border-color:#444; transform:translateX(2px); }
+  .item-top{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:5px; }
+  .item-name{ font-size:14.5px; font-weight:600; color:var(--ink); }
+  .badge{
+    font-size:9px; letter-spacing:0.8px; text-transform:uppercase; font-weight:700;
+    padding:2px 8px; border-radius:100px; flex:none;
+  }
+  .badge.live{ background:rgba(59,122,74,0.25); color:#7fc98f; }
+  .badge.draft{ background:rgba(138,106,42,0.25); color:#e0b054; }
+  .badge.tool{ background:rgba(58,90,122,0.25); color:#7ba6d9; }
+  .item-desc{ font-size:11.5px; line-height:1.55; color:var(--ink-soft); }
+  .item-path{ font-size:10px; color:var(--ink-faint); margin-top:6px; }
+
+  /* notes: same card family as .item, but not a link — dashed border
+     signals "no destination yet", not just "unfinished" (a draft
+     page's own border stays solid, since it does have somewhere to
+     click through to). */
+  .notes{ list-style:none; margin:14px 0 0; padding:0; }
+  .notes li{
+    background:var(--card); border:1px dashed var(--border); border-radius:8px;
+    padding:12px 16px; margin-bottom:10px;
+    font-size:11.5px; line-height:1.6; color:var(--ink-soft);
+  }
+
+  /* ---------- quick links ---------- */
+  .links{ display:flex; flex-wrap:wrap; gap:8px; }
+  .links a{
+    display:inline-flex; align-items:center; gap:6px;
+    background:var(--card); border:1px solid var(--border); border-radius:100px;
+    padding:7px 14px; font-size:11px; text-decoration:none; color:var(--ink-soft);
+    transition:border-color 0.15s ease, color 0.15s ease;
+  }
+  .links a:hover{ border-color:#444; color:var(--ink); }
+
+  footer{ margin-top:40px; font-size:10.5px; color:var(--ink-faint); line-height:1.7; }
+  footer a{ color:var(--accent); text-decoration:none; }
+  footer a:hover{ text-decoration:underline; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">wander / internal</p>
+    <h1>Dashboard.</h1>
+    <p>What needs attention, plus site state and the editing tools, in one place — not linked from the site, not in search. Bookmark this instead of hunting for URLs.</p>
+  </header>
+
+  <section>
+    <h2>Needs attention</h2>
+    <a class="item" href="../urotrip2026/berlin/">
+      <div class="item-top">
+        <span class="item-name">Contact Sheet — Berlin</span>
+        <span class="badge draft">Draft</span>
+      </div>
+      <div class="item-desc">kind:'contactsheet' format — whole roll visible, keepers circled in grease pencil. 15 real Sept 1 photos now (3 keepers + hero), evenly sampled from ~200 shots — not the full roll yet. Sept 2's East Side Gallery shoot doesn't land here as Roll 02 — it briefly had its own page (The Wall), since pulled back out; format still undecided.</div>
+      <div class="item-path">/urotrip2026/berlin/</div>
+    </a>
+    <a class="item" href="../urotrip2026/amsterdam-film/">
+      <div class="item-top">
+        <span class="item-name">On Film</span>
+        <span class="badge draft">Draft</span>
+      </div>
+      <div class="item-desc">Negative/positive film-strip treatment. Roll 1 (Amsterdam street shots) is real. Berlin is not going here anymore — see Contact Sheet above.</div>
+      <div class="item-path">/urotrip2026/amsterdam-film/</div>
+    </a>
+  </section>
+
+  <section>
+    <h2>Live, still evolving</h2>
+    <a class="item" href="../urotrip2026/">
+      <div class="item-top">
+        <span class="item-name">eUrope</span>
+        <span class="badge live">Live</span>
+      </div>
+      <div class="item-desc">Sections landing page, now 3 cards — Postcards (museum art, 40 Amsterdam pieces), On Film, and Contact Sheet (Berlin). Linked from the hub already, but changing often.</div>
+      <div class="item-path">/urotrip2026/</div>
+    </a>
+    <ul class="notes">
+      <li>Berlin contact sheet has its first 15 real frames (Sept 1, <code>berlin-sights</code> leg) — still needs the rest of that day's ~200 shots. The Wall (East Side Gallery, Sept 2) was pulled back out — no longer a live page.</li>
+      <li><code>urotrip2026/amsterdam-postcards/</code> still carries 3 stale Berlin stub entries (East Side Gallery, Museum Island, Mauerpark Sunday) from before the postcards/film-strip split. Now that Berlin's contact sheet has real photos, these should probably just be deleted rather than filled in.</li>
+      <li>Prague's format is still undecided — postcards, film-strip, contact-sheet, or something else. Look at the actual photos before picking rather than defaulting to whichever's freshest in mind.</li>
+      <li><code>europe/_review-tools/europe-2026-photo-db.json</code> (referenced in film-strip's own code comment as the source for its Amsterdam frames) isn't committed anywhere in this repo — it's local/ephemeral review tooling. Worth deciding if that's fine long-term or if the processed output should live somewhere durable.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Snapshot</h2>
+    <div class="stats">
+      <div class="stat"><b>10</b><span>Live places</span></div>
+      <div class="stat"><b>4</b><span>Story-only (no full page)</span></div>
+      <div class="stat"><b>3</b><span>Draft (not yet promoted)</span></div>
+      <div class="stat"><b>189</b><span>Pieces across the 7 grid albums</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>All live places</h2>
+    <div class="places-wrap">
+      <table class="places">
+        <tr><th>Name</th><th>Kind</th><th>Count</th></tr>
+        <tr><td><a href="../london/">Shoreditch</a></td><td class="kind">album</td><td class="count">75 pieces</td></tr>
+        <tr><td><a href="../camden/">Camden</a></td><td class="kind">album</td><td class="count">11 pieces</td></tr>
+        <tr><td><a href="../khajuraho/">Khajuraho</a></td><td class="kind">album</td><td class="count">26 pieces</td></tr>
+        <tr><td><a href="../concerts/">Concerts</a></td><td class="kind">album</td><td class="count">16 shows</td></tr>
+        <tr><td><a href="../udupi/">Udupi</a></td><td class="kind">album</td><td class="count">5 pieces</td></tr>
+        <tr><td><a href="../glasgow/">Glasgow</a></td><td class="kind">album</td><td class="count">27 pieces</td></tr>
+        <tr><td><a href="../manchester/">Manchester</a></td><td class="kind">album</td><td class="count">29 pieces</td></tr>
+        <tr><td><a href="../skye/">Isle of Skye</a></td><td class="kind">walk</td><td class="count">4d &middot; 42 photos</td></tr>
+        <tr><td><a href="../glasgow-edinburgh/">Glasgow &amp; Edinburgh</a></td><td class="kind">walk</td><td class="count">2d &middot; 12 photos</td></tr>
+        <tr><td><a href="../urotrip2026/">eUrope</a></td><td class="kind">multi-format</td><td class="count">3 sections</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Editor tools</h2>
+    <a class="item" href="../log/">
+      <div class="item-top">
+        <span class="item-name">Add a story</span>
+        <span class="badge tool">Tool</span>
+      </div>
+      <div class="item-desc">Phone-friendly uploader — new Stories slides, or new pieces onto an existing album. GPS EXIF auto-fills location where present.</div>
+      <div class="item-path">/log/</div>
+    </a>
+    <a class="item" href="../edit/">
+      <div class="item-top">
+        <span class="item-name">Fix captions &amp; tags</span>
+        <span class="badge tool">Tool</span>
+      </div>
+      <div class="item-desc">Edit any text field (caption, artist, title, location...) on any existing page's entries. Not for adding new photos — see Add a story for that.</div>
+      <div class="item-path">/edit/</div>
+    </a>
+  </section>
+
+  <section>
+    <h2>Quick links</h2>
+    <div class="links">
+      <a href="https://wander.varunagarwal.com/" target="_blank" rel="noopener">Live site &rarr;</a>
+      <a href="https://github.com/Dr-VarunAgarwal/field-notes" target="_blank" rel="noopener">GitHub repo &rarr;</a>
+      <a href="../STANDARDS.md">STANDARDS.md</a>
+      <a href="../robots.txt">robots.txt</a>
+    </div>
+  </section>
+
+  <footer>
+    Unlinked from the site nav, blocked in <a href="../robots.txt">robots.txt</a> — same pattern as the tools it lists. Stats above are a hand-updated snapshot, not live — check <code>PLACES</code> in <a href="../">index.html</a> if it's been a while.
+  </footer>
+
+</div>
+</body>
+</html>

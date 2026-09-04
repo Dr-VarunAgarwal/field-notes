@@ -119,6 +119,30 @@ const REPO = 'Dr-VarunAgarwal/field-notes';
 const API = `https://api.github.com/repos/${REPO}/contents`;
 const TOKEN_KEY = 'wander_gh_pat'; // shared with log/index.html -- same repo/token scope, no need to re-enter
 
+/* ---------- module state -----------------------------------------
+   Declared up front, not next to the code that uses each one. The
+   auto-load call at the bottom of the token gate section (`if
+   (localStorage.getItem(TOKEN_KEY)) populatePageList();`) runs
+   synchronously during script parse whenever a token is already
+   saved -- i.e. on every single reload for a returning user, which is
+   the normal case, not an edge case. `populatePageList` -> `ensurePagesList`
+   reads `pagesCache` on its very first line, so if that `let` were
+   still declared further down the file (as it was until this fix),
+   the parser hasn't reached its initializer yet at that point and the
+   read throws "Cannot access 'pagesCache' before initialization" --
+   a temporal-dead-zone crash that broke the tool completely, always,
+   for anyone who'd already saved a token. Keeping every top-level
+   `let` here, before anything that might run during parse, rules the
+   whole class of that bug out rather than fixing just the one
+   instance of it that happened to be reachable. */
+let pagesCache = null;
+let currentPageSlug = null;
+let currentRawEntries = [];   // raw {...} text for every entry on the current page
+let currentEntryList = [];    // [{id, img, preview}]
+let currentEntryId = null;
+let currentEntryFields = null; // raw key:value chunks for the entry being edited
+let lastPublish = null;
+
 /* ---------- token gate ---------- */
 function renderTokenStatus(){
   const has = !!localStorage.getItem(TOKEN_KEY);
@@ -332,7 +356,6 @@ const LONG_FIELDS = new Set(['caption', 'notes', 'altText', 'note', 'blurb']);
    reasoning as the story uploader's place dropdown) rather than a
    hand-maintained list. street-art/ is a themed aggregator, not a place
    in PLACES, so it's added on top as the one known, stable exception. */
-let pagesCache = null;
 async function ensurePagesList(){
   if (pagesCache) return pagesCache;
   const file = await ghGet('index.html');
@@ -362,11 +385,6 @@ async function populatePageList(){
 }
 
 /* ---------- browsing a page's entries ---------- */
-let currentPageSlug = null;
-let currentRawEntries = [];   // raw {...} text for every entry on the current page
-let currentEntryList = [];    // [{id, img, preview}]
-let currentEntryId = null;
-let currentEntryFields = null; // raw key:value chunks for the entry being edited
 
 function parseEntryForList(entryText){
   const fields = splitEntryFields(entryText).map(f => splitKeyValue(f));
@@ -391,7 +409,7 @@ async function onPageChange(){
     const content = base64ToUtf8(file.content);
     const marker = 'const DATA = [';
     const start = content.indexOf(marker);
-    if (start === -1) throw new Error(`No DATA array found on "${slug}" — has the file structure changed?`);
+    if (start === -1) throw new Error(`"${slug}" has no single flat DATA array to edit here — likely a multi-format landing page (like eUrope) rather than a plain gallery. Edit its sub-pages directly in a full session instead.`);
     const openBracketPos = start + marker.length - 1;
     const closeBracketPos = findMatchingBracket(content, openBracketPos);
     currentRawEntries = splitTopLevelEntries(content.slice(openBracketPos, closeBracketPos + 1));
@@ -491,7 +509,6 @@ async function saveEntryEdit(pageSlug, entryId, editedFields){
   return { updated, sha: file.sha };
 }
 
-let lastPublish = null;
 function showDeployStatus(){
   const box = document.getElementById('deploy-status');
   box.style.display = 'block';

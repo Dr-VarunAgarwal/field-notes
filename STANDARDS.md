@@ -87,6 +87,10 @@ whether it should also be added to these arrays in `index.html`:
   renders in array order, it isn't sorted at runtime).
 - The ticker pulls from all of `PLACES` (live + draft) automatically —
   nothing to do there beyond adding the place.
+- `dashboard/index.html`'s Snapshot stat tiles and All live places
+  table (§10) — hand-maintained, not derived from `PLACES` — so a
+  promotion (or any count/kind change) drifts out of sync there unless
+  updated in the same commit.
 
 **`kind`** (decided 2026-08-22, extended since): every live place is
 one of a small set of page formats; the hub groups matching kinds into
@@ -106,18 +110,19 @@ through for variety.
   grid album's.
 - `kind:'postcards'` — an infinite drag-to-pan canvas of postcard/stamp
   tiles that hash-tile forever in every direction, like
-  `urotrip2026/postcards/` ("eUrope"). For a trip still in progress and
-  filling in live, or one better read as scattered ephemera than a
-  chronological gallery. `photoItems` (the subset of `items` with a
-  real `photo`) is what actually renders, so a leg not yet reached can
-  sit in `items` without showing as an empty tile. Built by copying
-  `urotrip2026/postcards/index.html`'s structure.
+  `urotrip2026/amsterdam-postcards/` ("eUrope"). For a trip still in
+  progress and filling in live, or one better read as scattered
+  ephemera than a chronological gallery. `photoItems` (the subset of
+  `items` with a real `photo`) is what actually renders, so a leg not
+  yet reached can sit in `items` without showing as an empty tile.
+  Built by copying `urotrip2026/amsterdam-postcards/index.html`'s
+  structure.
 - `kind:'film-strip'` — a single horizontal roll of negatives (tap a
   frame to "develop" it into the real color print via a CSS filter
-  transition), like `film-strip/` ("On Film"). For candid/street shots
-  that aren't gallery pieces, as a companion to a `'postcards'` page
-  covering the same trip's museum/gallery material. Built by copying
-  `film-strip/index.html`'s structure.
+  transition), like `urotrip2026/amsterdam-film/` ("On Film"). For
+  candid/street shots that aren't gallery pieces, as a companion to a
+  `'postcards'` page covering the same trip's museum/gallery material.
+  Built by copying `urotrip2026/amsterdam-film/index.html`'s structure.
 - `kind:'contactsheet'` — a vertical stack of horizontal filmstrips
   ("rolls"): every frame from a shoot, in the order it was actually
   taken, not curated into a grid. A handful get circled in red grease
@@ -144,12 +149,21 @@ through for variety.
   `urotrip2026/east-side-gallery/`. Built by copying that page's
   structure.
 - A page doesn't have to sit at the hub's top level to carry a `kind`
-  — `urotrip2026/postcards/`, `film-strip/`, and `urotrip2026/berlin/`
-  are all sub-pages of the single `urotrip2026` ("eUrope") hub entry,
-  cross-linked from that trip's own landing page (`urotrip2026/`)
-  rather than each getting its own `PLACES` card. Use this when several
-  formats genuinely belong to one trip, not as a way to avoid deciding
-  which format a standalone place should use.
+  — `urotrip2026/amsterdam-postcards/`, `urotrip2026/amsterdam-film/`,
+  and `urotrip2026/berlin/` are all sub-pages of the single
+  `urotrip2026` ("eUrope") hub entry, cross-linked from that trip's own
+  landing page (`urotrip2026/`) rather than each getting its own
+  `PLACES` card. Use this when several formats genuinely belong to one
+  trip, not as a way to avoid deciding which format a standalone place
+  should use.
+- Name a sub-page's folder after the place, not the format (decided
+  2026-09-04) — `amsterdam-postcards`/`amsterdam-film`, not
+  `postcards`/`film-strip` — matching every top-level page's own
+  convention (`london/`, `glasgow-edinburgh/`). A page that later moves
+  (like `film-strip/` did, from a top-level sibling to nested under
+  `urotrip2026/`) needs every relative path inside it re-checked, code
+  comments included — a comment pointing at a now-wrong path is easy to
+  miss since nothing renders it or clicks it.
 - `count` conventions: walk reads `'N days · M photos'`; postcards
   reads `'N postcards'`; contact sheet should read `'N rolls · M
   frames · K kept'`; wall reads `'N of ~Mm'` (curated panels of an
@@ -314,7 +328,7 @@ pass.
   (murals, paste-ups, stencils, stickers, sculptural pieces), copy them
   in by hand per §6's id-offset/city-chip rules. Leave out
   museum/scenery/food shots.
-- `urotrip2026/postcards/index.html` ("eUrope", `kind:'postcards'`) —
+- `urotrip2026/amsterdam-postcards/index.html` ("eUrope", `kind:'postcards'`) —
   `items` array: `kicker, title, artist`(optional), `byline, mark`
   (2-letter city code), `location, date, desc, photo`(optional — omit
   for a place not visited yet), `orientation`('portrait', optional,
@@ -324,7 +338,7 @@ pass.
   placeholder (`svgArt`), not a blank box. Tiling is an infinite
   hash-based grid (`hashTile`), not a fixed page of results — dragging
   never runs out of tiles to reveal.
-- `film-strip/index.html` ("On Film", `kind:'film-strip'`) — `FRAMES`
+- `urotrip2026/amsterdam-film/index.html` ("On Film", `kind:'film-strip'`) — `FRAMES`
   array: `id, img, title, location, note`. Negative filters
   (`invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(1.08)
   brightness(1.03)` plus an amber `mix-blend-mode:multiply` mask) sit
@@ -480,28 +494,61 @@ building new pages.
   by re-adding through `log/`, not fixed in place), bulk/multi-entry
   edits, and new fields beyond what an entry already has.
 
-## 10. Tracking unfinished work — `test/index.html`
+## 10. `dashboard/index.html` — site state, unfinished work, tools
 
 Unlinked from the site nav and blocked in `robots.txt` — same
 hidden-URL pattern as `log/`/`edit/` (§7). Bookmark it instead of
-hunting for draft URLs or trying to remember what's still pending; a
-chat session's own memory of "what's left to do" doesn't survive past
-that session, but this page does.
+hunting for draft URLs, re-deriving site stats, or trying to remember
+what's still pending; a chat session's own memory of "what's left to
+do" doesn't survive past that session, but this page does. Named
+`dashboard` rather than `test` (renamed 2026-09-04) since it now
+covers site-state info, not just in-progress pages.
 
-Three kinds of entries, each its own `<section>`, `.item` cards
-(name, a status badge, a one-line description, the path):
-- **Draft pages** (`badge draft`) — a real page exists but isn't
-  finished — missing real content, still mid-design, or (like the
-  Berlin contact sheet) shipped as a structural placeholder on
-  purpose. The description should say what's actually there today vs.
-  what's still missing, not just "in progress."
-- **Live, still evolving** (`badge live`) — already linked from the
-  real site, but changing often enough that "what's actually on it
-  right now" is worth a running note (e.g. a landing page's section
-  count, which has grown across separate sessions without every
-  session remembering to check here).
+Sections, top to bottom — ordered by how actionable they are, most
+actionable first (reorganized 2026-09-04; originally the reference
+sections led and two sparse status-only sections split what's now one):
+- **Needs attention** — everything currently unfinished or in flux,
+  together in one section rather than split by status:
+  - `.item` cards (name, a status badge, a one-line description of
+    what's actually there today vs. what's still missing, the path):
+    `badge draft` for a real page that exists but isn't finished
+    (missing real content, still mid-design, or — like the Berlin
+    contact sheet — shipped as a structural placeholder on purpose);
+    `badge live` for a page already linked from the real site but
+    changing often enough that "what's on it right now" is worth a
+    running note. Order drafts before live-but-evolving — the less
+    finished thing is the more actionable one.
+  - Below the cards, `<ul class="notes">` list items for something
+    worth doing that doesn't have a page yet at all: an idea, a
+    decision still to make, a cleanup noticed in passing. Not `.item`
+    cards — there's nowhere to link to yet, so no href, no badge, no
+    hover affordance (a dashed border on `.notes li` marks that
+    distinction: unfinished-with-a-destination stays a solid-bordered
+    `.item`, unfinished-with-no-destination-yet gets the dashed one).
+    Write the note the moment you notice the thing, with enough
+    context that a cold read (a future session, or a future you)
+    understands why it matters — not just "fix postcards," but what's
+    wrong with it and why it's still open.
+- **Snapshot** — stat tiles (`.stat`, big number + label): live place
+  count, story-only count, draft count, total pieces across the
+  grid-album `kind`s. Hand-updated, not computed from `PLACES` at
+  render time (this is static HTML, no build step) — the footer says
+  so explicitly so nobody mistakes it for live data.
+- **All live places** — a plain table (name linked to its folder,
+  `kind`, `count`), one row per live `PLACES` entry. A denser,
+  admin-facing mirror of the hub's own card grid — nothing here a
+  visitor can't already see on the real site, just faster to scan and
+  without the visual design overhead. A place with more than one
+  format (eUrope) gets a plain `multi-format` in the `kind` column
+  rather than spelling out every sub-kind — that detail already lives
+  in Needs attention/Notes, and a long value here breaks the table's
+  scannability.
 - **Editor tools** (`badge tool`) — `log/`, `edit/`, any future
   one-off admin page.
+- **Quick links** — pill links out to the live site, the GitHub repo,
+  `STANDARDS.md`, `robots.txt`. Only link things that actually exist —
+  this page had a dead `sitemap.xml` link caught before it ever
+  shipped, since that file lives in the `blog` repo, not this one.
 
 **Rule: when you ship something unfinished, add or update its entry
 here in the same commit.** A placeholder batch, a page with no real
@@ -513,16 +560,7 @@ done — this page is a snapshot of what's still open, not a changelog
 of everything that ever happened, and a stale entry (see: On Film's
 old "Berlin gets its own roll here" line, left unedited through a
 later session that moved Berlin elsewhere) is actively misleading to
-whoever reads it next.
-
-**Fourth section, `Notes`** — for something worth doing that doesn't
-have a page yet at all: an idea, a decision still to make, a cleanup
-noticed in passing. Plain `<ul class="notes">` list items, not
-`.item` cards — there's nowhere to link to yet, so no href, no badge,
-no hover affordance (a dashed border on `.notes li` marks that
-distinction: unfinished-with-a-destination stays a solid-bordered
-`.item`, unfinished-with-no-destination-yet gets the dashed one).
-Write the note the moment you notice the thing, with enough context
-that a cold read (a future session, or a future you) understands why
-it matters — not just "fix postcards," but what's wrong with it and
-why it's still open.
+whoever reads it next. The same discipline applies to Snapshot and
+All live places: §5's "promote a draft to live" workflow should update
+this page's counts and table row in the same commit as the `PLACES`
+edit, not leave them to drift until someone notices.
