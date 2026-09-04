@@ -110,18 +110,19 @@ through for variety.
   grid album's.
 - `kind:'postcards'` — an infinite drag-to-pan canvas of postcard/stamp
   tiles that hash-tile forever in every direction, like
-  `urotrip2026/postcards/` ("eUrope"). For a trip still in progress and
-  filling in live, or one better read as scattered ephemera than a
-  chronological gallery. `photoItems` (the subset of `items` with a
-  real `photo`) is what actually renders, so a leg not yet reached can
-  sit in `items` without showing as an empty tile. Built by copying
-  `urotrip2026/postcards/index.html`'s structure.
+  `urotrip2026/amsterdam-postcards/` ("eUrope"). For a trip still in
+  progress and filling in live, or one better read as scattered
+  ephemera than a chronological gallery. `photoItems` (the subset of
+  `items` with a real `photo`) is what actually renders, so a leg not
+  yet reached can sit in `items` without showing as an empty tile.
+  Built by copying `urotrip2026/amsterdam-postcards/index.html`'s
+  structure.
 - `kind:'film-strip'` — a single horizontal roll of negatives (tap a
   frame to "develop" it into the real color print via a CSS filter
-  transition), like `film-strip/` ("On Film"). For candid/street shots
-  that aren't gallery pieces, as a companion to a `'postcards'` page
-  covering the same trip's museum/gallery material. Built by copying
-  `film-strip/index.html`'s structure.
+  transition), like `urotrip2026/amsterdam-film/` ("On Film"). For
+  candid/street shots that aren't gallery pieces, as a companion to a
+  `'postcards'` page covering the same trip's museum/gallery material.
+  Built by copying `urotrip2026/amsterdam-film/index.html`'s structure.
 - `kind:'contactsheet'` — a vertical stack of horizontal filmstrips
   ("rolls"): every frame from a shoot, in the order it was actually
   taken, not curated into a grid. A handful get circled in red grease
@@ -134,12 +135,21 @@ through for variety.
   browse a gallery. First live instance: `urotrip2026/berlin/`. Built
   by copying that page's structure.
 - A page doesn't have to sit at the hub's top level to carry a `kind`
-  — `urotrip2026/postcards/`, `film-strip/`, and `urotrip2026/berlin/`
-  are all sub-pages of the single `urotrip2026` ("eUrope") hub entry,
-  cross-linked from that trip's own landing page (`urotrip2026/`)
-  rather than each getting its own `PLACES` card. Use this when several
-  formats genuinely belong to one trip, not as a way to avoid deciding
-  which format a standalone place should use.
+  — `urotrip2026/amsterdam-postcards/`, `urotrip2026/amsterdam-film/`,
+  and `urotrip2026/berlin/` are all sub-pages of the single
+  `urotrip2026` ("eUrope") hub entry, cross-linked from that trip's own
+  landing page (`urotrip2026/`) rather than each getting its own
+  `PLACES` card. Use this when several formats genuinely belong to one
+  trip, not as a way to avoid deciding which format a standalone place
+  should use.
+- Name a sub-page's folder after the place, not the format (decided
+  2026-09-04) — `amsterdam-postcards`/`amsterdam-film`, not
+  `postcards`/`film-strip` — matching every top-level page's own
+  convention (`london/`, `glasgow-edinburgh/`). A page that later moves
+  (like `film-strip/` did, from a top-level sibling to nested under
+  `urotrip2026/`) needs every relative path inside it re-checked, code
+  comments included — a comment pointing at a now-wrong path is easy to
+  miss since nothing renders it or clicks it.
 - `count` conventions: walk reads `'N days · M photos'`; postcards
   reads `'N postcards'`; contact sheet should read `'N rolls · M
   frames · K kept'`; everything else reads `'M pieces'`.
@@ -302,7 +312,7 @@ pass.
   (murals, paste-ups, stencils, stickers, sculptural pieces), copy them
   in by hand per §6's id-offset/city-chip rules. Leave out
   museum/scenery/food shots.
-- `urotrip2026/postcards/index.html` ("eUrope", `kind:'postcards'`) —
+- `urotrip2026/amsterdam-postcards/index.html` ("eUrope", `kind:'postcards'`) —
   `items` array: `kicker, title, artist`(optional), `byline, mark`
   (2-letter city code), `location, date, desc, photo`(optional — omit
   for a place not visited yet), `orientation`('portrait', optional,
@@ -312,7 +322,7 @@ pass.
   placeholder (`svgArt`), not a blank box. Tiling is an infinite
   hash-based grid (`hashTile`), not a fixed page of results — dragging
   never runs out of tiles to reveal.
-- `film-strip/index.html` ("On Film", `kind:'film-strip'`) — `FRAMES`
+- `urotrip2026/amsterdam-film/index.html` ("On Film", `kind:'film-strip'`) — `FRAMES`
   array: `id, img, title, location, note`. Negative filters
   (`invert(0.92) hue-rotate(180deg) saturate(1.2) contrast(1.08)
   brightness(1.03)` plus an amber `mix-blend-mode:multiply` mask) sit
