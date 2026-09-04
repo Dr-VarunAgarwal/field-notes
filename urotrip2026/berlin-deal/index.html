@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>The Deal · Wander</title>
+<meta name="description" content="A dealt hand of face-down Berlin photos, turned over one at a time — a curated spread, not the unedited roll.">
+<meta name="theme-color" content="#ede4d3">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/berlin-deal/">
+<meta property="og:title" content="The Deal · Wander">
+<meta property="og:description" content="A dealt hand of face-down Berlin photos, turned over one at a time — a curated spread, not the unedited roll.">
+<meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/berlin-deal/img/13-brandenburg-gate.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Deal · Wander">
+<meta name="twitter:description" content="A dealt hand of face-down Berlin photos, turned over one at a time — a curated spread, not the unedited roll.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/berlin-deal/img/13-brandenburg-gate.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../../favicon-512.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;1,9..144,500&family=Roboto+Slab:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  /* ---------- aged ephemera / fortune-slip, not casino felt ----------
+     Every other eUrope format goes dark (postcards' cream is the closest
+     exception, but even that reads museum-neutral, not warm). This one
+     is a card-stock ivory tableau on purpose — the deck itself is what's
+     ink-black, so the one dark object on the page is the thing you're
+     about to turn over. */
+  :root{
+    --bg:#ede4d3;
+    --bg-deep:#e2d5bd;
+    --ink:#2a2520;
+    --ink-soft:rgba(42,37,32,0.7);
+    --ink-faint:rgba(42,37,32,0.46);
+    --line:rgba(42,37,32,0.16);
+    --card-back:#1f1c1a;
+    --card-back-ink:#ede4d3;
+    --card-back-ink-faint:rgba(237,228,211,0.5);
+    --brass:#a8763e;
+    --face:#fff8ec;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(ellipse 900px 500px at 50% 0%, rgba(168,118,62,0.08), transparent 65%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Fraunces', serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+
+  /* ---------- nav ---------- */
+  #top-pill-nav{
+    position:fixed; top:24px; left:24px; z-index:20;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px;
+    background:rgba(31,28,26,0.82);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:9999px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    font-size:11.5px; letter-spacing:1.2px;
+  }
+  .pill-main{
+    text-decoration:none; color:#cf9a5c;
+    font-family:'Roboto Slab', serif; font-weight:700; text-transform:uppercase;
+    transition:color 0.2s ease;
+  }
+  .pill-main:hover{ color:#e2b378; }
+  .pill-slash{ color:#8a8478; font-family:ui-monospace, monospace; }
+  .pill-current{ font-family:'Fraunces', serif; font-style:italic; color:#e8e2d6; letter-spacing:0.3px; }
+  .pill-crumb{ font-family:'Fraunces', serif; font-style:italic; color:#bdb6a8; letter-spacing:0.3px; text-decoration:none; transition:color 0.2s ease; }
+  .pill-crumb:hover{ color:#e8e2d6; }
+  #contact-badge{
+    position:fixed; top:24px; right:24px; z-index:20;
+    width:36px; height:36px;
+    background:rgba(31,28,26,0.82);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#ede4d3; font-family:ui-monospace, monospace; font-size:11px; font-weight:600;
+    text-decoration:none;
+    box-shadow:0 4px 12px rgba(0,0,0,0.2);
+    transition:transform 0.2s ease, border-color 0.2s ease;
+  }
+  #contact-badge:hover{ transform:scale(1.08); border-color:rgba(255,255,255,0.3); }
+
+  /* ---------- intro ---------- */
+  .intro{ max-width:640px; margin:0 auto; padding:6.5rem 1.3rem 1.2rem; }
+  .intro-kicker{
+    font-family:'Roboto Slab', serif; font-weight:700;
+    font-size:0.66rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--brass); margin:0 0 0.7rem;
+  }
+  .intro h1{
+    font-weight:500; font-style:italic;
+    font-size:clamp(2rem,6vw,2.8rem);
+    margin:0 0 0.9rem; line-height:1.05; color:var(--ink);
+  }
+  .intro p{ font-size:0.98rem; line-height:1.7; color:var(--ink-soft); margin:0 0 0.8rem; }
+  .intro .note{
+    margin-top:1.1rem; padding:0.85rem 1rem;
+    border:1px dashed var(--line); border-radius:6px;
+    font-family:ui-monospace, monospace; font-size:0.68rem; line-height:1.7; color:var(--ink-faint);
+  }
+  .intro .note strong{ color:var(--brass); }
+  .reset-row{ max-width:640px; margin:0 auto; padding:0 1.3rem; }
+  #reshuffle{
+    font-family:'Roboto Slab', serif; font-weight:700; font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--brass); background:none; border:1px solid var(--brass); border-radius:9999px;
+    padding:6px 14px; cursor:pointer; transition:background 0.15s ease, color 0.15s ease;
+  }
+  #reshuffle:hover{ background:var(--brass); color:var(--bg); }
+
+  /* ---------- the tableau ---------- */
+  .tableau-wrap{ max-width:1200px; margin:2rem auto 0; padding:0 1.3rem; }
+  .tableau{
+    position:relative;
+    height:78vh; min-height:560px; max-height:820px;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(42,37,32,0.03) 0, transparent 3%),
+      radial-gradient(circle at 70% 65%, rgba(42,37,32,0.03) 0, transparent 3%),
+      var(--bg-deep);
+    border:1px solid var(--line); border-radius:10px;
+    overflow:hidden;
+  }
+
+  .card{
+    position:absolute;
+    left:calc(var(--ox) * 1%); top:calc(var(--oy) * 1%);
+    width:130px; height:186px;
+    perspective:1000px;
+    cursor:pointer;
+    opacity:0;
+    animation:dealIn .5s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes dealIn{
+    from{ opacity:0; transform:translate(-50%,-50%) rotate(var(--tilt)) translateY(-26px) scale(0.92); }
+    to{ opacity:1; transform:translate(-50%,-50%) rotate(var(--tilt)) translateY(0) scale(1); }
+  }
+  .card:hover{ z-index:5; }
+  .card.flipped{ z-index:6; }
+
+  .card-inner{
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d;
+    transition:transform .6s cubic-bezier(.4,.2,.2,1);
+  }
+  .card.flipped .card-inner{ transform:rotateY(180deg); }
+
+  .card-back, .card-face{
+    position:absolute; inset:0;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    border-radius:7px;
+    box-shadow:0 8px 18px rgba(20,16,10,0.32);
+  }
+  .card-back{
+    background:var(--card-back);
+    padding:11px 12px;
+    display:flex; flex-direction:column; justify-content:space-between;
+    border:1px solid rgba(237,228,211,0.08);
+  }
+  .cb-swatch{ width:16px; height:16px; border-radius:2px; align-self:flex-end; box-shadow:0 0 0 1px rgba(237,228,211,0.15); }
+  .cb-rule{ height:1px; background:var(--brass); opacity:0.55; margin:6px 0; }
+  .cb-teaser{
+    font-family:'Roboto Slab', serif; font-weight:500; font-size:11.5px; line-height:1.4;
+    color:var(--card-back-ink); flex:1;
+  }
+  .cb-place{
+    font-family:ui-monospace, monospace; font-size:8.5px; letter-spacing:0.05em; text-transform:uppercase;
+    color:var(--card-back-ink-faint);
+  }
+  .card-face{
+    background:var(--face);
+    transform:rotateY(180deg);
+    overflow:hidden;
+    display:flex; flex-direction:column;
+  }
+  .cf-img{ width:100%; flex:1; object-fit:cover; display:block; min-height:0; }
+  .cf-cap{
+    padding:6px 8px; font-family:'Fraunces', serif; font-style:italic; font-size:9.5px; line-height:1.3;
+    color:#3a3226; flex:0 0 auto;
+  }
+
+  /* ---------- hover caption (fixed, JS-positioned) ---------- */
+  #tooltip{
+    position:fixed; transform:translateX(-50%) translateY(4px);
+    max-width:220px;
+    background:rgba(31,28,26,0.94); color:var(--bg); border-radius:5px;
+    padding:7px 10px; font-family:'Roboto Slab', serif; font-size:11px; line-height:1.4;
+    opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease;
+    z-index:50; text-align:left;
+  }
+  #tooltip.open{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  /* ---------- legend ---------- */
+  .legend{
+    max-width:1200px; margin:1.2rem auto 0; padding:0 1.3rem 3.5rem;
+    font-size:0.72rem; line-height:1.7; color:var(--ink-faint);
+    display:flex; gap:1.4rem; flex-wrap:wrap;
+  }
+
+  /* ---------- lightbox (reused pattern) ---------- */
+  #lightbox{
+    position:fixed; inset:0; z-index:100; background:rgba(10,8,6,0.95);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  #lightbox.open{ opacity:1; pointer-events:auto; }
+  #lightbox img{ max-width:92vw; max-height:92vh; object-fit:contain; }
+  #lightbox .lb-close{ position:absolute; top:20px; right:24px; background:none; border:none; color:#ede4d3; font-size:26px; cursor:pointer; }
+
+  @media(max-width:680px){
+    .tableau{ height:auto; min-height:0; padding:16px; }
+    .tableau .deck{
+      position:static; display:grid; grid-template-columns:repeat(auto-fill,minmax(110px,1fr)); gap:14px;
+    }
+    .card{
+      position:static; width:auto; height:158px; opacity:1; animation:none;
+    }
+    .card-inner, .card.flipped .card-inner{ }
+  }
+</style>
+</head>
+<body>
+
+<nav id="top-pill-nav">
+  <a href="../../" class="pill-main">&larr; wander ~ field notes</a>
+  <span class="pill-slash">/</span>
+  <a href="../" class="pill-crumb">eUrope</a>
+  <span class="pill-slash">/</span>
+  <span class="pill-current">Deal</span>
+</nav>
+<a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
+
+<div class="intro">
+  <p class="intro-kicker">Wander &middot; eUrope &middot; a curated spread</p>
+  <h1>The Deal.</h1>
+  <p>Twenty-two photos from Berlin's first day, dealt face-down. Each card carries one true clue &mdash; a place, a detail, nothing invented &mdash; and nothing else. Turn a card over to see what it actually was. This isn't the unedited roll (that's the <a href="../berlin/" style="color:var(--brass);">contact sheet</a>) &mdash; it's a hand-picked spread, guessed at before it's seen.</p>
+  <div class="note">
+    <strong>22 cards, Sept 1.</strong> A first deal from the same day the contact sheet covers &mdash; a different, curated cut of it, not a duplicate. Reload for a fresh face-down spread; nothing is remembered between visits.
+  </div>
+</div>
+
+<div class="reset-row"><button id="reshuffle" type="button">Deal again</button></div>
+
+<div class="tableau-wrap">
+  <div class="tableau"><div class="deck" id="deck"></div></div>
+</div>
+
+<div class="legend">
+  <span>Click a face-down card to turn it over. Click a revealed one to see it full-screen.</span>
+</div>
+
+<div id="tooltip"></div>
+<div id="lightbox">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   Berlin, Sept 1 — the same day as urotrip2026/berlin/'s contact
+   sheet, a different curated cut of it. 22 hand-picked frames, not
+   the unedited roll. ox/oy/tilt are a fixed authored scatter layout
+   (seeded once, then kept — never randomized at runtime, so the
+   dealt POSITIONS are identical every load; only which cards start
+   face-down/face-up resets). swatch is each photo's own real sampled
+   dominant color (48x48 HSV-bin weighting, same algorithm as this
+   site's own extractVividColor, computed offline in Python) — never
+   a made-up color. credit stays '' throughout: nothing here carried
+   a legible signature/placard naming a maker beyond the public
+   monuments themselves.
+   ============================================================ */
+const DECK = [
+  { id:'d01', order:1,  ox:58.8, oy:64.2, tilt:-8.9, swatch:'#8c4a38', img:'img/01-rotes-rathaus.jpg',
+    place:'Rotes Rathaus', teaser:'a red-brick clock tower, morning',
+    caption:'Berlin’s Rotes Rathaus — the “Red City Hall,” named for its brick, not its politics.', location:'Rotes Rathaus, Berlin' },
+  { id:'d02', order:2,  ox:93.1, oy:15.4, tilt:-2.9, swatch:'#aa5c33', img:'img/02-marienkirche.jpg',
+    place:'Marienkirche', teaser:'twin spires over Alexanderplatz',
+    caption:'St. Mary’s Church, one of Berlin’s oldest, its spire standing next to the Fernsehturm’s.', location:'Marienkirche, Berlin' },
+  { id:'d03', order:3,  ox:6.6, oy:89.2, tilt:-2.9, swatch:'#3a5c8c', img:'img/03-fernsehturm-street.jpg',
+    place:'Fernsehturm', teaser:'a needle over the rooftops',
+    caption:'The TV Tower seen from street level near Alexanderplatz — 368m, the tallest structure in Germany.', location:'Berlin' },
+  { id:'d04', order:4,  ox:88.1, oy:83.2, tilt:6.3, swatch:'#3e848c', img:'img/04-marienkirche-statue.jpg',
+    place:'Marienkirche forecourt', teaser:'a bronze figure, robed, mid-argument',
+    caption:'A statue in Marienkirche’s forecourt, the church and Fernsehturm behind it.', location:'Marienkirche, Berlin' },
+  { id:'d05', order:5,  ox:26.1, oy:64.1, tilt:4.1, swatch:'#5d788c', img:'img/05-berliner-dom.jpg',
+    place:'Berliner Dom', teaser:'a green dome against grey sky',
+    caption:'Berlin Cathedral’s dome and colonnade, Museum Island.', location:'Berliner Dom, Berlin' },
+  { id:'d06', order:6,  ox:74.9, oy:41.3, tilt:-2.2, swatch:'#838c1e', img:'img/06-altes-museum-fountains.jpg',
+    place:'Altes Museum', teaser:'two fountains, one colonnade',
+    caption:'Altes Museum’s facade across the Lustgarten’s twin fountains.', location:'Altes Museum, Berlin' },
+  { id:'d07', order:7,  ox:91.4, oy:64.3, tilt:2.1, swatch:'#305ea9', img:'img/07-fernsehturm-tall.jpg',
+    place:'Fernsehturm', teaser:'a tower, a construction crane, a heavy sky',
+    caption:'The TV Tower against a cloud-streaked afternoon.', location:'Berlin' },
+  { id:'d08', order:8,  ox:93.5, oy:38.5, tilt:3.7, swatch:'#2056bb', img:'img/08-lustgarten-statue.jpg',
+    place:'Lustgarten', teaser:'marble, mid-flight, blue sky',
+    caption:'One of the marble figure groups flanking Altes Museum’s steps.', location:'Lustgarten, Berlin' },
+  { id:'d09', order:9,  ox:38.6, oy:60.1, tilt:-3.8, swatch:'#5f668c', img:'img/09-neue-wache.jpg',
+    place:'Neue Wache', teaser:'one figure, alone, under an open roof',
+    caption:'Käthe Kollwitz’s “Mother with Her Dead Son,” the only object inside Neue Wache — daylight falls on it through an oculus, rain and snow too.', location:'Neue Wache, Berlin' },
+  { id:'d10', order:10, ox:71.7, oy:60.1, tilt:-7.2, swatch:'#4f86da', img:'img/10-humboldt-statue.jpg',
+    place:'Humboldt-Universität', teaser:'a name, a plinth, a legible date: 1939',
+    caption:'Alexander von Humboldt’s statue outside the university that carries his name — the plinth’s inscription is a 1939 dedication from the University of Havana.', location:'Humboldt-Universität, Berlin' },
+  { id:'d11', order:11, ox:23.8, oy:14.9, tilt:-2.4, swatch:'#808c3b', img:'img/11-frederick-the-great.jpg',
+    place:'Unter den Linden', teaser:'bronze, on horseback, larger than anything nearby',
+    caption:'The Frederick the Great equestrian monument, Unter den Linden.', location:'Unter den Linden, Berlin' },
+  { id:'d12', order:12, ox:8.1, oy:60.0, tilt:-4.2, swatch:'#912918', img:'img/12-ampelmann.jpg',
+    place:'a crosswalk', teaser:'a red man and a green man, both wearing hats',
+    caption:'An Ampelmann signal — the East German pedestrian figure, kept on after reunification instead of replaced.', location:'Berlin' },
+  { id:'d13', order:13, ox:61.3, oy:87.0, tilt:2.0, swatch:'#6e8c2e', img:'img/13-brandenburg-gate.jpg',
+    place:'Brandenburg Gate', teaser:'a chariot, four horses, on top of a gate',
+    caption:'The Quadriga atop the Brandenburg Gate.', location:'Brandenburg Gate, Berlin' },
+  { id:'d14', order:14, ox:6.7, oy:39.6, tilt:-6.1, swatch:'#4c708c', img:'img/14-reichstag-exterior.jpg',
+    place:'Reichstag', teaser:'flags, columns, an inscription no one reads anymore',
+    caption:'The Reichstag’s facade, flags out.', location:'Reichstag, Berlin' },
+  { id:'d15', order:15, ox:57.4, oy:41.4, tilt:2.5, swatch:'#808c48', img:'img/15-holocaust-memorial.jpg',
+    place:'Memorial to the Murdered Jews of Europe', teaser:'concrete, in rows, no two the same height',
+    caption:'The stelae field — there’s no single view of it; the ground drops away as you walk in.', location:'Memorial to the Murdered Jews of Europe, Berlin' },
+  { id:'d16', order:16, ox:42.2, oy:15.3, tilt:6.2, swatch:'#778c11', img:'img/16-checkpoint-charlie-sign.jpg',
+    place:'Checkpoint Charlie', teaser:'a sign, four languages, one sentence',
+    caption:'“You are leaving the American Sector” — the sign is a replica, the sentence is real.', location:'Checkpoint Charlie, Berlin' },
+  { id:'d17', order:17, ox:76.5, oy:84.1, tilt:-8.4, swatch:'#3b8ed0', img:'img/17-wall-remnant.jpg',
+    place:'Niederkirchnerstraße', teaser:'concrete, unpainted, rebar showing through',
+    caption:'A preserved stretch of the Wall, left bare — no murals here, just what it actually was.', location:'Niederkirchnerstraße, Berlin' },
+  { id:'d18', order:18, ox:73.3, oy:12.4, tilt:-5.2, swatch:'#8c563a', img:'img/18-reichstag-dome.jpg',
+    place:'Reichstag dome', teaser:'a mirrored cone, upside down, funneling light',
+    caption:'The inverted mirrored cone at the center of the Reichstag’s glass dome, channeling daylight into the chamber below.', location:'Reichstag, Berlin' },
+  { id:'d19', order:19, ox:28.5, oy:88.6, tilt:-3.3, swatch:'#8c644a', img:'img/19-reichstag-view.jpg',
+    place:'Reichstag dome ramp', teaser:'a whole city, from above, tower included',
+    caption:'Berlin’s skyline from the dome’s spiral ramp — the TV Tower on the horizon, smaller from up here for once.', location:'Reichstag, Berlin' },
+  { id:'d20', order:20, ox:26.5, oy:37.3, tilt:7.5, swatch:'#3b708c', img:'img/20-tiergarten-bridge.jpg',
+    place:'Tiergarten', teaser:'an iron footbridge, painted white, a canal beneath',
+    caption:'One of Tiergarten’s footbridges, canal below.', location:'Tiergarten, Berlin' },
+  { id:'d21', order:21, ox:41.5, oy:36.4, tilt:-4.6, swatch:'#888c4a', img:'img/21-dusk-swan.jpg',
+    place:'a lake at dusk', teaser:'a swan, close up, looking straight at the lens',
+    caption:'A swan at the lake’s edge as the light goes gold — Tiergarten, near the end of the day.', location:'Tiergarten, Berlin' },
+  { id:'d22', order:22, ox:9.4, oy:12.3, tilt:1.5, swatch:'#8c6c4d', img:'img/22-dusk-picnic.jpg',
+    place:'a lake at dusk', teaser:'a picnic, no plates, whatever was in the bag',
+    caption:'An evening picnic by the water — the day’s last stop, not its most photographed.', location:'Tiergarten, Berlin' },
+];
+
+const deckEl = document.getElementById('deck');
+const cardIndex = {};
+
+function render(){
+  deckEl.innerHTML = '';
+  const sorted = [...DECK].sort((a,b)=>a.order-b.order);
+  sorted.forEach((d, i) => {
+    const el = document.createElement('div');
+    el.className = 'card';
+    el.style.setProperty('--ox', d.ox);
+    el.style.setProperty('--oy', d.oy);
+    el.style.setProperty('--tilt', d.tilt + 'deg');
+    el.style.animationDelay = (i * 45) + 'ms';
+    el.dataset.id = d.id;
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-back">
+          <div class="cb-swatch" style="background:${d.swatch}"></div>
+          <div class="cb-teaser">${d.teaser}</div>
+          <div class="cb-place">${d.place}</div>
+        </div>
+        <div class="card-face">
+          <img class="cf-img" src="${d.img}" alt="">
+          <div class="cf-cap">${d.caption}</div>
+        </div>
+      </div>
+    `;
+    cardIndex[d.id] = { data: d, el };
+    deckEl.appendChild(el);
+  });
+}
+render();
+
+document.getElementById('reshuffle').addEventListener('click', () => {
+  Object.values(cardIndex).forEach(c => c.el.classList.remove('flipped'));
+  render();
+});
+
+/* ============ tooltip on hover (face-down cards only) ============ */
+const tooltipEl = document.getElementById('tooltip');
+function showTooltip(el, d){
+  if (el.classList.contains('flipped')) return;
+  tooltipEl.textContent = d.place;
+  const rect = el.getBoundingClientRect();
+  tooltipEl.classList.add('open');
+  const tw = tooltipEl.offsetWidth, th = tooltipEl.offsetHeight;
+  let left = rect.left + rect.width / 2;
+  left = Math.min(Math.max(left, tw / 2 + 8), window.innerWidth - tw / 2 - 8);
+  let top = rect.top - th - 8;
+  if (top < 8) top = rect.bottom + 8;
+  tooltipEl.style.left = left + 'px';
+  tooltipEl.style.top = top + 'px';
+}
+function hideTooltip(){ tooltipEl.classList.remove('open'); }
+
+/* ============ click: flip, or open lightbox if already flipped ============ */
+const lightboxEl = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+function openLightbox(src){ lightboxImg.src = src; lightboxEl.classList.add('open'); }
+function closeLightbox(){ lightboxEl.classList.remove('open'); }
+
+deckEl.addEventListener('click', (e) => {
+  const el = e.target.closest('.card');
+  if (!el) return;
+  const { data } = cardIndex[el.dataset.id];
+  if (el.classList.contains('flipped')) {
+    openLightbox(data.img);
+  } else {
+    el.classList.add('flipped');
+    hideTooltip();
+  }
+});
+deckEl.addEventListener('mouseover', (e) => {
+  const el = e.target.closest('.card');
+  if (!el) return;
+  showTooltip(el, cardIndex[el.dataset.id].data);
+});
+deckEl.addEventListener('mouseout', hideTooltip);
+
+document.querySelector('.lb-close').addEventListener('click', closeLightbox);
+lightboxEl.addEventListener('click', (e) => { if (e.target === lightboxEl) closeLightbox(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>

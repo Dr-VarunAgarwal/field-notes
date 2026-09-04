@@ -145,9 +145,34 @@ through for variety.
   wall panels, not pretending to be part of the same surface.
   Reserve this for a batch that's fundamentally about one long
   physical thing you walk the length of, not a second name for
-  `'album'` or `'contactsheet'`. First live instance:
-  `urotrip2026/east-side-gallery/`. Built by copying that page's
-  structure.
+  `'album'` or `'contactsheet'`. First instance:
+  `urotrip2026/east-side-gallery/` — a draft, not yet linked from the
+  eUrope landing page (see dashboard's Needs Attention and the rule
+  below). Built by copying that page's structure.
+- `kind:'deal'` — a dealt hand of face-down cards scattered across a
+  tableau at fixed, hand-set positions/tilts; each back shows only a
+  short true teaser line plus a small corner tab tinted to that
+  photo's own real sampled dominant color (never invented). Clicking
+  a face-down card performs a genuine CSS 3D flip (`preserve-3d` +
+  `backface-visibility` + a `rotateY(180deg)` class toggle) to reveal
+  the real photo; clicking an already-revealed card opens the
+  standard lightbox. Needs no special metadata, route, or curated
+  relationships between specific photos — the most generally reusable
+  kind so far, reach for it when a batch is just an ordinary curated
+  selection and none of the more specific kinds' preconditions apply.
+  First instance: `urotrip2026/berlin-deal/` ("The Deal") — a draft,
+  not yet linked from the eUrope landing page. Built by copying that
+  page's structure.
+- **A brand-new `kind`'s first instance is a dashboard-only draft
+  until the format itself is chosen, not just its content** (decided
+  2026-09-04, after The Wall's real, working first instance still got
+  treated as provisional): build it for real, on real photos if
+  they're available, but don't add its card to a landing page or
+  `PLACES` yet — track it in `dashboard/index.html`'s Needs Attention
+  instead (§10). Promote it to an actual link only once it's been
+  compared against alternatives (or just sat with) and is genuinely
+  the answer for that batch, not merely the first format that got
+  built for it.
 - A page doesn't have to sit at the hub's top level to carry a `kind`
   — `urotrip2026/amsterdam-postcards/`, `urotrip2026/amsterdam-film/`,
   and `urotrip2026/berlin/` are all sub-pages of the single
@@ -384,12 +409,37 @@ pass.
   rather than on it). A fixed bottom progress bar tracks
   `wall-wrap`'s own `scrollLeft` against its `scrollWidth`, labeled
   start/Oberbaumbrücke rather than claiming a real distance. Sidebar/
-  lightbox pattern copied verbatim from contact sheet. 18 of 78
+  lightbox pattern copied verbatim from contact sheet. 22 of 78
   distinct East Side Gallery frames (Sept 2) curated so far —
   artist attributed only where a signature was actually zoomed in on
   and read (Birgit Kinder, Rosemarie Schinzler, Aleksej Taranin,
   Dmitri Vrubel & Victoria Timofeeva, Kani Alavi, Ursula Wünsch);
   left blank everywhere else, same rule as every other page.
+- `urotrip2026/berlin-deal/index.html` (`kind:'deal'`) — `DECK` array:
+  `id, order`(deal-in stagger order, independent of physical
+  position), `ox, oy`(fixed hand-set percent position within the
+  tableau), `tilt`(fixed hand-set degrees), `swatch`(hex — the
+  photo's own real sampled dominant color, computed offline in Python
+  with the same 48x48 HSV-bin-weighting algorithm as this site's own
+  `extractVividColor`, never a guessed color), `img, place, teaser`(a
+  short true clue, never invented), `caption, location`. No `artist`/
+  `credit` field populated yet — none of this batch's subjects carried
+  a legible maker's signature beyond the public monuments themselves.
+  Card back and card face are both `position:absolute; inset:0;
+  backface-visibility:hidden` children of one `.card-inner
+  {transform-style:preserve-3d}`; a `.flipped` class toggles
+  `rotateY(180deg)` on that inner element only, so it never conflicts
+  with `.card`'s own separate position/tilt/deal-in-animation
+  transform. A "Deal again" control re-renders the deck fresh
+  (unflipped) at the same fixed positions — nothing about a spread is
+  remembered between visits, on purpose. 22 real Sept 1 photos, a
+  different curated cut of the same day `urotrip2026/berlin/`'s
+  contact sheet covers (not a duplicate of its 15 frames). First new
+  kind whose spec came out of a 4-concept design workflow (Sundial,
+  Corkboard, Site Plan, Deal) judged against distinctiveness/
+  buildability/fit/reusability before anything was built — worth
+  reaching for that pattern again when a new format is genuinely open-
+  ended rather than dictated by the batch's own content.
 - `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
   (§7 above) — the Stories ring feed. **Known rule (decided
   2026-08-22):** Stories must be a curated, distinct edit — a handful of
