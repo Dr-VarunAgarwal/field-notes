@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: /log/
 Disallow: /edit/
-Disallow: /test/
+Disallow: /dashboard/
