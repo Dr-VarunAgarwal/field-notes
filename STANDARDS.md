@@ -129,6 +129,20 @@ through for variety.
   showing the editorial judgment is the point, not a sixth way to
   browse a gallery. First live instance: `urotrip2026/berlin/`. Built
   by copying that page's structure.
+- `kind:'wall'` — a single horizontal scroll strip of variable-width
+  panels standing in for physically walking past one continuous
+  painted surface, like `urotrip2026/east-side-gallery/` ("The
+  Wall"). Panel width is an editorial guess at how much of the wall
+  a piece felt like it took up while walking past — never claimed as
+  a measurement. Shorter, white-bordered "aside" panels sit
+  interspersed for anything that isn't actually on the wall (a
+  plaque, a sign, a view away from it) — smaller and lower than the
+  wall panels, not pretending to be part of the same surface.
+  Reserve this for a batch that's fundamentally about one long
+  physical thing you walk the length of, not a second name for
+  `'album'` or `'contactsheet'`. First live instance:
+  `urotrip2026/east-side-gallery/`. Built by copying that page's
+  structure.
 - A page doesn't have to sit at the hub's top level to carry a `kind`
   — `urotrip2026/postcards/`, `film-strip/`, and `urotrip2026/berlin/`
   are all sub-pages of the single `urotrip2026` ("eUrope") hub entry,
@@ -138,7 +152,9 @@ through for variety.
   which format a standalone place should use.
 - `count` conventions: walk reads `'N days · M photos'`; postcards
   reads `'N postcards'`; contact sheet should read `'N rolls · M
-  frames · K kept'`; everything else reads `'M pieces'`.
+  frames · K kept'`; wall reads `'N of ~Mm'` (curated panels of an
+  approximate real wall length, not a measured one); everything else
+  reads `'M pieces'`.
 
 ## 6. Feeding a new place into `street-art/index.html`
 
@@ -336,8 +352,30 @@ pass.
   with the frames (`.filmstrip-wrap` itself is the scroll container,
   sized via `width:max-content` on an inner wrapper) rather than
   sitting fixed while only the photos scroll underneath them — they're
-  the same physical strip. Currently placeholder frames (generated
-  art, invented titles) awaiting the real Berlin batch.
+  the same physical strip. First 15 frames are real (Sept 1 leg),
+  rest of that day's ~200 shots still to come.
+- `urotrip2026/east-side-gallery/index.html` (`kind:'wall'`) —
+  `PANELS` array, flat (no per-roll grouping like contact sheet has):
+  `kind`(`'mural'|'aside'`), `no`, `img`, `aspect`(the saved image's
+  real w/h, read off the file — not invented), `emphasis`(optional,
+  default 1, an editorial width multiplier for a piece that felt
+  wider/more significant than its own frame), `hero`(bool, at most
+  one — accent-color outline instead of contact sheet's bracket
+  corners), `title, artist`(optional, blank unless a signature or
+  credit is actually legible in-frame), `location, desc`. Panel width
+  is computed in JS as `panelHeight * aspect * emphasis`, not
+  hardcoded — `panelHeight` itself differs for `'mural'` (full height,
+  common baseline, numbered plaque-style tag) vs `'aside'` (shorter,
+  white polaroid-style border, sits visually "in front of" the wall
+  rather than on it). A fixed bottom progress bar tracks
+  `wall-wrap`'s own `scrollLeft` against its `scrollWidth`, labeled
+  start/Oberbaumbrücke rather than claiming a real distance. Sidebar/
+  lightbox pattern copied verbatim from contact sheet. 18 of 78
+  distinct East Side Gallery frames (Sept 2) curated so far —
+  artist attributed only where a signature was actually zoomed in on
+  and read (Birgit Kinder, Rosemarie Schinzler, Aleksej Taranin,
+  Dmitri Vrubel & Victoria Timofeeva, Kani Alavi, Ursula Wünsch);
+  left blank everywhere else, same rule as every other page.
 - `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
   (§7 above) — the Stories ring feed. **Known rule (decided
   2026-08-22):** Stories must be a curated, distinct edit — a handful of

@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>East Side Gallery · Wander</title>
+<meta name="description" content="Walking the East Side Gallery, mural by mural — plus what's on either side of it.">
+<meta name="theme-color" content="#c9c6c0">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/east-side-gallery/">
+<meta property="og:title" content="East Side Gallery · Wander">
+<meta property="og:description" content="Walking the East Side Gallery, mural by mural — plus what's on either side of it.">
+<meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/east-side-gallery/img/15-the-kiss.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="East Side Gallery · Wander">
+<meta name="twitter:description" content="Walking the East Side Gallery, mural by mural — plus what's on either side of it.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/east-side-gallery/img/15-the-kiss.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../../favicon-512.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Grotesk:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ---------- daylight concrete, not another darkroom: every sibling
+     format under eUrope (postcards, film-strip, contact sheet) reads
+     dark/moody, because they're all museum-adjacent or literally shot
+     in a darkroom metaphor. The wall itself is an outdoor, daytime,
+     unglamorous grey surface that the murals are painted ON — so this
+     page goes light and concrete-colored instead, and lets the murals'
+     own color carry all the vibrancy. */
+  :root{
+    --bg:#c9c6c0;
+    --bg-deep:#b7b4ac;
+    --seam:#a19d94;
+    --ink:#221f1a;
+    --ink-soft:rgba(34,31,26,0.68);
+    --ink-faint:rgba(34,31,26,0.44);
+    --card:#f1efe9;
+    --line:rgba(34,31,26,0.14);
+    --accent:#d6336c;
+    --accent-ink:#fff;
+    --panel-shadow:#2a2926;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Space Grotesk', -apple-system, sans-serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+  /* faint concrete grain, sitting over everything at low opacity */
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none; z-index:999;
+    opacity:0.05; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ---------- nav (same pill-nav chrome as the other eUrope siblings) ---------- */
+  #top-pill-nav{
+    position:fixed; top:24px; left:24px; z-index:20;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 16px;
+    background:rgba(34,31,26,0.72);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:9999px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.18);
+    font-size:11.5px; letter-spacing:1.2px;
+  }
+  .pill-main{
+    text-decoration:none; color:#e589a8;
+    font-family:var(--mono); font-weight:500; text-transform:uppercase;
+    transition:color 0.2s ease;
+  }
+  .pill-main:hover{ color:#f2a8c2; }
+  .pill-slash{ color:#999; font-family:var(--mono); }
+  .pill-current{ font-family:'Space Grotesk', sans-serif; font-style:italic; color:#e8e5df; letter-spacing:0.3px; }
+  .pill-crumb{ font-family:'Space Grotesk', sans-serif; font-style:italic; color:#c9c5bd; letter-spacing:0.3px; text-decoration:none; transition:color 0.2s ease; }
+  .pill-crumb:hover{ color:#e8e5df; }
+  #contact-badge{
+    position:fixed; top:24px; right:24px; z-index:20;
+    width:36px; height:36px;
+    background:rgba(34,31,26,0.72);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#eee; font-family:var(--mono); font-size:11px; font-weight:600;
+    text-decoration:none;
+    box-shadow:0 4px 12px rgba(0,0,0,0.18);
+    transition:transform 0.2s ease, border-color 0.2s ease;
+  }
+  #contact-badge:hover{ transform:scale(1.08); border-color:rgba(255,255,255,0.35); }
+
+  /* ---------- intro ---------- */
+  .intro{ max-width:640px; margin:0 auto; padding:6.5rem 1.3rem 1.4rem; }
+  .intro-kicker{
+    font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase;
+    color:var(--accent); margin:0 0 0.7rem; font-weight:600;
+  }
+  .intro h1{
+    font-family:'Bebas Neue', sans-serif; font-weight:400; letter-spacing:0.01em;
+    font-size:clamp(2.4rem,7vw,3.4rem);
+    margin:0 0 0.9rem; line-height:0.98; color:var(--ink);
+  }
+  .intro p{ font-size:0.98rem; line-height:1.7; color:var(--ink-soft); margin:0 0 0.8rem; }
+  .intro .note{
+    margin-top:1.1rem; padding:0.85rem 1rem;
+    border:1px dashed var(--line); border-radius:6px;
+    font-family:var(--mono); font-size:0.68rem; line-height:1.7; color:var(--ink-faint);
+  }
+  .intro .note strong{ color:var(--accent); }
+
+  /* ---------- the wall itself ---------- */
+  .wall-outer{ position:relative; margin-top:1.6rem; }
+  .wall-wrap{
+    position:relative;
+    background:
+      repeating-linear-gradient(90deg,
+        var(--seam) 0px, var(--seam) 2px,
+        transparent 2px, transparent 132px),
+      linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-deep) 78%, #a09c93 78%, #a09c93 100%);
+    overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin;
+    padding-top:8px;
+  }
+  .wall-wrap::-webkit-scrollbar{ height:7px; }
+  .wall-wrap::-webkit-scrollbar-thumb{ background:rgba(34,31,26,0.22); border-radius:4px; }
+  .wall-track{
+    display:flex; align-items:flex-end; gap:3px; width:max-content;
+    padding:36px 5vw 22px 5vw;
+  }
+
+  .panel{ position:relative; flex:0 0 auto; cursor:pointer; }
+  .panel-photo-wrap{
+    position:relative; width:100%; height:100%;
+    background:var(--panel-shadow); overflow:hidden;
+    box-shadow:0 6px 16px rgba(0,0,0,0.28);
+  }
+  .panel-photo{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  /* murals: full height, common baseline, a numbered preservation-style
+     plaque bottom-left echoing the real gallery's segment ID tags */
+  .panel.mural{ height:var(--panel-h,340px); }
+  .panel-tag{
+    position:absolute; left:6px; bottom:6px; z-index:2;
+    background:rgba(241,239,233,0.92); color:var(--ink);
+    font-family:var(--mono); font-size:9.5px; font-weight:700; letter-spacing:0.04em;
+    padding:2px 6px; border-radius:2px;
+    box-shadow:0 1px 3px rgba(0,0,0,0.3);
+  }
+  .panel.mural:hover .panel-photo{ transform:scale(1.025); }
+  .panel-photo{ transition:transform 0.25s ease; }
+
+  /* the hero piece: a thin accent frame instead of the plain shadow */
+  .panel.is-hero .panel-photo-wrap{ outline:3px solid var(--accent); outline-offset:2px; }
+
+  /* asides: shorter (reads as "in front of" the wall, not on it), tilted,
+     white snapshot border+shadow — the glance away and back */
+  .panel.aside{ height:var(--aside-h,204px); margin:0 10px 14px; }
+  .panel.aside .panel-photo-wrap{
+    background:#fff; padding:7px 7px 22px; box-shadow:0 8px 18px rgba(0,0,0,0.32);
+  }
+  .panel.aside .panel-photo{ height:calc(100% - 15px); }
+  .panel.aside .panel-tag{
+    position:static; display:inline-block; margin-top:4px;
+    background:none; box-shadow:none; padding:0 2px;
+    font-family:'Space Grotesk',sans-serif; font-style:italic; font-size:10.5px; color:#555;
+  }
+
+  /* ---------- hint strip under the wall ---------- */
+  .hint-row{
+    max-width:640px; margin:0 auto; padding:1rem 1.3rem 0;
+    display:flex; gap:1.3rem; flex-wrap:wrap;
+    font-size:0.66rem; letter-spacing:0.03em; color:var(--ink-faint);
+  }
+  .hint-row span{ display:inline-flex; align-items:center; gap:0.4rem; }
+  .hint-row .sw{ width:13px; height:13px; border-radius:2px; flex:0 0 auto; }
+  .hint-row .sw.mural{ background:var(--bg-deep); border:1px solid var(--seam); }
+  .hint-row .sw.aside{ background:#fff; border:1px solid var(--line); }
+  .hint-row .sw.hero{ background:var(--bg-deep); border:2px solid var(--accent); }
+
+  /* ---------- scroll progress: start of the gallery -> the bridge ---------- */
+  .progress-row{
+    max-width:640px; margin:1.1rem auto 0; padding:0 1.3rem;
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--mono); font-size:9.5px; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--ink-faint);
+  }
+  .progress-track{
+    position:relative; flex:1; height:4px; border-radius:2px;
+    background:rgba(34,31,26,0.14); overflow:hidden;
+  }
+  .progress-thumb{
+    position:absolute; top:0; left:0; height:100%; width:6%;
+    background:var(--accent); border-radius:2px; transition:width 0.05s linear;
+  }
+
+  .legend{
+    max-width:640px; margin:0 auto; padding:1.4rem 1.3rem 3.5rem;
+    font-size:0.72rem; line-height:1.7; color:var(--ink-faint);
+  }
+
+  /* ---------- hover caption (fixed, JS-positioned) ---------- */
+  #tooltip{
+    position:fixed; transform:translateX(-50%) translateY(4px);
+    width:190px; max-width:60vw;
+    background:rgba(34,31,26,0.94); color:#f1efe9; border-radius:5px;
+    padding:8px 10px; font-family:'Space Grotesk',sans-serif;
+    opacity:0; pointer-events:none; transition:opacity .15s ease, transform .15s ease;
+    z-index:50; text-align:left;
+  }
+  #tooltip.open{ opacity:1; transform:translateX(-50%) translateY(0); }
+  #tooltip .cap-no{ font-family:var(--mono); font-size:9px; color:#e589a8; letter-spacing:0.08em; }
+  #tooltip .cap-title{ font-size:12.5px; margin-top:3px; line-height:1.3; }
+
+  /* ---------- sidebar (opens a panel) ---------- */
+  #overlay{
+    position:fixed; inset:0; background:rgba(20,18,15,0.55);
+    backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px);
+    opacity:0; pointer-events:none; transition:opacity .3s ease; z-index:30;
+  }
+  #overlay.open{ opacity:1; pointer-events:auto; }
+  #sidebar{
+    position:fixed; top:0; right:0; height:100vh; width:440px; max-width:92vw;
+    background:var(--card); border-left:1px solid var(--line);
+    transform:translateX(100%); transition:transform .35s cubic-bezier(.2,.8,.2,1);
+    z-index:40; overflow-y:auto;
+  }
+  #sidebar.open{ transform:translateX(0); }
+  .sb-close{
+    position:absolute; top:18px; left:20px; z-index:2;
+    background:rgba(34,31,26,0.08); border:none; border-radius:50%;
+    width:32px; height:32px; color:var(--ink);
+    font-size:20px; cursor:pointer; line-height:1;
+  }
+  .sb-close:hover{ background:rgba(34,31,26,0.16); }
+  .sb-photo-wrap{ padding:56px 24px 0; }
+  .sb-photo{ width:100%; height:auto; display:block; border:1px solid var(--line); cursor:zoom-in; }
+  .sb-body{ padding:20px 24px 48px; }
+  .sb-kicker{ font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; font-weight:600; }
+  .sb-title{ font-family:'Bebas Neue', sans-serif; font-size:28px; letter-spacing:0.01em; line-height:1.15; margin-bottom:14px; color:var(--ink); }
+  .sb-desc{ font-size:13.5px; line-height:1.75; color:var(--ink-soft); margin-bottom:22px; }
+  .sb-meta{ display:grid; gap:12px; }
+  .sb-meta-item{ border-top:1px solid var(--line); padding-top:10px; }
+  .sb-meta-label{ font-size:9.5px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:3px; }
+  .sb-meta-value{ font-size:13px; color:var(--ink); }
+
+  #lightbox{
+    position:fixed; inset:0; z-index:100; background:rgba(10,9,7,0.95);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  #lightbox.open{ opacity:1; pointer-events:auto; }
+  #lightbox img{ max-width:92vw; max-height:92vh; object-fit:contain; }
+  #lightbox .lb-close{ position:absolute; top:20px; right:24px; background:none; border:none; color:#eee; font-size:26px; cursor:pointer; }
+
+  @media(max-width:640px){
+    :root{ --panel-h:260px; --aside-h:160px; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="top-pill-nav">
+  <a href="../../" class="pill-main">&larr; wander ~ field notes</a>
+  <span class="pill-slash">/</span>
+  <a href="../" class="pill-crumb">eUrope</a>
+  <span class="pill-slash">/</span>
+  <span class="pill-current">Wall</span>
+</nav>
+<a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
+
+<div class="intro">
+  <p class="intro-kicker">Wander &middot; eUrope &middot; on the wall</p>
+  <h1>East Side Gallery, one wall.</h1>
+  <p>The murals painted on the longest surviving stretch of the Berlin Wall, in the order you'd actually pass them walking it &mdash; not curated into a gallery grid. A few things that aren't murals at all sit in between: a plaque, a sign, a bridge, a sculpture in the river &mdash; the glances away from the wall that are part of actually being there.</p>
+  <div class="note">
+    <strong>18 of ~1300m, Sept 2.</strong> A first pass through the roll &mdash; the wall itself runs for over a kilometer and this covers a fraction of it. More panels to come from the same shoot.
+  </div>
+</div>
+
+<div class="wall-outer">
+  <div class="wall-wrap">
+    <div class="wall-track" id="wallTrack"></div>
+  </div>
+</div>
+
+<div class="progress-row">
+  <span>Start</span>
+  <div class="progress-track"><div class="progress-thumb" id="progressThumb"></div></div>
+  <span>Oberbaumbr&uuml;cke</span>
+</div>
+
+<div class="hint-row">
+  <span><span class="sw mural"></span> on the wall &mdash; click to open</span>
+  <span><span class="sw hero"></span> the most photographed panel here</span>
+  <span><span class="sw aside"></span> off the wall &mdash; a snapshot of what's around it</span>
+</div>
+
+<div class="legend">Panel width is an editorial guess at how much of the wall each piece felt like it took up while walking past &mdash; not a measurement.</div>
+
+<div id="tooltip"></div>
+<div id="overlay"></div>
+<div id="sidebar">
+  <button class="sb-close" aria-label="Close">&times;</button>
+  <div id="sidebarInner"></div>
+</div>
+<div id="lightbox">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   East Side Gallery, Sept 2 shoot. First pass: 18 of ~1300m of
+   actual wall (78 distinct frames exist from this leg; this is
+   a curated first batch, not the whole roll). `aspect` is the
+   real saved image's w/h. `emphasis` is an editorial width
+   multiplier for a piece that felt more significant/wide than
+   its own frame suggests (default 1) — noted in the UI as a
+   guess, not a measurement, since there's no way to actually
+   measure wall-length from a photo taken square-on.
+   ============================================================ */
+const PANELS = [
+  { kind:'aside', no:'01', img:'img/01-plaque.jpg', aspect:1280/720,
+    title:'The gallery, restored', location:'East Side Gallery, Berlin',
+    desc:'A plaque at the entrance explains what\'s actually old here: the wall was restored in 2008/09, and most of the original 1990 paintings were destroyed in the process. The artists repainted their own panels from photographs. Five artists chose not to take part again — their sections are left in the plain pre-1989 wall color instead.' },
+
+  { kind:'mural', no:'02', img:'img/02-test-the-rest.jpg', aspect:1280/2274,
+    title:'Test the Rest', artist:'Birgit Kinder', location:'East Side Gallery, Berlin',
+    desc:'A Trabant — the classic East German car — punching straight through the wall, plaster cracking outward from the impact. Probably the single most photographed panel on the whole gallery.' },
+
+  { kind:'mural', no:'03', img:'img/03-la-buerlinica.jpg', aspect:1280/720,
+    title:'La Buerlinica', artist:'signed "Cacciatore"', location:'East Side Gallery, Berlin',
+    desc:'A Picasso-inflected jumble of masked, fragmented figures in red, black and yellow — the title puns Guernica against Berlin. Signed "Cacciatore," dated 1990 and 2009 (the original, and the repaint).' },
+
+  { kind:'mural', no:'04', img:'img/04-face-triptych.jpg', aspect:1280/720,
+    title:'Three faces, one wall', location:'East Side Gallery, Berlin',
+    desc:'Three flat, wide-eyed cartoon heads in clashing color blocks — green, pink, teal — repeated down the panel like a printed pattern rather than one single scene.' },
+
+  { kind:'mural', no:'05', img:'img/05-goethe-einstein.jpg', aspect:1280/720,
+    title:'Great minds, one gallery', location:'East Side Gallery, Berlin',
+    desc:'A row of German thinkers — Goethe (1748–1832), Einstein (1879–1955) among them — painted as an informal hall of fame. A small side panel, easy to walk past, memorializes "Klaus Niethardt, 2005 †" — presumably the artist behind the neighboring piece, gone before this repaint.' },
+
+  { kind:'aside', no:'06', img:'img/06-japanese-sector-sign.jpg', aspect:1280/720,
+    title:'Detour to the Japanese Sector', location:'East Side Gallery, Berlin',
+    desc:'A deadpan replica of a Cold War-era street sign, German and Japanese side by side — one of the wall\'s few jokes about the city\'s old occupation-zone bureaucracy.' },
+
+  { kind:'mural', no:'07', img:'img/07-dawn-of-peace.jpg', aspect:1280/720,
+    title:'Dawn of Peace', location:'East Side Gallery, Berlin',
+    desc:'A white dove flying toward a rising yellow sun over a darkened hillside. The mural\'s own text, off to the side: "the r/evolution is LOVE."' },
+
+  { kind:'mural', no:'08', img:'img/08-collage-faces.jpg', aspect:1280/720,
+    title:'Psychedelic gallery', location:'East Side Gallery, Berlin',
+    desc:'A dense, poster-collage wall of overlapping painted faces in acid color — closer to a flyer-covered wall than one single composition.' },
+
+  { kind:'mural', no:'09', img:'img/09-mensch-swirl.jpg', aspect:1280/720, emphasis:1.4,
+    title:'The wall keeps going', location:'East Side Gallery, Berlin',
+    desc:'A hypnotic black-and-white swirl pattern that just keeps running down the gallery, panel after panel — from here the wall stops reading as individual murals and becomes one long optical rhythm.' },
+
+  { kind:'mural', no:'10', img:'img/10-gate.jpg', aspect:1280/2274,
+    title:'Through the gate', location:'East Side Gallery, Berlin',
+    desc:'A real wrought-iron gate set directly into a riot of psychedelic color — one of the few spots on the gallery you can actually walk through rather than just past. A visitor pauses in the opening, good for scale if nothing else.' },
+
+  { kind:'mural', no:'11', img:'img/11-berlin-tower-text.jpg', aspect:1280/720,
+    title:'Berlin, spelled out', location:'East Side Gallery, Berlin',
+    desc:'Barbed-wire linework and the Fernsehturm\'s ball reduced to a rising sun behind it — the word BERLIN doing the rest of the talking.' },
+
+  { kind:'mural', no:'12', img:'img/12-doves-barbed-wire.jpg', aspect:1280/720,
+    title:'Two doves', artist:'Rosemarie Schinzler', location:'East Side Gallery, Berlin',
+    desc:'Two white doves pull a length of barbed wire taut between them. Signed "Rosemarie Schinzler, Freiburg, June 1990."' },
+
+  { kind:'mural', no:'13', img:'img/13-thumbs-up.jpg', aspect:1280/720,
+    title:'Diagonale Lösung des Problems', location:'East Side Gallery, Berlin',
+    desc:'A giant fist, thumb up, snapping a chain — the mural\'s own caption translates loosely to "the diagonal solution to the problem."' },
+
+  { kind:'mural', no:'14', img:'img/14-curtain-windows.jpg', aspect:1280/720, emphasis:1.15,
+    title:'Moscow, China, Everywhere, Berlin', artist:'Aleksej Taranin', location:'East Side Gallery, Berlin',
+    desc:'Four painted curtained windows in a row, each looking out on a different city, a cat and rabbits perched on the sills between them. Signed "Aleksej Taranin, Moscow."' },
+
+  { kind:'mural', no:'15', img:'img/15-the-kiss.jpg', aspect:1280/720, emphasis:1.15, hero:true,
+    title:'My God, Help Me to Survive This Deadly Love', artist:'Dmitri Vrubel & Victoria Timofeeva', location:'East Side Gallery, Berlin',
+    desc:'The gallery\'s most photographed panel by far — Brezhnev and Honecker\'s real 1979 kiss, repainted from a wire-photo. The Russian text along the bottom, "среди этой смертной любви" ("amid this deadly love"), is the second half of the title.' },
+
+  { kind:'mural', no:'16', img:'img/16-many-small-people.jpg', aspect:1280/720,
+    title:'Many small people…', artist:'Kani Alavi', location:'East Side Gallery, Berlin',
+    desc:'"Many small people, in many small places, doing many small things, can alter the face of the world" — painted in German and English. Signed with the artist\'s own studio contact still legible in the corner.' },
+
+  { kind:'mural', no:'17', img:'img/17-orange-figure-birds.jpg', aspect:1280/720,
+    title:'Reaching', location:'East Side Gallery, Berlin',
+    desc:'A single orange figure straining upward into a flock of white birds — one of the gallery\'s more painterly, less text-driven panels.' },
+
+  { kind:'mural', no:'18', img:'img/18-frieden-fur-alles.jpg', aspect:1280/720, emphasis:1.1,
+    title:'Frieden für alles, was auf dieser Erde lebt', artist:'Ursula Wünsch', location:'East Side Gallery, Berlin',
+    desc:'"Peace for everything that lives on this earth! Care for what life needs!" — animals in a rainbow-colored procession, dedicated "for Lorenz, Luca, Livio, and all the children of the world." Signed and dated DDR/BRD, 1990/2009.' },
+
+  { kind:'mural', no:'19', img:'img/19-sieben-stufen.jpg', aspect:1280/2274, emphasis:1.2,
+    title:'Sieben Stufen der Erleuchtung', location:'East Side Gallery, Berlin',
+    desc:'A long, densely painted meditation naming Buddha, Christ, Mohammed, Mary, Mahavira and others alongside seven lines of philosophy — "every soul carries within itself all wisdom and absolute [love]."' },
+
+  { kind:'aside', no:'20', img:'img/20-oberbaum-bridge.jpg', aspect:1280/2274,
+    title:'Oberbaumbrücke', location:'Oberbaumbrücke, Berlin',
+    desc:'The wall runs out here — the gallery ends at this red-brick bridge, one of Berlin\'s most recognizable, still carrying the U1 line across the Spree.' },
+
+  { kind:'aside', no:'21', img:'img/21-molecule-man.jpg', aspect:1280/2274,
+    title:'Molecule Man', location:'Spree river, Berlin',
+    desc:'Jonathan Borofsky\'s three perforated figures reach toward each other out in the middle of the Spree, visible from the bridge — marking where three old Berlin boroughs meet.' },
+
+  { kind:'aside', no:'22', img:'img/22-hanging-shoes.jpg', aspect:1280/720,
+    title:'Under the arches', location:'Oberbaumbrücke underpass, Berlin',
+    desc:'Odd shoes and boots strung up along the underside of the bridge\'s brick arches. Nobody\'s ever explained this one — it\'s just there.' },
+];
+
+/* ============ render ============ */
+const trackEl = document.getElementById('wallTrack');
+const MURAL_H = 340, ASIDE_H = 204;
+
+function panelHeight(){
+  const cs = getComputedStyle(document.documentElement);
+  const mh = parseFloat(cs.getPropertyValue('--panel-h')) || MURAL_H;
+  const ah = parseFloat(cs.getPropertyValue('--aside-h')) || ASIDE_H;
+  return { mh, ah };
+}
+
+PANELS.forEach((p, i) => {
+  const el = document.createElement('div');
+  const isMural = p.kind === 'mural';
+  el.className = 'panel ' + p.kind + (p.hero ? ' is-hero' : '');
+  const { mh, ah } = panelHeight();
+  const h = isMural ? mh : ah;
+  const w = Math.round(h * p.aspect * (p.emphasis || 1));
+  el.style.width = w + 'px';
+  if (isMural) el.style.height = h + 'px';
+  el.dataset.idx = i;
+  el.innerHTML = `
+    <div class="panel-photo-wrap">
+      <img class="panel-photo" src="${p.img}" alt="">
+    </div>
+    <div class="panel-tag">${p.kind === 'aside' ? p.title : '#' + p.no}</div>
+  `;
+  trackEl.appendChild(el);
+});
+
+/* ============ hover tooltip (murals only — asides show their title inline) ============ */
+const tooltipEl = document.getElementById('tooltip');
+function showTooltip(el, p){
+  if (p.kind !== 'mural') return;
+  tooltipEl.innerHTML = `<div class="cap-no">#${p.no}</div><div class="cap-title">${p.title}</div>`;
+  const rect = el.getBoundingClientRect();
+  tooltipEl.classList.add('open');
+  const tw = tooltipEl.offsetWidth, th = tooltipEl.offsetHeight;
+  let left = rect.left + rect.width / 2;
+  left = Math.min(Math.max(left, tw / 2 + 8), window.innerWidth - tw / 2 - 8);
+  let top = rect.top - th - 8;
+  if (top < 8) top = rect.bottom + 8;
+  tooltipEl.style.left = left + 'px';
+  tooltipEl.style.top = top + 'px';
+}
+function hideTooltip(){ tooltipEl.classList.remove('open'); }
+
+document.querySelectorAll('.panel').forEach(el => {
+  const p = PANELS[+el.dataset.idx];
+  el.addEventListener('mouseenter', () => showTooltip(el, p));
+  el.addEventListener('mouseleave', hideTooltip);
+});
+
+/* ============ sidebar + lightbox ============ */
+const overlayEl = document.getElementById('overlay');
+const sidebarEl = document.getElementById('sidebar');
+const lightboxEl = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+
+function openSidebar(p){
+  const inner = document.getElementById('sidebarInner');
+  inner.innerHTML = `
+    <div class="sb-photo-wrap"><img class="sb-photo" src="${p.img}" alt=""></div>
+    <div class="sb-body">
+      <div class="sb-kicker">${p.kind === 'mural' ? 'Panel #' + p.no : 'Off the wall'}${p.hero ? ' &middot; the one everyone photographs' : ''}</div>
+      <div class="sb-title">${p.title}</div>
+      <div class="sb-desc">${p.desc || ''}</div>
+      <div class="sb-meta">
+        <div class="sb-meta-item"><div class="sb-meta-label">Artist</div><div class="sb-meta-value">${p.artist || '&mdash;'}</div></div>
+        <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${p.location || '&mdash;'}</div></div>
+      </div>
+    </div>
+  `;
+  sidebarEl.classList.add('open');
+  overlayEl.classList.add('open');
+  inner.querySelector('.sb-photo').addEventListener('click', () => openLightbox(p.img));
+}
+function closeSidebar(){ sidebarEl.classList.remove('open'); overlayEl.classList.remove('open'); }
+function openLightbox(src){ lightboxImg.src = src; lightboxEl.classList.add('open'); }
+function closeLightbox(){ lightboxEl.classList.remove('open'); }
+
+trackEl.addEventListener('click', (e) => {
+  const el = e.target.closest('.panel');
+  if (!el) return;
+  openSidebar(PANELS[+el.dataset.idx]);
+});
+overlayEl.addEventListener('click', closeSidebar);
+document.querySelector('.sb-close').addEventListener('click', closeSidebar);
+document.querySelector('.lb-close').addEventListener('click', closeLightbox);
+lightboxEl.addEventListener('click', (e) => { if (e.target === lightboxEl) closeLightbox(); });
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (lightboxEl.classList.contains('open')) closeLightbox();
+  else if (sidebarEl.classList.contains('open')) closeSidebar();
+});
+document.querySelectorAll('.wall-wrap').forEach(el => el.addEventListener('scroll', hideTooltip));
+
+/* ============ scroll progress ("you are here" along the strip) ============ */
+const wallWrapEl = document.querySelector('.wall-wrap');
+const progressThumb = document.getElementById('progressThumb');
+function updateProgress(){
+  const max = wallWrapEl.scrollWidth - wallWrapEl.clientWidth;
+  const pct = max > 0 ? (wallWrapEl.scrollLeft / max) * 100 : 0;
+  progressThumb.style.width = Math.max(4, pct) + '%';
+}
+wallWrapEl.addEventListener('scroll', updateProgress);
+updateProgress();
+</script>
+</body>
+</html>
