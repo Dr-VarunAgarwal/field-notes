@@ -912,11 +912,11 @@ document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
    step" convention as everywhere else on this site).
    ============================================================ */
 const GIFT_CITIES = [
-  {name:'Shoreditch', slug:'london', cover:'london/img/07-elephant-shutter.jpg', count:'73 pieces'},
-  {name:'Camden', slug:'camden', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', count:'11 pieces'},
-  {name:'Glasgow', slug:'glasgow', cover:'glasgow/img/17-red-haired-woman-mural.jpg', count:'9 pieces'},
-  {name:'Manchester', slug:'manchester', cover:'manchester/img/02-harlequin-bee.jpg', count:'14 pieces'},
-  {name:'Amsterdam', slug:'amsterdam', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', count:'55 pieces'},
+  {name:'Shoreditch', slug:'london', cover:'img/gift-cities/shoreditch.jpg', count:'73 pieces'},
+  {name:'Camden', slug:'camden', cover:'img/gift-cities/camden.jpg', count:'11 pieces'},
+  {name:'Glasgow', slug:'glasgow', cover:'img/gift-cities/glasgow.jpg', count:'9 pieces'},
+  {name:'Manchester', slug:'manchester', cover:'img/gift-cities/manchester.jpg', count:'14 pieces'},
+  {name:'Amsterdam', slug:'amsterdam', cover:'img/gift-cities/amsterdam.jpg', count:'55 pieces'},
 ];
 document.getElementById('gift-cities').innerHTML = GIFT_CITIES.map(c => `
   <a class="gift-city-card" href="street-art/?city=${c.slug}" style="--bg-img:url('${c.cover}')">
