@@ -466,7 +466,31 @@ do" doesn't survive past that session, but this page does. Named
 `dashboard` rather than `test` (renamed 2026-09-04) since it now
 covers site-state info, not just in-progress pages.
 
-Sections, top to bottom:
+Sections, top to bottom — ordered by how actionable they are, most
+actionable first (reorganized 2026-09-04; originally the reference
+sections led and two sparse status-only sections split what's now one):
+- **Needs attention** — everything currently unfinished or in flux,
+  together in one section rather than split by status:
+  - `.item` cards (name, a status badge, a one-line description of
+    what's actually there today vs. what's still missing, the path):
+    `badge draft` for a real page that exists but isn't finished
+    (missing real content, still mid-design, or — like the Berlin
+    contact sheet — shipped as a structural placeholder on purpose);
+    `badge live` for a page already linked from the real site but
+    changing often enough that "what's on it right now" is worth a
+    running note. Order drafts before live-but-evolving — the less
+    finished thing is the more actionable one.
+  - Below the cards, `<ul class="notes">` list items for something
+    worth doing that doesn't have a page yet at all: an idea, a
+    decision still to make, a cleanup noticed in passing. Not `.item`
+    cards — there's nowhere to link to yet, so no href, no badge, no
+    hover affordance (a dashed border on `.notes li` marks that
+    distinction: unfinished-with-a-destination stays a solid-bordered
+    `.item`, unfinished-with-no-destination-yet gets the dashed one).
+    Write the note the moment you notice the thing, with enough
+    context that a cold read (a future session, or a future you)
+    understands why it matters — not just "fix postcards," but what's
+    wrong with it and why it's still open.
 - **Snapshot** — stat tiles (`.stat`, big number + label): live place
   count, story-only count, draft count, total pieces across the
   grid-album `kind`s. Hand-updated, not computed from `PLACES` at
@@ -476,29 +500,11 @@ Sections, top to bottom:
   `kind`, `count`), one row per live `PLACES` entry. A denser,
   admin-facing mirror of the hub's own card grid — nothing here a
   visitor can't already see on the real site, just faster to scan and
-  without the visual design overhead.
-- **Draft pages** (`badge draft`) — a real page exists but isn't
-  finished — missing real content, still mid-design, or (like the
-  Berlin contact sheet) shipped as a structural placeholder on
-  purpose. `.item` card: name, badge, a one-line description of what's
-  actually there today vs. what's still missing (not just "in
-  progress"), the path.
-- **Live, still evolving** (`badge live`) — already linked from the
-  real site, but changing often enough that "what's actually on it
-  right now" is worth a running note (e.g. a landing page's section
-  count, which has grown across separate sessions without every
-  session remembering to check here).
-- **Notes** — for something worth doing that doesn't have a page yet
-  at all: an idea, a decision still to make, a cleanup noticed in
-  passing. Plain `<ul class="notes">` list items, not `.item` cards —
-  there's nowhere to link to yet, so no href, no badge, no hover
-  affordance (a dashed border on `.notes li` marks that distinction:
-  unfinished-with-a-destination stays a solid-bordered `.item`,
-  unfinished-with-no-destination-yet gets the dashed one). Write the
-  note the moment you notice the thing, with enough context that a
-  cold read (a future session, or a future you) understands why it
-  matters — not just "fix postcards," but what's wrong with it and why
-  it's still open.
+  without the visual design overhead. A place with more than one
+  format (eUrope) gets a plain `multi-format` in the `kind` column
+  rather than spelling out every sub-kind — that detail already lives
+  in Needs attention/Notes, and a long value here breaks the table's
+  scannability.
 - **Editor tools** (`badge tool`) — `log/`, `edit/`, any future
   one-off admin page.
 - **Quick links** — pill links out to the live site, the GitHub repo,
