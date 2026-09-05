@@ -109,12 +109,6 @@
     margin:0 0 0.9rem; line-height:0.98; color:var(--ink);
   }
   .intro p{ font-size:0.98rem; line-height:1.7; color:var(--ink-soft); margin:0 0 0.8rem; }
-  .intro .note{
-    margin-top:1.1rem; padding:0.85rem 1rem;
-    border:1px dashed var(--line); border-radius:6px;
-    font-family:var(--mono); font-size:0.68rem; line-height:1.7; color:var(--ink-faint);
-  }
-  .intro .note strong{ color:var(--accent); }
 
   /* ---------- the wall itself ---------- */
   .wall-outer{ position:relative; margin-top:1.6rem; }
@@ -174,7 +168,7 @@
 
   /* ---------- hint strip under the wall ---------- */
   .hint-row{
-    max-width:640px; margin:0 auto; padding:1rem 1.3rem 0;
+    max-width:640px; margin:0 auto; padding:1rem 1.3rem 3.5rem;
     display:flex; gap:1.3rem; flex-wrap:wrap;
     font-size:0.66rem; letter-spacing:0.03em; color:var(--ink-faint);
   }
@@ -200,10 +194,6 @@
     background:var(--accent); border-radius:2px; transition:width 0.05s linear;
   }
 
-  .legend{
-    max-width:640px; margin:0 auto; padding:1.4rem 1.3rem 3.5rem;
-    font-size:0.72rem; line-height:1.7; color:var(--ink-faint);
-  }
 
   /* ---------- hover caption (fixed, JS-positioned) ---------- */
   #tooltip{
@@ -279,9 +269,6 @@
   <p class="intro-kicker">Wander &middot; eUrope &middot; on the wall</p>
   <h1>My walk along Berlin's artistic wall.</h1>
   <p>Street art, as political as it gets — the longest surviving stretch of the Berlin Wall, painted over almost end to end. Most of these murals date to right after the Wall came down in 1990, later restored as the paint faded. In the order I actually passed them walking it, not curated into a gallery grid. A few things that aren't murals at all sit in between: a plaque, a sign, a bridge, a sculpture in the river — the glances away from the wall that are part of actually being there. Panel #28 is the one everyone already knows, even if not by name: the Fraternal Kiss.</p>
-  <div class="note">
-    <strong>49 of 78 distinct frames, Sept 2.</strong> A thorough pass through the roll, not the whole thing — a handful of genuinely repeat framings of the same mural were left out on purpose.
-  </div>
 </div>
 
 <div class="wall-outer">
@@ -302,7 +289,6 @@
   <span><span class="sw aside"></span> off the wall &mdash; a snapshot of what's around it</span>
 </div>
 
-<div class="legend">Panel width is an editorial guess at how much of the wall each piece felt like it took up while walking past &mdash; not a measurement.</div>
 
 <div id="tooltip"></div>
 <div id="overlay"></div>
