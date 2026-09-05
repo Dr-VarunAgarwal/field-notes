@@ -132,7 +132,7 @@
         <span class="item-name">Contact Sheet — Berlin</span>
         <span class="badge draft">Draft</span>
       </div>
-      <div class="item-desc">kind:'contactsheet' format — whole roll visible, keepers circled in grease pencil. 15 real Sept 1 photos now (3 keepers + hero), evenly sampled from ~200 shots — not the full roll yet. Sept 2's East Side Gallery shoot doesn't land here as Roll 02 — it got its own page instead (The Wall, below).</div>
+      <div class="item-desc">kind:'contactsheet' format — whole roll visible, keepers circled in grease pencil. 15 real Sept 1 photos now (3 keepers + hero), evenly sampled from ~200 shots — not the full roll yet. Sept 2's East Side Gallery shoot doesn't land here as Roll 02 — it got its own page instead (The Wall, now live — see below).</div>
       <div class="item-path">/urotrip2026/berlin/</div>
     </a>
     <a class="item" href="../urotrip2026/amsterdam-film/">
@@ -142,14 +142,6 @@
       </div>
       <div class="item-desc">Negative/positive film-strip treatment. Roll 1 (Amsterdam street shots) is real. Berlin is not going here anymore — see Contact Sheet above.</div>
       <div class="item-path">/urotrip2026/amsterdam-film/</div>
-    </a>
-    <a class="item" href="../urotrip2026/east-side-gallery/">
-      <div class="item-top">
-        <span class="item-name">The Wall — East Side Gallery</span>
-        <span class="badge draft">Draft</span>
-      </div>
-      <div class="item-desc">New kind:'wall' format — a horizontal scroll strip standing in for walking the wall, panels sized by an editorial guess (never a measurement) at how much wall each mural took up, shorter white-bordered "aside" panels for anything off the wall. 22 of 78 distinct Sept 2 frames curated, real photos throughout. Built, working, and rendered on real Sept 2 photos — but not linked from the eUrope landing page yet, since the format itself is still a candidate rather than a decided choice. Keep drafting/comparing here before promoting.</div>
-      <div class="item-path">/urotrip2026/east-side-gallery/</div>
     </a>
     <a class="item" href="../urotrip2026/berlin-deal/">
       <div class="item-top">
@@ -168,11 +160,19 @@
         <span class="item-name">eUrope</span>
         <span class="badge live">Live</span>
       </div>
-      <div class="item-desc">Sections landing page, now 3 cards — Postcards (museum art, 40 Amsterdam pieces), On Film, and Contact Sheet (Berlin). Linked from the hub already, but changing often.</div>
+      <div class="item-desc">Sections landing page, now 4 cards — Postcards (museum art, 40 Amsterdam pieces), On Film, Contact Sheet (Berlin), and The Wall (East Side Gallery). Linked from the hub already, but changing often.</div>
       <div class="item-path">/urotrip2026/</div>
     </a>
+    <a class="item" href="../urotrip2026/east-side-gallery/">
+      <div class="item-top">
+        <span class="item-name">The Wall — East Side Gallery</span>
+        <span class="badge live">Live</span>
+      </div>
+      <div class="item-desc">kind:'wall' format, promoted to the eUrope landing page — the format itself got chosen after The Deal shipped as a real comparison, not just built and left dashboard-only. 49 of 78 distinct Sept 2 frames curated (a thorough pass, not all 78 — a handful of genuine repeat framings of the same mural were skipped on purpose); 29 more distinct frames technically exist if a future pass wants them.</div>
+      <div class="item-path">/urotrip2026/east-side-gallery/</div>
+    </a>
     <ul class="notes">
-      <li>Berlin contact sheet has its first 15 real frames (Sept 1, <code>berlin-sights</code> leg) — still needs the rest of that day's ~200 shots. Two new page formats exist for other Berlin material (The Wall, The Deal — see Needs Attention above) but neither is linked from this landing page: <strong>new format prototypes stay dashboard-only until the format itself is chosen, not just the content</strong> — build and compare them here before ever adding a card to a real place page.</li>
+      <li>Berlin contact sheet has its first 15 real frames (Sept 1, <code>berlin-sights</code> leg) — still needs the rest of that day's ~200 shots. The Deal (see Needs Attention above) is still dashboard-only, unlike The Wall: <strong>new format prototypes stay dashboard-only until the format itself is chosen, not just the content</strong> — build and compare them here before ever adding a card to a real place page.</li>
       <li><code>urotrip2026/amsterdam-postcards/</code> still carries 3 stale Berlin stub entries (East Side Gallery, Museum Island, Mauerpark Sunday) from before the postcards/film-strip split. Now that Berlin's contact sheet has real photos, these should probably just be deleted rather than filled in.</li>
       <li>Prague's format is still undecided — postcards, film-strip, contact-sheet, or something else. Look at the actual photos before picking rather than defaulting to whichever's freshest in mind.</li>
       <li>The shared pill-nav (§2 in STANDARDS.md) clips against the VA badge on narrow phones (~375px) whenever the current-page label plus "eUrope" pushes it past the badge's fixed position — hit on both The Wall and The Deal even after shortening their labels to one word ("Wall", "Deal"). Not fixed by picking a shorter label each time; the pill itself needs an actual CSS fix (truncate with ellipsis, or stop the badge from sitting fixed over it) rather than each new page hoping its name is short enough.</li>

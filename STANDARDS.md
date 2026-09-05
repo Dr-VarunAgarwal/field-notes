@@ -146,9 +146,10 @@ through for variety.
   Reserve this for a batch that's fundamentally about one long
   physical thing you walk the length of, not a second name for
   `'album'` or `'contactsheet'`. First instance:
-  `urotrip2026/east-side-gallery/` — a draft, not yet linked from the
-  eUrope landing page (see dashboard's Needs Attention and the rule
-  below). Built by copying that page's structure.
+  `urotrip2026/east-side-gallery/` ("The Wall") — promoted to the
+  eUrope landing page after being compared against `kind:'deal'` as
+  a real alternative (see the rule below), 49 of 78 distinct frames
+  curated. Built by copying that page's structure.
 - `kind:'deal'` — a dealt hand of face-down cards scattered across a
   tableau at fixed, hand-set positions/tilts; each back shows only a
   short true teaser line plus a small corner tab tinted to that
@@ -172,7 +173,10 @@ through for variety.
   instead (§10). Promote it to an actual link only once it's been
   compared against alternatives (or just sat with) and is genuinely
   the answer for that batch, not merely the first format that got
-  built for it.
+  built for it. The Wall is the first page to actually go through
+  this: stayed dashboard-only while `kind:'deal'` was built as a real
+  second option, then got explicitly promoted — `kind:'deal'` itself
+  is still waiting on the same decision.
 - A page doesn't have to sit at the hub's top level to carry a `kind`
   — `urotrip2026/amsterdam-postcards/`, `urotrip2026/amsterdam-film/`,
   and `urotrip2026/berlin/` are all sub-pages of the single
@@ -191,8 +195,9 @@ through for variety.
   miss since nothing renders it or clicks it.
 - `count` conventions: walk reads `'N days · M photos'`; postcards
   reads `'N postcards'`; contact sheet should read `'N rolls · M
-  frames · K kept'`; wall reads `'N of ~Mm'` (curated panels of an
-  approximate real wall length, not a measured one); everything else
+  frames · K kept'`; wall reads `'N of M frames'` (curated panels out
+  of the leg's total distinct shots, not an approximate wall length —
+  simpler and more honest than guessing meters); everything else
   reads `'M pieces'`.
 
 ## 6. Feeding a new place into `street-art/index.html`
@@ -409,12 +414,18 @@ pass.
   rather than on it). A fixed bottom progress bar tracks
   `wall-wrap`'s own `scrollLeft` against its `scrollWidth`, labeled
   start/Oberbaumbrücke rather than claiming a real distance. Sidebar/
-  lightbox pattern copied verbatim from contact sheet. 22 of 78
-  distinct East Side Gallery frames (Sept 2) curated so far —
-  artist attributed only where a signature was actually zoomed in on
-  and read (Birgit Kinder, Rosemarie Schinzler, Aleksej Taranin,
-  Dmitri Vrubel & Victoria Timofeeva, Kani Alavi, Ursula Wünsch);
-  left blank everywhere else, same rule as every other page.
+  lightbox pattern copied verbatim from contact sheet. 49 of 78
+  distinct East Side Gallery frames (Sept 2) curated — a thorough
+  pass, not the whole leg: real near-duplicate framings of the same
+  mural were skipped, but a mural that genuinely spans many meters
+  (the black-and-white swirl, "Sieben Stufen der Erleuchtung") gets
+  more than one panel on purpose, numbered `(I)`/`(II)`/`(III)` in
+  its own title rather than pretending each segment is a separate
+  piece. Artist attributed only where a signature was actually
+  zoomed in on and read (Birgit Kinder, Rosemarie Schinzler, Aleksej
+  Taranin, Dmitri Vrubel & Victoria Timofeeva, Kani Alavi, Ursula
+  Wünsch, M. Elsa Budzinski); left blank everywhere else, same rule
+  as every other page.
 - `urotrip2026/berlin-deal/index.html` (`kind:'deal'`) — `DECK` array:
   `id, order`(deal-in stagger order, independent of physical
   position), `ox, oy`(fixed hand-set percent position within the

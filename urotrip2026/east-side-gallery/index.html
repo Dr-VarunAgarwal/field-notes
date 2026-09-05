@@ -280,7 +280,7 @@
   <h1>East Side Gallery, one wall.</h1>
   <p>The murals painted on the longest surviving stretch of the Berlin Wall, in the order you'd actually pass them walking it &mdash; not curated into a gallery grid. A few things that aren't murals at all sit in between: a plaque, a sign, a bridge, a sculpture in the river &mdash; the glances away from the wall that are part of actually being there.</p>
   <div class="note">
-    <strong>22 of ~1300m, Sept 2.</strong> A first pass through the roll &mdash; the wall itself runs for over a kilometer and this covers a fraction of it. More panels to come from the same shoot.
+    <strong>49 of 78 distinct frames, Sept 2.</strong> A thorough pass through the roll, not the whole thing — a handful of genuinely repeat framings of the same mural were left out on purpose.
   </div>
 </div>
 
@@ -317,14 +317,17 @@
 
 <script>
 /* ============================================================
-   East Side Gallery, Sept 2 shoot. First pass: 22 of ~1300m of
-   actual wall (78 distinct frames exist from this leg; this is
-   a curated first batch, not the whole roll). `aspect` is the
-   real saved image's w/h. `emphasis` is an editorial width
-   multiplier for a piece that felt more significant/wide than
-   its own frame suggests (default 1) — noted in the UI as a
-   guess, not a measurement, since there's no way to actually
-   measure wall-length from a photo taken square-on.
+   East Side Gallery, Sept 2 shoot. 49 of 78 distinct frames — a
+   thorough pass, not the whole roll (some genuine near-duplicate
+   framings of the same mural were skipped on purpose; a long
+   mural spanning many meters, like the swirl pattern or Sieben
+   Stufen, gets more than one panel since it's honestly still one
+   continuous piece, not a repeat). `aspect` is the real saved
+   image's w/h. `emphasis` is an editorial width multiplier for a
+   piece that felt more significant/wide than its own frame
+   suggests (default 1) — noted in the UI as a guess, not a
+   measurement, since there's no way to actually measure
+   wall-length from a photo taken square-on.
    ============================================================ */
 const PANELS = [
   { kind:'aside', no:'01', img:'img/01-plaque.jpg', aspect:1280/720,
@@ -335,85 +338,193 @@ const PANELS = [
     title:'Test the Rest', artist:'Birgit Kinder', location:'East Side Gallery, Berlin',
     desc:'A Trabant — the classic East German car — punching straight through the wall, plaster cracking outward from the impact. Probably the single most photographed panel on the whole gallery.' },
 
-  { kind:'mural', no:'03', img:'img/03-la-buerlinica.jpg', aspect:1280/720,
+  { kind:'mural', no:'03', img:'img/23-abstract-space.jpg', aspect:1280/720,
+    title:'Deep space', location:'East Side Gallery, Berlin',
+    desc:'Stars, planets and orbiting debris in blue and gold — one of the gallery\'s few panels that isn\'t about Berlin, the wall, or 1989 at all.' },
+
+  { kind:'mural', no:'04', img:'img/24-overlapping-faces.jpg', aspect:1280/720,
+    title:'Two faces, one line', location:'East Side Gallery, Berlin',
+    desc:'A sketchy, single-line drawing of overlapping profile faces, a red cross scored through the middle — closer to a sketchbook page than a mural.' },
+
+  { kind:'mural', no:'05', img:'img/25-bottlecap-texture.jpg', aspect:1280/720,
+    title:'A thousand small marks', location:'East Side Gallery, Berlin',
+    desc:'A whole panel covered edge to edge in small repeated dot-marks — from a distance it reads as texture, not image, the opposite of every loud panel around it.' },
+
+  { kind:'mural', no:'06', img:'img/03-la-buerlinica.jpg', aspect:1280/720,
     title:'La Buerlinica', artist:'signed "Cacciatore"', location:'East Side Gallery, Berlin',
     desc:'A Picasso-inflected jumble of masked, fragmented figures in red, black and yellow — the title puns Guernica against Berlin. Signed "Cacciatore," dated 1990 and 2009 (the original, and the repaint).' },
 
-  { kind:'mural', no:'04', img:'img/04-face-triptych.jpg', aspect:1280/720,
+  { kind:'mural', no:'07', img:'img/04-face-triptych.jpg', aspect:1280/720,
     title:'Three faces, one wall', location:'East Side Gallery, Berlin',
     desc:'Three flat, wide-eyed cartoon heads in clashing color blocks — green, pink, teal — repeated down the panel like a printed pattern rather than one single scene.' },
 
-  { kind:'mural', no:'05', img:'img/05-goethe-einstein.jpg', aspect:1280/720,
+  { kind:'mural', no:'08', img:'img/26-many-walls-text.jpg', aspect:1280/720,
+    title:'Es gilt, viele Mauern abzubauen', location:'East Side Gallery, Berlin',
+    desc:'"There are still many walls to tear down" — dense hand-lettered text over a rough painted crowd, layered with later graffiti tags nobody\'s scrubbed off.' },
+
+  { kind:'mural', no:'09', img:'img/05-goethe-einstein.jpg', aspect:1280/720,
     title:'Great minds, one gallery', location:'East Side Gallery, Berlin',
     desc:'A row of German thinkers — Goethe (1748–1832), Einstein (1879–1955) among them — painted as an informal hall of fame. A small side panel, easy to walk past, memorializes "Klaus Niethardt, 2005 †" — presumably the artist behind the neighboring piece, gone before this repaint.' },
 
-  { kind:'aside', no:'06', img:'img/06-japanese-sector-sign.jpg', aspect:1280/720,
-    title:'Detour to the Japanese Sector', location:'East Side Gallery, Berlin',
-    desc:'A deadpan replica of a Cold War-era street sign, German and Japanese side by side — one of the wall\'s few jokes about the city\'s old occupation-zone bureaucracy.' },
+  { kind:'mural', no:'10', img:'img/27-white-tag.jpg', aspect:1280/720,
+    title:'A tag, in white', location:'East Side Gallery, Berlin',
+    desc:'A loose white scrawl over a dark ground — closer to a subway tag scaled up than a planned composition, and no less deliberate for it.' },
 
-  { kind:'mural', no:'07', img:'img/07-dawn-of-peace.jpg', aspect:1280/720,
+  { kind:'mural', no:'11', img:'img/28-tiled-mosaic.jpg', aspect:1280/720,
+    title:'Small figures, white tile', location:'East Side Gallery, Berlin',
+    desc:'Cartoon-bright cutout figures set into a plain white tiled ground, like a shop sign that escaped its shop.' },
+
+  { kind:'aside', no:'12', img:'img/45-street-artist.jpg', aspect:1280/720,
+    title:'Selling his own work', location:'East Side Gallery, Berlin',
+    desc:'A street artist at a folding table along the gallery, his own paintings propped up beside him — the murals aren\'t the only art changing hands here.' },
+
+  { kind:'mural', no:'13', img:'img/29-jazz-figures.jpg', aspect:1280/720,
+    title:'Three figures, one horn', location:'East Side Gallery, Berlin',
+    desc:'Blue and yellow expressionist figures, one raising an instrument — loose brushwork, no text, reads more like a jazz-club poster than most of the gallery around it.' },
+
+  { kind:'mural', no:'14', img:'img/30-erich-fried-quote.jpg', aspect:1280/720,
+    title:'Wer will, dass die Welt so bleibt', artist:'M. Elsa Budzinski', location:'East Side Gallery, Berlin',
+    desc:'"Whoever wants the world to stay as it is doesn\'t want it to stay at all" — a Erich Fried quote painted plainly in black and white. Signed "M. Elsa Budzinski, Berlin 1990"; a second, smaller inscription near the curb, in another hand, dedicates the repaint to the original artist\'s memory.' },
+
+  { kind:'mural', no:'15', img:'img/31-blue-swirl-dragon.jpg', aspect:1280/720,
+    title:'A dragon, dreamed in blue', location:'East Side Gallery, Berlin',
+    desc:'A hypnotic blue swirl coiling into a dragon-like shape — three visitors caught mid-stride in front of it, small against the scale of the thing.' },
+
+  { kind:'mural', no:'16', img:'img/07-dawn-of-peace.jpg', aspect:1280/720,
     title:'Dawn of Peace', location:'East Side Gallery, Berlin',
     desc:'A white dove flying toward a rising yellow sun over a darkened hillside. The mural\'s own text, off to the side: "the r/evolution is LOVE."' },
 
-  { kind:'mural', no:'08', img:'img/08-collage-faces.jpg', aspect:1280/720,
+  { kind:'aside', no:'17', img:'img/06-japanese-sector-sign.jpg', aspect:1280/720,
+    title:'Detour to the Japanese Sector', location:'East Side Gallery, Berlin',
+    desc:'A deadpan replica of a Cold War-era street sign, German and Japanese side by side — one of the wall\'s few jokes about the city\'s old occupation-zone bureaucracy.' },
+
+  { kind:'mural', no:'18', img:'img/32-batman-collage.jpg', aspect:1280/720,
+    title:'Pop, collaged', location:'East Side Gallery, Berlin',
+    desc:'A riot of cartoon and comic-book characters layered over each other in acid color — the gallery\'s most straightforwardly pop-art panel.' },
+
+  { kind:'mural', no:'19', img:'img/08-collage-faces.jpg', aspect:1280/720,
     title:'Psychedelic gallery', location:'East Side Gallery, Berlin',
     desc:'A dense, poster-collage wall of overlapping painted faces in acid color — closer to a flyer-covered wall than one single composition.' },
 
-  { kind:'mural', no:'09', img:'img/09-mensch-swirl.jpg', aspect:1280/720, emphasis:1.4,
+  { kind:'mural', no:'20', img:'img/33-wall-receding.jpg', aspect:1280/720, emphasis:1.2,
+    title:'The wall, receding', location:'East Side Gallery, Berlin',
+    desc:'A wide street-level view of the same swirl pattern stretching away down the gallery — the establishing shot for just how long this stretch actually runs.' },
+
+  { kind:'mural', no:'21', img:'img/09-mensch-swirl.jpg', aspect:1280/720, emphasis:1.4,
     title:'The wall keeps going', location:'East Side Gallery, Berlin',
     desc:'A hypnotic black-and-white swirl pattern that just keeps running down the gallery, panel after panel — from here the wall stops reading as individual murals and becomes one long optical rhythm.' },
 
-  { kind:'mural', no:'10', img:'img/10-gate.jpg', aspect:1280/2274,
+  { kind:'mural', no:'22', img:'img/10-gate.jpg', aspect:1280/2274,
     title:'Through the gate', location:'East Side Gallery, Berlin',
     desc:'A real wrought-iron gate set directly into a riot of psychedelic color — one of the few spots on the gallery you can actually walk through rather than just past. A visitor pauses in the opening, good for scale if nothing else.' },
 
-  { kind:'mural', no:'11', img:'img/11-berlin-tower-text.jpg', aspect:1280/720,
+  { kind:'mural', no:'23', img:'img/11-berlin-tower-text.jpg', aspect:1280/720,
     title:'Berlin, spelled out', location:'East Side Gallery, Berlin',
     desc:'Barbed-wire linework and the Fernsehturm\'s ball reduced to a rising sun behind it — the word BERLIN doing the rest of the talking.' },
 
-  { kind:'mural', no:'12', img:'img/12-doves-barbed-wire.jpg', aspect:1280/720,
+  { kind:'mural', no:'24', img:'img/12-doves-barbed-wire.jpg', aspect:1280/720,
     title:'Two doves', artist:'Rosemarie Schinzler', location:'East Side Gallery, Berlin',
     desc:'Two white doves pull a length of barbed wire taut between them. Signed "Rosemarie Schinzler, Freiburg, June 1990."' },
 
-  { kind:'mural', no:'13', img:'img/13-thumbs-up.jpg', aspect:1280/720,
+  { kind:'mural', no:'25', img:'img/13-thumbs-up.jpg', aspect:1280/720,
     title:'Diagonale Lösung des Problems', location:'East Side Gallery, Berlin',
     desc:'A giant fist, thumb up, snapping a chain — the mural\'s own caption translates loosely to "the diagonal solution to the problem."' },
 
-  { kind:'mural', no:'14', img:'img/14-curtain-windows.jpg', aspect:1280/720, emphasis:1.15,
+  { kind:'mural', no:'26', img:'img/14-curtain-windows.jpg', aspect:1280/720, emphasis:1.15,
     title:'Moscow, China, Everywhere, Berlin', artist:'Aleksej Taranin', location:'East Side Gallery, Berlin',
     desc:'Four painted curtained windows in a row, each looking out on a different city, a cat and rabbits perched on the sills between them. Signed "Aleksej Taranin, Moscow."' },
 
-  { kind:'mural', no:'15', img:'img/15-the-kiss.jpg', aspect:1280/720, emphasis:1.15, hero:true,
+  { kind:'mural', no:'27', img:'img/34-dali-melting-figure.jpg', aspect:1280/720,
+    title:'A figure, hung out to dry', location:'East Side Gallery, Berlin',
+    desc:'A surreal, Dali-inflected scene — a limp figure strung up against a desert horizon under a bruised orange sky, a bare cross planted nearby.' },
+
+  { kind:'mural', no:'28', img:'img/15-the-kiss.jpg', aspect:1280/720, emphasis:1.15, hero:true,
     title:'My God, Help Me to Survive This Deadly Love', artist:'Dmitri Vrubel & Victoria Timofeeva', location:'East Side Gallery, Berlin',
     desc:'The gallery\'s most photographed panel by far — Brezhnev and Honecker\'s real 1979 kiss, repainted from a wire-photo. The Russian text along the bottom, "среди этой смертной любви" ("amid this deadly love"), is the second half of the title.' },
 
-  { kind:'mural', no:'16', img:'img/16-many-small-people.jpg', aspect:1280/720,
+  { kind:'mural', no:'29', img:'img/35-gewidmet-spiral.jpg', aspect:1280/720,
+    title:'Gewidmet', location:'East Side Gallery, Berlin',
+    desc:'"Dedicated:" — a red spiral of tiny hand-lettered names circling outward, too small to read from more than a step away. A memorial, though whoever it\'s for isn\'t named any bigger than anyone else.' },
+
+  { kind:'mural', no:'30', img:'img/36-tree-rainbow-portrait.jpg', aspect:1280/720,
+    title:'A face, a tree, a rainbow', location:'East Side Gallery, Berlin',
+    desc:'A painted portrait watching over a bare tree and a crowd of embracing figures under a rainbow arc — one of the gallery\'s warmer, less didactic panels.' },
+
+  { kind:'mural', no:'31', img:'img/37-earth-moon-text.jpg', aspect:1280/720,
+    title:'Du hast gelernt, was Freiheit heißt', location:'East Side Gallery, Berlin',
+    desc:'A half-lit Earth against a black sky, a crescent moon opposite. Hand-written alongside: "You\'ve learned what freedom means — never forget it again."' },
+
+  { kind:'mural', no:'32', img:'img/38-mt-heart-fragment.jpg', aspect:1280/720,
+    title:'M + T', location:'East Side Gallery, Berlin',
+    desc:'A small, easy-to-miss fragment — two initials in a heart, a length of scribbled barbed wire underneath. No bigger than a single concrete slab.' },
+
+  { kind:'mural', no:'33', img:'img/16-many-small-people.jpg', aspect:1280/720,
     title:'Many small people…', artist:'Kani Alavi', location:'East Side Gallery, Berlin',
     desc:'"Many small people, in many small places, doing many small things, can alter the face of the world" — painted in German and English. Signed with the artist\'s own studio contact still legible in the corner.' },
 
-  { kind:'mural', no:'17', img:'img/17-orange-figure-birds.jpg', aspect:1280/720,
+  { kind:'mural', no:'34', img:'img/39-ghostly-figures.jpg', aspect:1280/720,
+    title:'Three, draped', location:'East Side Gallery, Berlin',
+    desc:'Three ghostly white-draped figures against black — the gallery\'s most somber panel, no text anywhere on it.' },
+
+  { kind:'mural', no:'35', img:'img/17-orange-figure-birds.jpg', aspect:1280/720,
     title:'Reaching', location:'East Side Gallery, Berlin',
     desc:'A single orange figure straining upward into a flock of white birds — one of the gallery\'s more painterly, less text-driven panels.' },
 
-  { kind:'mural', no:'18', img:'img/18-frieden-fur-alles.jpg', aspect:1280/720, emphasis:1.1,
+  { kind:'mural', no:'36', img:'img/18-frieden-fur-alles.jpg', aspect:1280/720, emphasis:1.1,
     title:'Frieden für alles, was auf dieser Erde lebt', artist:'Ursula Wünsch', location:'East Side Gallery, Berlin',
     desc:'"Peace for everything that lives on this earth! Care for what life needs!" — animals in a rainbow-colored procession, dedicated "for Lorenz, Luca, Livio, and all the children of the world." Signed and dated DDR/BRD, 1990/2009.' },
 
-  { kind:'mural', no:'19', img:'img/19-sieben-stufen.jpg', aspect:1280/2274, emphasis:1.2,
-    title:'Sieben Stufen der Erleuchtung', location:'East Side Gallery, Berlin',
+  { kind:'mural', no:'37', img:'img/40-sieben-stufen-angel.jpg', aspect:1280/720,
+    title:'Sieben Stufen der Erleuchtung (I)', location:'East Side Gallery, Berlin',
+    desc:'The opening figure of a long painted meditation — a winged, robed figure reaching over water, "SIEBEN STUFEN" ("seven steps") lettered beneath.' },
+
+  { kind:'mural', no:'38', img:'img/19-sieben-stufen.jpg', aspect:1280/2274, emphasis:1.2,
+    title:'Sieben Stufen der Erleuchtung (II)', location:'East Side Gallery, Berlin',
     desc:'A long, densely painted meditation naming Buddha, Christ, Mohammed, Mary, Mahavira and others alongside seven lines of philosophy — "every soul carries within itself all wisdom and absolute [love]."' },
 
-  { kind:'aside', no:'20', img:'img/20-oberbaum-bridge.jpg', aspect:1280/2274,
+  { kind:'mural', no:'39', img:'img/41-sieben-stufen-continues.jpg', aspect:1280/720,
+    title:'Sieben Stufen der Erleuchtung (III)', location:'East Side Gallery, Berlin',
+    desc:'The same meditation, further along — it keeps going for meters past where most visitors stop reading, the imagery shifting even as the philosophy keeps unspooling.' },
+
+  { kind:'aside', no:'40', img:'img/46-oberbaum-train.jpg', aspect:1280/720,
+    title:'Where the wall ends', location:'Oberbaumbrücke, Berlin',
+    desc:'A wider street-level view of the bridge, a U-Bahn train crossing — the gallery is behind you here, the city just resuming as if the wall had never interrupted it.' },
+
+  { kind:'aside', no:'41', img:'img/20-oberbaum-bridge.jpg', aspect:1280/2274,
     title:'Oberbaumbrücke', location:'Oberbaumbrücke, Berlin',
     desc:'The wall runs out here — the gallery ends at this red-brick bridge, one of Berlin\'s most recognizable, still carrying the U1 line across the Spree.' },
 
-  { kind:'aside', no:'21', img:'img/21-molecule-man.jpg', aspect:1280/2274,
+  { kind:'aside', no:'42', img:'img/47-river-skyline.jpg', aspect:1280/720,
+    title:'The Spree, looking back', location:'Spree river, Berlin',
+    desc:'A quieter view along the river, the skyline that grew up on the wall\'s old death-strip side now just ordinary waterfront.' },
+
+  { kind:'aside', no:'43', img:'img/21-molecule-man.jpg', aspect:1280/2274,
     title:'Molecule Man', location:'Spree river, Berlin',
     desc:'Jonathan Borofsky\'s three perforated figures reach toward each other out in the middle of the Spree, visible from the bridge — marking where three old Berlin boroughs meet.' },
 
-  { kind:'aside', no:'22', img:'img/22-hanging-shoes.jpg', aspect:1280/720,
+  { kind:'aside', no:'44', img:'img/22-hanging-shoes.jpg', aspect:1280/720,
     title:'Under the arches', location:'Oberbaumbrücke underpass, Berlin',
     desc:'Odd shoes and boots strung up along the underside of the bridge\'s brick arches. Nobody\'s ever explained this one — it\'s just there.' },
+
+  { kind:'aside', no:'45', img:'img/48-hanging-shoes-detail.jpg', aspect:1280/720,
+    title:'Closer up', location:'Oberbaumbrücke underpass, Berlin',
+    desc:'The same string of shoes, close enough to see it\'s a real boot, a real sandal, a real pair of child\'s sneakers — not props, actual footwear someone actually wore.' },
+
+  { kind:'mural', no:'46', img:'img/42-suited-man-reading.jpg', aspect:1280/720,
+    title:'A man, reading, on brick', location:'near Oberbaumbrücke, Berlin',
+    desc:'A separate piece from the gallery proper, painted on plain brick near the bridge — a suited figure absorbed in a newspaper, a smear of green spray-paint across his face.' },
+
+  { kind:'aside', no:'47', img:'img/44-shiva-cafe-mural.jpg', aspect:1280/720,
+    title:'A mural, indoors', location:'near Oberbaumbrücke, Berlin',
+    desc:'A many-armed painted figure inside a small cafe near the bridge — the gallery\'s style has leaked off the actual wall and into the neighborhood around it.' },
+
+  { kind:'aside', no:'48', img:'img/49-cyclist-street.jpg', aspect:1280/2274,
+    title:'Ordinary traffic', location:'near Oberbaumbrücke, Berlin',
+    desc:'A cyclist and a pedestrian on an unremarkable street — the neighborhood the gallery actually sits in, going about a Tuesday.' },
+
+  { kind:'mural', no:'49', img:'img/43-roomservice-mural.jpg', aspect:1280/720,
+    title:'Roomservice', location:'near Oberbaumbrücke, Berlin',
+    desc:'A cartoon-bright mural on a building near the bridge, "ROOMSERVICE" lettered across it — street art that\'s clearly a cousin of the gallery\'s work without being part of it.' },
 ];
 
 /* ============ render ============ */
