@@ -286,6 +286,60 @@
     font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0 0;
   }
 
+  /* ---------- expandable place card (eUrope) — expands in place instead
+     of linking away, revealing its own sections as a small grid below ---------- */
+  .place-card-toggle{
+    all:unset; display:block; width:100%; cursor:pointer; color:inherit;
+  }
+  .place-card-toggle .name{ display:flex; align-items:center; gap:0.4rem; }
+  .expand-arrow{
+    font-size:0.75rem; color:var(--ink-soft); transition:transform 0.2s ease;
+    display:inline-block; transform:translateY(1px);
+  }
+  .place-card--expandable.expanded .expand-arrow{ transform:rotate(180deg) translateY(-1px); }
+
+  .euro-sections{
+    display:grid; grid-template-columns:1fr; gap:1rem;
+    max-height:0; overflow:hidden; opacity:0; margin-top:0;
+    transition:max-height 0.4s ease, opacity 0.3s ease, margin-top 0.4s ease;
+  }
+  @media(min-width:640px){ .euro-sections{ grid-template-columns:1fr 1fr; } }
+  @media(min-width:1024px){ .euro-sections{ grid-template-columns:repeat(4,1fr); } }
+  .place-card--expandable.expanded .euro-sections{
+    max-height:1600px; opacity:1; margin-top:1.4rem;
+  }
+
+  .euro-section-card{
+    display:block; text-decoration:none; color:inherit;
+    background:var(--card); border-radius:14px; overflow:hidden;
+    box-shadow:0 8px 20px -12px rgba(23,20,12,0.35);
+    transition:transform 0.15s ease;
+  }
+  .euro-section-card:hover{ transform:translateY(-3px); }
+  .euro-section-cover{ position:relative; aspect-ratio:4/3; }
+  .euro-section-cover img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .euro-section-cover::after{
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.6) 100%);
+  }
+  .euro-section-tag{
+    position:absolute; top:0.6rem; left:0.6rem; z-index:2; color:#fff;
+    font-family:"Fredoka", sans-serif; font-size:0.6rem; font-weight:600;
+    letter-spacing:0.04em; text-transform:uppercase;
+    padding:0.25rem 0.55rem; border-radius:100px;
+  }
+  .euro-section-card.coral .euro-section-tag{ background:#c9634f; }
+  .euro-section-card.amber .euro-section-tag{ background:#e2a13a; color:#241a0f; }
+  .euro-section-card.crimson .euro-section-tag{ background:#c0392b; }
+  .euro-section-card.slate .euro-section-tag{ background:#d6336c; }
+  .euro-section-label{
+    position:absolute; left:0.7rem; bottom:0.6rem; z-index:2;
+    color:#fff; font-weight:600; font-size:0.85rem; text-shadow:0 1px 4px rgba(0,0,0,0.4);
+  }
+  .euro-section-body{ padding:0.8rem 0.9rem 1rem; }
+  .euro-section-body p{ font-size:0.76rem; line-height:1.5; color:var(--ink-soft); margin:0 0 0.5rem; }
+  .euro-section-count{ font-size:0.66rem; letter-spacing:0.03em; text-transform:uppercase; color:var(--ink-soft); opacity:0.8; }
+
   /* ---------- albums / walks / postcards — tinted like every other
      section on this page (sidebar sky, gift-shop white, itinerary olive),
      so the three photo-format sections read as distinct at a glance ---------- */
@@ -603,7 +657,13 @@
       </div>
     </header>
 
-    <section class="section albums" style="padding-top:2.5rem;">
+    <section class="section postcards" style="padding-top:2.5rem;">
+      <h2>On the Road</h2>
+      <p class="lede">Trip pages filled in as they actually happen, sorted into whatever sections fit — not a finished album.</p>
+      <div class="grid" id="postcards-grid"></div>
+    </section>
+
+    <section class="section albums">
       <h2>Albums</h2>
       <p class="lede">Grid galleries — browse a place piece by piece.</p>
       <div class="grid" id="grid"></div>
@@ -613,12 +673,6 @@
       <h2>Photo Walks</h2>
       <p class="lede">Day-by-day journals with a real route map — fewer photos, more story.</p>
       <div class="grid" id="walks-grid"></div>
-    </section>
-
-    <section class="section postcards">
-      <h2>On the Road</h2>
-      <p class="lede">Trip pages filled in as they actually happen, sorted into whatever sections fit — not a finished album.</p>
-      <div class="grid" id="postcards-grid"></div>
     </section>
 
     <section class="section gift-shop">
@@ -722,9 +776,16 @@ const PLACES = [
   {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka.', count:'5 pieces', region:'Karnataka 🇮🇳'},
   {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
+  {name:'STRAAT', slug:'street-art', href:'street-art/?city=amsterdam', status:'live', kind:'album', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', blurb:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse.", count:'55 pieces', region:'Amsterdam 🇳🇱'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Three ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin. Prague still to come.', count:'3 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague']},
+  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', tickerNames:['Glasgow', 'Edinburgh']},
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Four ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, and the East Side Gallery wall. Prague still to come.', count:'4 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
+    sections:[
+      {tag:'Postcards', label:'Museum walls.', href:'urotrip2026/amsterdam-postcards/', cover:'urotrip2026/img/28-sunflowers.jpg', desc:"A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.", count:'40 pieces, Amsterdam', color:'coral'},
+      {tag:'On Film', label:'Everywhere else.', href:'urotrip2026/amsterdam-film/', cover:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', desc:'A strip of negatives that develop into color on tap — the streets and corners between the museums, Amsterdam so far.', count:'Amsterdam roll, growing', color:'amber'},
+      {tag:'Contact Sheet', label:'Berlin, unedited.', href:'urotrip2026/berlin/', cover:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', desc:'The whole roll, not just the keepers — every frame circled in grease pencil or passed over, left visible either way.', count:'15 of ~200 frames, Sept 1', color:'crimson'},
+      {tag:'The Wall', label:'One long wall.', href:'urotrip2026/east-side-gallery/', cover:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', desc:"The East Side Gallery's murals, in walking order, with a scroll strip standing in for the wall itself — plus what's on either side of it.", count:'49 of 78 frames, Sept 2', color:'slate'},
+    ]},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
   {name:'Parvati Valley', slug:'manali', status:'story', count:''},
@@ -864,7 +925,7 @@ function coverHTML(p, opts){
 
 // albums grid — live places shown as grid galleries (skip the featured one, or show all incl. featured)
 document.getElementById('grid').innerHTML = liveAlbums.map(p => `
-  <a class="place-card" href="${p.slug}/">
+  <a class="place-card" href="${p.href || p.slug + '/'}">
     ${coverHTML(p)}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
@@ -874,7 +935,7 @@ document.getElementById('grid').innerHTML = liveAlbums.map(p => `
 
 // walks grid — live places built as day-journal/route-map photo walks
 document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
-  <a class="place-card" href="${p.slug}/">
+  <a class="place-card" href="${p.href || p.slug + '/'}">
     ${coverHTML(p, {pill:'Walk'})}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
@@ -883,15 +944,53 @@ document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
 `).join('');
 
 // "on the road" grid — live trip pages with their own sections/formats,
-// not one consistent kind (no pill, same as a plain Albums card)
-document.getElementById('postcards-grid').innerHTML = livePostcards.map(p => `
-  <a class="place-card" href="${p.slug}/">
-    ${coverHTML(p)}
-    <p class="meta-line">${p.count}</p>
-    <p class="name">${p.name}</p>
-    <p class="blurb">${p.blurb}</p>
-  </a>
-`).join('');
+// not one consistent kind (no pill, same as a plain Albums card).
+// A place carrying its own `sections` array (currently just eUrope) expands
+// in place instead of navigating away, revealing those sections as its own
+// small grid right there — the trip's still filling in, so showing the
+// pieces up front reads better than hiding them behind one more click.
+document.getElementById('postcards-grid').innerHTML = livePostcards.map(p => {
+  if (!p.sections) return `
+    <a class="place-card" href="${p.href || p.slug + '/'}">
+      ${coverHTML(p)}
+      <p class="meta-line">${p.count}</p>
+      <p class="name">${p.name}</p>
+      <p class="blurb">${p.blurb}</p>
+    </a>
+  `;
+  return `
+    <div class="place-card place-card--expandable">
+      <button class="place-card-toggle" type="button" aria-expanded="false">
+        ${coverHTML(p)}
+        <p class="meta-line">${p.count}</p>
+        <p class="name">${p.name} <span class="expand-arrow" aria-hidden="true">&#9662;</span></p>
+        <p class="blurb">${p.blurb}</p>
+      </button>
+      <div class="euro-sections">
+        ${p.sections.map(s => `
+          <a class="euro-section-card ${s.color}" href="${s.href}">
+            <div class="euro-section-cover">
+              <span class="euro-section-tag">${s.tag}</span>
+              <img src="${s.cover}" alt="">
+              <span class="euro-section-label">${s.label}</span>
+            </div>
+            <div class="euro-section-body">
+              <p>${s.desc}</p>
+              <span class="euro-section-count">${s.count}</span>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+    </div>
+  `;
+}).join('');
+document.querySelectorAll('.place-card--expandable .place-card-toggle').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const card = btn.closest('.place-card--expandable');
+    const expanded = card.classList.toggle('expanded');
+    btn.setAttribute('aria-expanded', String(expanded));
+  });
+});
 
 // itinerary — draft places
 document.getElementById('itin-list').innerHTML = draft.map((p, i) => `
