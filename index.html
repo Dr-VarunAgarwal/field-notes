@@ -287,7 +287,11 @@
   }
 
   /* ---------- expandable place card (eUrope) — expands in place instead
-     of linking away, revealing its own sections as a small grid below ---------- */
+     of linking away, revealing its own sections as a small grid below.
+     `.postcards .grid` stays one column (not the usual 2-col `.grid`)
+     since this section holds a single expandable entry — a 2-col grid
+     around one item just left the other half blank. ---------- */
+  .postcards .grid{ grid-template-columns:1fr; }
   .place-card-toggle{
     all:unset; display:block; width:100%; cursor:pointer; color:inherit;
   }
@@ -303,10 +307,20 @@
     max-height:0; overflow:hidden; opacity:0; margin-top:0;
     transition:max-height 0.4s ease, opacity 0.3s ease, margin-top 0.4s ease;
   }
-  @media(min-width:640px){ .euro-sections{ grid-template-columns:1fr 1fr; } }
-  @media(min-width:1024px){ .euro-sections{ grid-template-columns:repeat(4,1fr); } }
+  @media(min-width:480px){ .euro-sections{ grid-template-columns:1fr 1fr; } }
   .place-card--expandable.expanded .euro-sections{
     max-height:1600px; opacity:1; margin-top:1.4rem;
+  }
+  /* desktop (sidebar's own breakpoint): sections sit beside the card,
+     always open — no click needed, and no leftover blank column. */
+  @media(min-width:1024px){
+    .place-card--expandable{ display:flex; align-items:flex-start; gap:1.75rem; }
+    .place-card-toggle{ flex:0 0 260px; width:260px; cursor:default; }
+    .place-card--expandable .expand-arrow{ display:none; }
+    .place-card--expandable .euro-sections{
+      flex:1; min-width:0; grid-template-columns:1fr 1fr;
+      max-height:none !important; opacity:1 !important; margin-top:0 !important;
+    }
   }
 
   .euro-section-card{
@@ -325,7 +339,7 @@
   .euro-section-tag{
     position:absolute; top:0.6rem; left:0.6rem; z-index:2; color:#fff;
     font-family:"Fredoka", sans-serif; font-size:0.6rem; font-weight:600;
-    letter-spacing:0.04em; text-transform:uppercase;
+    letter-spacing:0.04em; text-transform:uppercase; white-space:nowrap;
     padding:0.25rem 0.55rem; border-radius:100px;
   }
   .euro-section-card.coral .euro-section-tag{ background:#c9634f; }
@@ -779,7 +793,7 @@ const PLACES = [
   {name:'STRAAT', slug:'street-art', href:'street-art/?city=amsterdam', status:'live', kind:'album', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', blurb:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse.", count:'55 pieces', region:'Amsterdam 🇳🇱'},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', tickerNames:['Glasgow', 'Edinburgh']},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/img/28-sunflowers.jpg', blurb:'Four ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, and the East Side Gallery wall. Prague still to come.', count:'4 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/amsterdam-film/img/03-canal-ring.jpg', blurb:'Four ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, and the East Side Gallery wall. Prague still to come.', count:'4 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
     sections:[
       {tag:'Postcards', label:'Museum walls.', href:'urotrip2026/amsterdam-postcards/', cover:'urotrip2026/img/28-sunflowers.jpg', desc:"A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.", count:'40 pieces, Amsterdam', color:'coral'},
       {tag:'On Film', label:'Everywhere else.', href:'urotrip2026/amsterdam-film/', cover:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', desc:'A strip of negatives that develop into color on tap — the streets and corners between the museums, Amsterdam so far.', count:'Amsterdam roll, growing', color:'amber'},
@@ -826,6 +840,9 @@ const HEADER_PHOTOS = [
   {src:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', coords:'55.9550°N, 3.1828°W'},
   {src:'manchester/img/02-harlequin-bee.jpg', coords:'53.4808°N, 2.2426°W'},
   {src:'manchester/img/15-dapper-fox-afflecks.jpg', coords:'53.4808°N, 2.2426°W'},
+  {src:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', coords:'52.5029°N, 13.4393°E'},
+  {src:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', coords:'52.3676°N, 4.9041°E'},
+  {src:'urotrip2026/img/47-rainbow-classical-figure.jpg', coords:'52.4040°N, 4.9204°E'},
 ];
 const headerPhotoEl = document.getElementById('header-photo');
 const headerCoordsEl = document.getElementById('header-coords');
@@ -896,12 +913,17 @@ const FEATURED_PHOTOS = [
   {img:'manchester/img/01-aubee-piccadilly.jpg', caption:'AuBee, outside Piccadilly station — one of over a hundred Bee in the City sculptures across Manchester in 2018.', place:'Manchester', slug:'manchester'},
   {img:'manchester/img/06-rocket-steampunk-bee.jpg', caption:'Rocket, the Steampunk Bee.', place:'Manchester', slug:'manchester'},
   {img:'manchester/img/15-dapper-fox-afflecks.jpg', caption:'', place:'Manchester', slug:'manchester'},
+  {img:'urotrip2026/img/28-sunflowers.jpg', caption:'Vincent van Gogh — Sunflowers, 1889.', place:'eUrope · Postcards', slug:'urotrip2026/amsterdam-postcards'},
+  {img:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', caption:'', place:'eUrope · On Film', slug:'urotrip2026/amsterdam-film'},
+  {img:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', caption:'The TV Tower over the Spree.', place:'eUrope · Contact Sheet', slug:'urotrip2026/berlin'},
+  {img:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', caption:'Dmitri Vrubel & Victoria Timofeeva — "My God, Help Me to Survive This Deadly Love," East Side Gallery.', place:'eUrope · The Wall', slug:'urotrip2026/east-side-gallery'},
+  {img:'urotrip2026/img/47-rainbow-classical-figure.jpg', caption:'PichiAvo, STRAAT Museum, Amsterdam-Noord.', place:'STRAAT', href:'street-art/?city=amsterdam'},
 ];
 
 const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
 if (featured) {
   const card = document.getElementById('featured');
-  card.href = `${featured.slug}/`;
+  card.href = featured.href || `${featured.slug}/`;
   card.innerHTML = `
     <span class="featured-tag">Featured</span>
     <img src="${featured.img}" alt="">
