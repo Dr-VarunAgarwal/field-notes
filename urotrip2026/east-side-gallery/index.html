@@ -234,6 +234,7 @@
   .sb-body{ padding:20px 24px 48px; }
   .sb-kicker{ font-size:10.5px; letter-spacing:0.12em; text-transform:uppercase; color:var(--accent); margin-bottom:8px; font-weight:600; }
   .sb-title{ font-family:'Bebas Neue', sans-serif; font-size:28px; letter-spacing:0.01em; line-height:1.15; margin-bottom:14px; color:var(--ink); }
+  .sb-desc-label{ font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--ink-faint); margin-bottom:4px; font-style:italic; }
   .sb-desc{ font-size:13.5px; line-height:1.75; color:var(--ink-soft); margin-bottom:22px; }
   .sb-meta{ display:grid; gap:12px; }
   .sb-meta-item{ border-top:1px solid var(--line); padding-top:10px; }
@@ -267,8 +268,8 @@
 
 <div class="intro">
   <p class="intro-kicker">Wander &middot; eUrope &middot; on the wall</p>
-  <h1>My walk along Berlin's artistic wall.</h1>
-  <p>Street art, as political as it gets — the longest surviving stretch of the Berlin Wall, painted over almost end to end. Most of these murals date to right after the Wall came down in 1990, later restored as the paint faded. In the order I actually passed them walking it, not curated into a gallery grid. A few things that aren't murals at all sit in between: a plaque, a sign, a bridge, a sculpture in the river — the glances away from the wall that are part of actually being there. Panel #28 is the one everyone already knows, even if not by name: the Fraternal Kiss.</p>
+  <h1>My walk along Berlin's artistic East Side Gallery wall</h1>
+  <p>Street art, as political as it gets. A lot of them were murals from the cold war era around 1990, with refreshments done around 2019. Also features the famous Fraternal Kiss at #28.</p>
 </div>
 
 <div class="wall-outer">
@@ -579,7 +580,7 @@ function openSidebar(p){
     <div class="sb-body">
       <div class="sb-kicker">${p.kind === 'mural' ? 'Panel #' + p.no : 'Off the wall'}${p.hero ? ' &middot; the one everyone photographs' : ''}</div>
       <div class="sb-title">${p.title}</div>
-      <div class="sb-desc">${p.desc || ''}</div>
+      ${p.desc ? `<div class="sb-desc-label">AI note</div><div class="sb-desc">${p.desc}</div>` : ''}
       <div class="sb-meta">
         <div class="sb-meta-item"><div class="sb-meta-label">Artist</div><div class="sb-meta-value">${p.artist || '&mdash;'}</div></div>
         <div class="sb-meta-item"><div class="sb-meta-label">Location</div><div class="sb-meta-value">${p.location || '&mdash;'}</div></div>
