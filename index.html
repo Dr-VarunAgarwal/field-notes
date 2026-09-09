@@ -309,7 +309,7 @@
   }
   @media(min-width:480px){ .euro-sections{ grid-template-columns:1fr 1fr; } }
   .place-card--expandable.expanded .euro-sections{
-    max-height:1600px; opacity:1; margin-top:1.4rem;
+    max-height:2000px; opacity:1; margin-top:1.4rem;
   }
   /* desktop (sidebar's own breakpoint): sections sit beside the card,
      always open — no click needed, and no leftover blank column. */
@@ -346,6 +346,7 @@
   .euro-section-card.amber .euro-section-tag{ background:#e2a13a; color:#241a0f; }
   .euro-section-card.crimson .euro-section-tag{ background:#c0392b; }
   .euro-section-card.slate .euro-section-tag{ background:#d6336c; }
+  .euro-section-card.teal .euro-section-tag{ background:#1f9e8f; }
   .euro-section-label{
     position:absolute; left:0.7rem; bottom:0.6rem; z-index:2;
     color:#fff; font-weight:600; font-size:0.85rem; text-shadow:0 1px 4px rgba(0,0,0,0.4);
@@ -790,15 +791,15 @@ const PLACES = [
   {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola in Manipal.', count:'15 pieces', region:'Karnataka 🇮🇳'},
   {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
-  {name:'STRAAT', slug:'street-art', href:'street-art/?city=amsterdam', status:'live', kind:'album', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', blurb:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse.", count:'55 pieces', region:'Amsterdam 🇳🇱', tickerNames:[]},
   {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
   {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', tickerNames:['Glasgow', 'Edinburgh']},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/amsterdam-film/img/03-canal-ring.jpg', blurb:'Four ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, and the East Side Gallery wall. Prague still to come.', count:'4 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/amsterdam-film/img/03-canal-ring.jpg', blurb:'Five ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, the East Side Gallery wall, and a warehouse of street art at STRAAT. Prague still to come.', count:'5 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
     sections:[
       {tag:'Postcards', label:'Museum walls.', href:'urotrip2026/amsterdam-postcards/', cover:'urotrip2026/img/28-sunflowers.jpg', desc:"A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.", count:'40 pieces, Amsterdam', color:'coral'},
       {tag:'On Film', label:'Everywhere else.', href:'urotrip2026/amsterdam-film/', cover:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', desc:'A strip of negatives that develop into color on tap — the streets and corners between the museums, Amsterdam so far.', count:'Amsterdam roll, growing', color:'amber'},
       {tag:'Contact Sheet', label:'Berlin, unedited.', href:'urotrip2026/berlin/', cover:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', desc:'The whole roll, not just the keepers — every frame circled in grease pencil or passed over, left visible either way.', count:'15 of ~200 frames, Sept 1', color:'crimson'},
       {tag:'The Wall', label:'One long wall.', href:'urotrip2026/east-side-gallery/', cover:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', desc:"The East Side Gallery's murals, in walking order, with a scroll strip standing in for the wall itself — plus what's on either side of it.", count:'49 of 78 frames, Sept 2', color:'slate'},
+      {tag:'STRAAT', label:'A whole warehouse.', href:'street-art/?city=amsterdam', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', desc:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse. An experience more than a gallery, so it sits apart from the trip's own on-the-street formats above.", count:'55 pieces, Amsterdam', color:'teal'},
     ]},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
