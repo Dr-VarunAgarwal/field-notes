@@ -4,18 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>UDUPI — Wander</title>
-<meta name="description" content="Quiet lakes and backroads around Udupi, Karnataka, India.">
+<meta name="description" content="Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola ritual theatre in neighboring Manipal.">
 <meta name="theme-color" content="#0B1F1D">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Wander">
 <meta property="og:url" content="https://wander.varunagarwal.com/udupi/">
 <meta property="og:title" content="Udupi · Wander">
-<meta property="og:description" content="Quiet lakes and backroads around Udupi, Karnataka, India.">
-<meta property="og:image" content="https://wander.varunagarwal.com/udupi/img/05-sunset-lake.jpg">
+<meta property="og:description" content="Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola ritual theatre in neighboring Manipal.">
+<meta property="og:image" content="https://wander.varunagarwal.com/udupi/img/08-kola-frontal-mandala.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Udupi · Wander">
-<meta name="twitter:description" content="Quiet lakes and backroads around Udupi, Karnataka, India.">
-<meta name="twitter:image" content="https://wander.varunagarwal.com/udupi/img/05-sunset-lake.jpg">
+<meta name="twitter:description" content="Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola ritual theatre in neighboring Manipal.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/udupi/img/08-kola-frontal-mandala.jpg">
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="192x192" href="../favicon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="../favicon-512.png">
@@ -337,7 +337,7 @@
       <div class="eyebrow"><a href="../">← wander ~ field notes</a> / udupi</div>
       <h1><span class="h1a">UDU</span><span class="h1b">PI</span></h1>
     </div>
-    <div class="sub">Quiet lakes and backroads around Udupi, Karnataka — palm-lined water, evening walks, one drone shot that got lucky. Tap in to browse.</div>
+    <div class="sub">Quiet lakes and backroads around Udupi, Karnataka — palm-lined water, evening walks, one drone shot that got lucky. Plus a night of Bhoota Kola, spirit-worship ritual theatre, at a shrine in neighboring Manipal. Tap in to browse.</div>
   </div>
 
   <div class="filters" id="filters"></div>
@@ -388,9 +388,10 @@ const CATEGORIES = [
   {id:'landscape',   label:'Landscape'},
   {id:'trail',        label:'Trail'},
   {id:'golden-hour',  label:'Golden Hour'},
+  {id:'kola',         label:'Bhoota Kola'},
 ];
 
-const GLYPHS = {'landscape':'🌊','trail':'🌳','golden-hour':'🌅'};
+const GLYPHS = {'landscape':'🌊','trail':'🌳','golden-hour':'🌅','kola':'🎭'};
 
 const MONOGRAM_TEXT = 'VA';
 
@@ -400,6 +401,16 @@ const DATA = [
   {id:3, img:'img/03-lake-island-wide.jpg', type:'photo', category:'landscape', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Wider view of the same kind of lake and island, different visit — grey sky, water down a little, more of the bank exposed.", tags:['wide shot','island','overcast'], ratio:'1280/964', date:'2026-02-21T17:34:00', order:3},
   {id:4, img:'img/04-walking-path-leaves.jpg', type:'photo', category:'trail', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Paved walking path cutting through a stand of trees, yellow fallen leaves scattered across the tarmac — looks like a lakeside park path.", tags:['walking path','fallen leaves','trees'], ratio:'964/1280', date:'2026-02-25T18:03:52', order:4},
   {id:5, img:'img/05-sunset-lake.jpg', type:'photo', category:'golden-hour', title:'', location:'Udupi, Karnataka, India', notes:"", altText:"Sun going down over the same lake, shot through tree branches with a bit of a lens flare — same walk as the path shot, a few minutes later by the look of the light.", tags:['sunset','silhouette','lake'], ratio:'964/1280', date:'2026-02-25T18:18:15', order:5, colorFrame:'140,82,52'},
+  {id:6, img:'img/06-kola-canopy-crowd.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"Wide view up into a temple pandal's decorated canopy — dense rows of marigold and rose garlands hanging down, fairy lights strung between them, a crowd gathered underneath for a Bhoota Kola ritual performance at night.", tags:['bhoota kola','pandal','night'], ratio:'1280/720', date:'2026-03-14T22:47:25', order:6},
+  {id:7, img:'img/07-kola-arms-raised.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"A Bhoota Kola performer in a red and gold costume with a yellow-painted mask, arms raised and bangled wrists spread wide, dancing before a large marigold-and-purple flower mandala shaped like a deity's face, ringed by photographers and onlookers.", tags:['bhoota kola','performer','night ritual'], ratio:'1280/720', date:'2026-03-14T22:47:32', order:7},
+  {id:8, img:'img/08-kola-frontal-mandala.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"The same red-costumed performer standing calmly facing the camera, garlands stacked to the chin, the marigold flower-mandala of a deity's face glowing on the banner behind, priests in pink and orange flanking the altar.", tags:['bhoota kola','shrine','flower mandala'], ratio:'1280/720', date:'2026-03-14T22:48:29', order:8, colorFrame:'197,138,30'},
+  {id:9, img:'img/09-kola-back-turned-hair.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"A performer with long loose black hair seen from behind, red costume, facing into the flower-mandala shrine — a quieter, more ritual moment between dance sequences.", tags:['bhoota kola','ritual moment'], ratio:'1280/720', date:'2026-03-14T22:53:31', order:9},
+  {id:10, img:'img/10-kola-gold-mask-portrait.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"Vertical shot of a performer wearing an ornate gold circular headpiece over long black hair, facing away from the camera toward the flower-mandala altar, marigold garlands and fairy lights hanging overhead.", tags:['bhoota kola','gold mask','portrait'], ratio:'720/1280', date:'2026-03-14T22:54:51', order:10, colorFrame:'160,102,0'},
+  {id:11, img:'img/11-kola-second-mask-entering.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"A different Bhoota Kola performer entering — yellow face paint under a tall orange-fringed gold headdress, red costume — flanked by camera operators and a line of onlookers in front of the same flower-mandala backdrop.", tags:['bhoota kola','new mask','entrance'], ratio:'1280/720', date:'2026-03-14T23:02:09', order:11},
+  {id:12, img:'img/12-kola-procession-dhotis.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"A line of men in matching pink and orange dhotis and sashes, seen from behind, walking in procession past the flower-mandala shrine as part of the night's rites.", tags:['bhoota kola','procession','ritual attendants'], ratio:'1280/720', date:'2026-03-14T23:04:39', order:12},
+  {id:13, img:'img/13-kola-cymbals-raised.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"The orange-headdressed performer mid-gesture, holding a pair of gold cymbal-like anklets aloft in front of the crowd and shrine.", tags:['bhoota kola','cymbals','gesture'], ratio:'1280/720', date:'2026-03-14T23:07:42', order:13},
+  {id:14, img:'img/14-kola-grass-skirt-entering.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"A performer in a dried-grass skirt and red top, wearing an ornate gold headdress with orange fringe, walking into frame past seated onlookers and photographers — a later, different spirit in the same night's kola.", tags:['bhoota kola','grass skirt','entrance'], ratio:'1280/720', date:'2026-03-14T23:15:40', order:14},
+  {id:15, img:'img/15-kola-grass-skirt-dance.jpg', type:'photo', category:'kola', title:'', location:'Manipal, Karnataka, India', notes:"", altText:"The same grass-skirted performer mid-motion, hair swinging, dancing before the flower mandala as the night's rites continue.", tags:['bhoota kola','grass skirt','dance'], ratio:'1280/720', date:'2026-03-14T23:26:15', order:15},
 ];
 
 /* ============================================================
