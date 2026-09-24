@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Clock · Wander</title>
+<meta name="description" content="Prague on an astronomical clock face — three days of photos set to the minute they were taken, one afternoon running into night.">
+<meta name="theme-color" content="#0d1424">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/prague/">
+<meta property="og:title" content="The Clock · Wander">
+<meta property="og:description" content="Prague on an astronomical clock face — three days of photos set to the minute they were taken, one afternoon running into night.">
+<meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/prague/img/22-the-tower-clock.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Clock · Wander">
+<meta name="twitter:description" content="Prague on an astronomical clock face — three days of photos set to the minute they were taken, one afternoon running into night.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/prague/img/22-the-tower-clock.jpg">
+<meta name="robots" content="noindex">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../../favicon-512.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+<style>
+  /* ---------- the Orloj: midnight-blue dial, gold leaf, sky bands ----------
+     Palette lifted from Prague's astronomical clock itself — the deep
+     blue of its day sky, the burnt brown of its dusk band, black for
+     night, gold for the hands and numerals. Every other eUrope page
+     is either card-stock or near-black; this one is the only blue. */
+  :root{
+    --bg:#0d1424;
+    --bg-2:#131c30;
+    --ink:#efe6cf;
+    --ink-soft:rgba(239,230,207,0.72);
+    --ink-faint:rgba(239,230,207,0.45);
+    --line:rgba(239,230,207,0.14);
+    --gold:#d4ad55;
+    --gold-deep:#a8823a;
+    --sky-day:#2d5a8c;
+    --sky-golden:#c7893a;
+    --sky-dusk:#7d4428;
+    --sky-blue-hour:#2b2748;
+    --sky-night:#07090f;
+    --ring-train:#6fb3a6;
+    --ring-oldtown:#e2b24a;
+    --ring-castle:#d0674c;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(ellipse 1000px 600px at 30% 10%, rgba(45,90,140,0.22), transparent 70%),
+      var(--bg);
+    color:var(--ink);
+    font-family:'Newsreader', Georgia, serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+
+  /* ---------- nav (shared eUrope pattern) ---------- */
+  #top-pill-nav{
+    position:fixed; top:24px; left:24px; z-index:20;
+    display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;
+    max-width:calc(100vw - 96px);
+    padding:8px 16px;
+    background:rgba(13,20,36,0.82);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:9999px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    font-size:11.5px; letter-spacing:1.2px;
+  }
+  .pill-main{
+    text-decoration:none; color:var(--gold);
+    font-family:'Marcellus', serif; text-transform:uppercase;
+    transition:color 0.2s ease;
+  }
+  .pill-main:hover{ color:#ecc978; }
+  .pill-slash{ color:#7c8499; font-family:ui-monospace, monospace; }
+  .pill-current{ font-style:italic; color:var(--ink); letter-spacing:0.3px; }
+  .pill-crumb{ font-style:italic; color:var(--ink-soft); letter-spacing:0.3px; text-decoration:none; transition:color 0.2s ease; }
+  .pill-crumb:hover{ color:var(--ink); }
+  #contact-badge{
+    position:fixed; top:24px; right:24px; z-index:20;
+    width:36px; height:36px;
+    background:rgba(13,20,36,0.82);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--ink); font-family:ui-monospace, monospace; font-size:11px; font-weight:600;
+    text-decoration:none;
+    box-shadow:0 4px 12px rgba(0,0,0,0.3);
+    transition:transform 0.2s ease, border-color 0.2s ease;
+  }
+  #contact-badge:hover{ transform:scale(1.08); border-color:rgba(255,255,255,0.3); }
+
+  /* ---------- intro ---------- */
+  .intro{ max-width:660px; margin:0 auto; padding:6.5rem 1.2rem 0.6rem; }
+  .intro-kicker{
+    font-family:'Marcellus', serif;
+    font-size:0.7rem; letter-spacing:0.18em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 0.7rem;
+  }
+  .intro h1{
+    font-family:'Marcellus', serif; font-weight:400;
+    font-size:clamp(2.1rem,6vw,3rem);
+    margin:0 0 0.9rem; line-height:1.05; color:var(--ink); letter-spacing:0.02em;
+  }
+  .intro p{ font-size:1.02rem; line-height:1.7; color:var(--ink-soft); margin:0 0 0.8rem; }
+  .intro .note{
+    margin-top:1.1rem; padding:0.85rem 1rem;
+    border:1px dashed var(--line); border-radius:6px;
+    font-family:ui-monospace, monospace; font-size:0.68rem; line-height:1.7; color:var(--ink-faint);
+  }
+  .intro .note strong{ color:var(--gold); font-weight:600; }
+
+  /* ---------- stage: dial + photo ---------- */
+  .stage{
+    max-width:1240px; margin:1.6rem auto 0; padding:0 1.2rem;
+    display:grid; grid-template-columns:1fr; gap:1.6rem; align-items:start;
+  }
+  @media(min-width:960px){
+    .stage{ grid-template-columns:minmax(0,1.05fr) minmax(0,1fr); gap:2.4rem; }
+    .panel{ position:sticky; top:84px; }
+  }
+
+  .dial-wrap{ width:100%; max-width:640px; margin:0 auto; }
+  #dial{ width:100%; height:auto; display:block; touch-action:none; user-select:none; -webkit-user-select:none; cursor:grab; }
+  #dial.dragging{ cursor:grabbing; }
+  #dial text{ pointer-events:none; }
+  .numeral{ font-family:'Marcellus', serif; fill:var(--gold); font-size:44px; text-anchor:middle; dominant-baseline:central; }
+  .numeral.off{ fill:rgba(212,173,85,0.35); }
+  .band-label{ font-family:ui-monospace, monospace; font-size:15px; fill:var(--ink-faint); letter-spacing:1px; }
+  .bead{ cursor:pointer; }
+  .bead circle.rim{ fill:none; stroke-width:0; opacity:0.9; transition:stroke-width .15s ease; }
+  .bead circle.dot{ stroke:#0b1120; stroke-width:2; }
+  .bead:hover circle.rim, .bead:focus circle.rim{ stroke-width:2.5; }
+  .bead:focus{ outline:none; }
+  .bead.active circle.rim{ stroke:#fff !important; stroke-width:4; }
+  .bead.active circle.dot{ fill:#fff; }
+  .center-time{ font-family:'Marcellus', serif; fill:var(--ink); font-size:64px; text-anchor:middle; }
+  .center-sub{ font-family:ui-monospace, monospace; fill:var(--ink-soft); font-size:17px; letter-spacing:2px; text-anchor:middle; text-transform:uppercase; }
+
+  .controls{ display:flex; justify-content:center; gap:0.6rem; margin-top:0.9rem; flex-wrap:wrap; }
+  @media(max-width:600px){ .controls button{ padding:6px 12px; font-size:0.72rem; } .stage{ gap:1rem; } }
+  .controls button{
+    font-family:'Marcellus', serif; font-size:0.8rem; letter-spacing:0.1em; text-transform:uppercase;
+    color:var(--gold); background:none; border:1px solid var(--gold-deep); border-radius:9999px;
+    padding:7px 16px; cursor:pointer; transition:background .15s ease, color .15s ease;
+  }
+  .controls button:hover, .controls button[aria-pressed="true"]{ background:var(--gold); color:var(--bg); }
+
+  .key{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:0.5rem 1.1rem; margin:1.6rem auto 0; max-width:900px; padding:0 1.2rem;
+    font-family:ui-monospace, monospace; font-size:0.66rem; line-height:1.6; color:var(--ink-faint);
+  }
+  .key span{ display:inline-flex; align-items:center; gap:0.4rem; }
+  .key i{ display:inline-block; width:11px; height:11px; border-radius:50%; }
+  .key i.sq{ border-radius:2px; }
+
+  /* ---------- photo panel ---------- */
+  .panel{ background:var(--bg-2); border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+  .panel-photo{ background:#05070c; display:flex; align-items:center; justify-content:center; height:min(58vh,520px); cursor:zoom-in; }
+  .panel-photo img{ max-width:100%; max-height:100%; object-fit:contain; display:block; transition:opacity .35s ease; }
+  .panel-photo img.fading{ opacity:0; }
+  .panel-body{ padding:1.1rem 1.3rem 1.3rem; }
+  .panel-when{ display:flex; align-items:baseline; gap:0.8rem; flex-wrap:wrap; margin:0 0 0.5rem; }
+  .panel-time{ font-family:'Marcellus', serif; font-size:1.7rem; color:var(--gold); }
+  .panel-date{ font-family:ui-monospace, monospace; font-size:0.7rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); }
+  .panel-ring{ display:inline-flex; align-items:center; gap:0.35rem; }
+  .panel-ring i{ width:9px; height:9px; border-radius:50%; display:inline-block; }
+  .panel-title{ font-family:'Marcellus', serif; font-size:1.35rem; margin:0 0 0.2rem; }
+  .panel-loc{ font-size:0.88rem; font-style:italic; color:var(--ink-faint); margin:0 0 0.7rem; }
+  .panel-desc{ font-size:1rem; line-height:1.65; color:var(--ink-soft); margin:0; }
+  .panel-count{ font-family:ui-monospace, monospace; font-size:0.64rem; color:var(--ink-faint); margin-top:0.9rem; }
+
+  .footnote{
+    max-width:660px; margin:3rem auto 3rem; padding:0 1.2rem;
+    font-family:ui-monospace, monospace; font-size:0.66rem; line-height:1.75; color:var(--ink-faint);
+  }
+
+  /* ---------- lightbox (reused pattern) ---------- */
+  #lightbox{
+    position:fixed; inset:0; z-index:100; background:rgba(5,7,12,0.96);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  #lightbox.open{ opacity:1; pointer-events:auto; }
+  #lightbox img{ max-width:94vw; max-height:92vh; object-fit:contain; }
+  #lightbox .lb-close{ position:absolute; top:20px; right:24px; background:none; border:none; color:var(--ink); font-size:28px; cursor:pointer; }
+
+  @media(max-width:600px){
+    #top-pill-nav{ top:14px; left:14px; padding:7px 12px; font-size:10.5px; gap:6px; }
+    #contact-badge{ top:14px; right:14px; }
+    .intro{ padding-top:5.2rem; }
+    .panel-photo{ height:auto; max-height:62vh; }
+  }
+  @media(prefers-reduced-motion:reduce){
+    .panel-photo img{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="top-pill-nav">
+  <a href="../../" class="pill-main">&larr; wander ~ field notes</a>
+  <span class="pill-slash">/</span>
+  <a href="../" class="pill-crumb">eUrope</a>
+  <span class="pill-slash">/</span>
+  <span class="pill-current">Clock</span>
+</nav>
+<a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
+
+<div class="intro">
+  <p class="intro-kicker">Wander &middot; eUrope &middot; Prague</p>
+  <h1>The Clock.</h1>
+  <p>Three days in and around Prague, set on one clock face at the minute each photo was taken &mdash; the train in along the Elbe, a race night in the Old Town, an afternoon at the castle that ran on down to Letn&aacute;. Stacked together they make one long afternoon that turns into night.</p>
+  <p>Drag the gold hand round the dial, tap any bead, or let it run.</p>
+  <div class="note">
+    <strong>53 photos &middot; Sept 3, 5 &amp; 6.</strong> The band behind the beads is the real sky over Prague on Sept 5 &mdash; blue until the light goes gold, sunset at 7:39, dusk until 8:13, the last of the blue at 8:53 &mdash; the same day/dusk/night bands the Orloj paints on its own dial.
+  </div>
+</div>
+
+<div class="stage">
+  <div>
+    <div class="dial-wrap">
+      <svg id="dial" viewBox="0 0 1000 1000" role="group" aria-label="Clock dial — drag the hand to move through the photos by time of day">
+        <defs>
+          <radialGradient id="faceGrad" cx="50%" cy="45%" r="60%">
+            <stop offset="0%" stop-color="#1a2744"/>
+            <stop offset="100%" stop-color="#0b1120"/>
+          </radialGradient>
+          <radialGradient id="sunGrad" cx="40%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#fff1c2"/>
+            <stop offset="60%" stop-color="#e2b24a"/>
+            <stop offset="100%" stop-color="#9c7329"/>
+          </radialGradient>
+        </defs>
+        <circle cx="500" cy="500" r="492" fill="none" stroke="var(--gold-deep)" stroke-width="3"/>
+        <circle cx="500" cy="500" r="480" fill="url(#faceGrad)" stroke="var(--gold)" stroke-width="2"/>
+        <g id="sky"></g>
+        <g id="ticks"></g>
+        <g id="numerals"></g>
+        <g id="tracks"></g>
+        <circle cx="500" cy="500" r="180" fill="#0b1120" stroke="var(--gold-deep)" stroke-width="2"/>
+        <text id="centerTime" class="center-time" x="500" y="505">5:00</text>
+        <text id="centerSub" class="center-sub" x="500" y="552">pm</text>
+        <g id="hand"></g>
+        <g id="beads"></g>
+      </svg>
+    </div>
+    <div class="controls">
+      <button type="button" id="prevBtn" aria-label="Earlier photo">&larr; earlier</button>
+      <button type="button" id="playBtn" aria-pressed="false">Let it run</button>
+      <button type="button" id="nextBtn" aria-label="Later photo">later &rarr;</button>
+    </div>
+  </div>
+
+  <aside class="panel" aria-live="polite">
+    <div class="panel-photo" id="panelPhoto"><img id="panelImg" src="" alt=""></div>
+    <div class="panel-body">
+      <div class="panel-when">
+        <span class="panel-time" id="panelTime"></span>
+        <span class="panel-date" id="panelDate"></span>
+      </div>
+      <h2 class="panel-title" id="panelTitle"></h2>
+      <p class="panel-loc" id="panelLoc"></p>
+      <p class="panel-desc" id="panelDesc"></p>
+      <p class="panel-count" id="panelCount"></p>
+    </div>
+  </aside>
+</div>
+
+<div class="key" id="key"></div>
+
+<p class="footnote">
+  The camera was still set to India time for the whole trip, so its timestamps run 3&frac12; hours ahead of Prague. Every time on this page has been corrected, checked against the Old Town Hall's own tower clock in <em>Ten Past Nine</em> (camera 00:40, clock face about 9:10). Each dot sits at its true minute; where several were taken within a minute or two of each other they stack outward across their day's ring rather than sliding round the dial, so the angle never lies.
+</p>
+
+<div id="lightbox">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script>
+/* ============================================================
+   Prague — kind:'clock'. 53 photos across three legs, times in
+   local Prague time (CEST), already corrected from the camera's
+   IST clock (camera − 3:30; see footnote). ring: which day's track
+   the bead sits on — outer to inner: train (Sept 3), oldtown
+   (Sept 5), castle (Sept 6). Order in the array doesn't matter;
+   everything is sorted by time-of-day at runtime.
+   Source files (folder/filename) are tracked in
+   europe/_review-tools/europe-2026-photo-db.json → used_where 'clock'.
+   ============================================================ */
+const PHOTOS = [
+  {id:1, ring:'train', day:'2026-09-03', time:'17:00', img:'img/01-hillside-village.jpg', title:'Red Roofs, Green Hill', location:'Elbe valley, Saxony', desc:'Villages start stacking up the slopes once the line leaves the plains behind.'},
+  {id:2, ring:'train', day:'2026-09-03', time:'17:03', img:'img/02-wooden-carriages.jpg', title:'Old Carriages', location:'A station platform, Saxony', desc:'A row of wooden passenger coaches parked on a siding, a different century from the one passing it.'},
+  {id:3, ring:'train', day:'2026-09-03', time:'17:08', img:'img/03-red-double-decker.jpg', title:'Double-Decker', location:'Saxony', desc:'A red regional train waiting beside the tracks.'},
+  {id:4, ring:'train', day:'2026-09-03', time:'17:33', img:'img/04-sandstone-towers.jpg', title:'Sandstone Towers', location:'Elbe valley, Saxony', desc:'Sandstone pillars above the river, a stone bridge strung between two of them near the top.'},
+  {id:5, ring:'train', day:'2026-09-03', time:'17:37', img:'img/05-river-bend.jpg', title:'The Bend', location:'Elbe valley', desc:'The line follows the Elbe closely enough that the river becomes the view for the next hour.'},
+  {id:6, ring:'train', day:'2026-09-03', time:'17:49', img:'img/06-under-the-cliffs.jpg', title:'Under the Cliffs', location:'Elbe valley', desc:'Half-timbered hotels built right up against the rock face.'},
+  {id:7, ring:'train', day:'2026-09-03', time:'17:51', img:'img/07-flower-boxes.jpg', title:'Flower Boxes', location:'Elbe valley', desc:'One pink house with every window planted.'},
+  {id:8, ring:'train', day:'2026-09-03', time:'18:05', img:'img/08-call-home.jpg', title:'Call Home', location:'On the train', desc:'A video call home, propped against the window — a sleeping dog on the other end.'},
+  {id:9, ring:'train', day:'2026-09-03', time:'18:15', img:'img/09-cable-stay.jpg', title:'Cable-Stayed', location:'Elbe valley, Czechia', desc:'A single white pylon holding up a road bridge over the Elbe.'},
+  {id:10, ring:'train', day:'2026-09-03', time:'18:20', img:'img/10-ruin-on-the-rock.jpg', title:'Ruin on the Rock', location:'Above the Elbe, Czechia', desc:'A castle ruin on the crag above the river, the light already going flat.'},
+  {id:11, ring:'train', day:'2026-09-03', time:'18:21', img:'img/11-wide-water.jpg', title:'Wide Water', location:'Elbe valley, Czechia', desc:'The river widens out, hills closing in on both banks.'},
+  {id:12, ring:'train', day:'2026-09-03', time:'19:09', img:'img/12-last-light-on-the-train.jpg', title:'Last Light', location:'Elbe valley, Czechia', desc:'Clouds finally breaking, about half an hour before sunset.'},
+  {id:13, ring:'train', day:'2026-09-03', time:'19:15', img:'img/13-factory-mural.jpg', title:'Factory Mural', location:'Near Prague', desc:'A patterned mural across a pharmaceutical plant, seen through the carriage glass.'},
+  {id:14, ring:'oldtown', day:'2026-09-05', time:'20:16', img:'img/14-tram-and-runners.jpg', title:'Race Night', location:'Prague', desc:'A tram nosing through a street full of runners in race bibs.'},
+  {id:15, ring:'oldtown', day:'2026-09-05', time:'20:20', img:'img/15-finish-arch.jpg', title:'The Arch', location:'Náměstí Republiky, Prague', desc:'An inflatable race arch in front of the Municipal House — the whole square taken over by a night run.'},
+  {id:16, ring:'oldtown', day:'2026-09-05', time:'20:22', img:'img/16-municipal-house.jpg', title:'Municipal House', location:'Náměstí Republiky, Prague', desc:'The Municipal House lit up gold after dark.'},
+  {id:17, ring:'oldtown', day:'2026-09-05', time:'20:24', img:'img/17-mosaic-over-the-door.jpg', title:'Over the Door', location:'Municipal House, Prague', desc:'The mosaic above the main entrance, floodlit.'},
+  {id:18, ring:'oldtown', day:'2026-09-05', time:'20:27', img:'img/18-powder-tower.jpg', title:'Powder Tower', location:'Náměstí Republiky, Prague', desc:'The Powder Tower, straight up.'},
+  {id:19, ring:'oldtown', day:'2026-09-05', time:'20:32', img:'img/19-behind-the-barriers.jpg', title:'Behind the Barriers', location:'Old Town, Prague', desc:'Runners streaming past the crowd barriers.'},
+  {id:20, ring:'oldtown', day:'2026-09-05', time:'20:42', img:'img/20-tyn-over-the-square.jpg', title:'Týn at Night', location:'Old Town Square, Prague', desc:'Týn Church over the square, the gabled houses below it glowing orange.'},
+  {id:21, ring:'oldtown', day:'2026-09-05', time:'20:45', img:'img/21-sgraffito.jpg', title:'Sgraffito', location:'Old Town Square, Prague', desc:'A façade scratched all over with black-and-white figures, beside the Old Town Hall.'},
+  {id:22, ring:'oldtown', day:'2026-09-05', time:'21:10', img:'img/22-the-tower-clock.jpg', title:'Ten Past Nine', location:'Old Town Square, Prague', desc:'The Old Town Hall tower from above the square. Its clock reads about ten past nine — the photo every time on this page is set from.'},
+  {id:23, ring:'oldtown', day:'2026-09-05', time:'21:42', img:'img/23-lit-steeple.jpg', title:'Steeple', location:'Old Town, Prague', desc:'A lit steeple over the rooftops.'},
+  {id:24, ring:'oldtown', day:'2026-09-05', time:'22:06', img:'img/24-square-at-night.jpg', title:'Still Busy', location:'Old Town Square, Prague', desc:'Café tables still full late into the evening.'},
+  {id:25, ring:'oldtown', day:'2026-09-05', time:'22:16', img:'img/25-red-pickup.jpg', title:'Red Pickup', location:'Old Town, Prague', desc:'A vintage red pickup parked on the cobbles.'},
+  {id:26, ring:'oldtown', day:'2026-09-05', time:'22:16', img:'img/26-coca-cola-truck.jpg', title:'Delicious and Refreshing', location:'Old Town, Prague', desc:'A Coca-Cola truck from another era, parked for the night.'},
+  {id:27, ring:'oldtown', day:'2026-09-05', time:'22:16', img:'img/27-neon-awnings.jpg', title:'Neon', location:'Old Town, Prague', desc:'Red awnings outlined in neon on an otherwise dark street.'},
+  {id:28, ring:'oldtown', day:'2026-09-05', time:'22:29', img:'img/28-stucco.jpg', title:'Stucco', location:'Old Town, Prague', desc:'Baroque plasterwork over a doorway, the last frame of the night.'},
+  {id:29, ring:'castle', day:'2026-09-06', time:'16:08', img:'img/29-sticker-wall.jpg', title:'Did You Know', location:'Malá Strana, Prague', desc:'A sticker wall on the way up to the castle, one of them a handwritten protest note.'},
+  {id:30, ring:'castle', day:'2026-09-06', time:'16:08', img:'img/30-castle-steps.jpg', title:'The Climb', location:'Castle steps, Prague', desc:'Walking up toward the castle against the sun.'},
+  {id:31, ring:'castle', day:'2026-09-06', time:'16:14', img:'img/31-malastrana-domes.jpg', title:'Malá Strana', location:'From the castle hill, Prague', desc:'Green domes and spires over the Malá Strana rooftops.'},
+  {id:32, ring:'castle', day:'2026-09-06', time:'16:16', img:'img/32-charles-bridge-view.jpg', title:'Across the River', location:'From the castle hill, Prague', desc:'The Old Town across the Vltava, the bridge towers in the middle.'},
+  {id:33, ring:'castle', day:'2026-09-06', time:'16:17', img:'img/33-old-and-new-skyline.jpg', title:'Old and New', location:'From the castle hill, Prague', desc:'The high-rises of the newer city behind the old roofline.'},
+  {id:34, ring:'castle', day:'2026-09-06', time:'16:33', img:'img/34-dragon-relief.jpg', title:'Dragon', location:'Prague Castle', desc:'A dragon-slaying relief in a red pediment.'},
+  {id:35, ring:'castle', day:'2026-09-06', time:'16:36', img:'img/35-south-tower.jpg', title:'South Tower', location:'St. Vitus Cathedral, Prague', desc:'The cathedral’s south tower against a completely blue sky.'},
+  {id:36, ring:'castle', day:'2026-09-06', time:'16:41', img:'img/36-golden-mosaic.jpg', title:'Gold Mosaic', location:'St. Vitus Cathedral, Prague', desc:'The mosaic over the cathedral’s south entrance, glittering in the afternoon sun.'},
+  {id:37, ring:'castle', day:'2026-09-06', time:'16:47', img:'img/37-tympanum.jpg', title:'Tympanum', location:'St. Vitus Cathedral, Prague', desc:'Carved figures packed into the arch over the west door.'},
+  {id:38, ring:'castle', day:'2026-09-06', time:'16:49', img:'img/38-rose-window.jpg', title:'Rose Window', location:'St. Vitus Cathedral, Prague', desc:'The west front and its rose window, the stone gone gold.'},
+  {id:39, ring:'castle', day:'2026-09-06', time:'16:54', img:'img/39-courtyard-fountain.jpg', title:'Courtyard Fountain', location:'Prague Castle', desc:'The fountain in one of the castle courtyards.'},
+  {id:40, ring:'castle', day:'2026-09-06', time:'16:56', img:'img/40-the-guard.jpg', title:'The Guard', location:'Prague Castle', desc:'Two castle guards in striped sentry boxes, a third in camouflage keeping an eye on the gate.'},
+  {id:41, ring:'castle', day:'2026-09-06', time:'16:59', img:'img/41-peacock-on-cobbles.jpg', title:'Peacock', location:'Prague Castle grounds', desc:'A peacock walking the cobbles as if it owns them.'},
+  {id:42, ring:'castle', day:'2026-09-06', time:'16:59', img:'img/42-golden-retriever.jpg', title:'Passing Through', location:'Prague Castle grounds', desc:'A golden retriever out for a walk past the castle walls.'},
+  {id:43, ring:'castle', day:'2026-09-06', time:'17:01', img:'img/43-peacock-close.jpg', title:'Close Up', location:'Prague Castle grounds', desc:'Close enough to see every feather change colour.'},
+  {id:44, ring:'castle', day:'2026-09-06', time:'17:02', img:'img/44-cathedral-from-the-gardens.jpg', title:'From the Gardens', location:'Royal Garden, Prague', desc:'The whole length of the cathedral from across the garden.'},
+  {id:45, ring:'castle', day:'2026-09-06', time:'17:08', img:'img/45-red-flowerbeds.jpg', title:'Red Beds', location:'Royal Garden, Prague', desc:'Flowerbeds in solid red, long shadows across the lawn.'},
+  {id:46, ring:'castle', day:'2026-09-06', time:'17:09', img:'img/46-stone-lions.jpg', title:'Lions', location:'Royal Garden, Prague', desc:'Stone lions guarding the garden steps.'},
+  {id:47, ring:'castle', day:'2026-09-06', time:'17:50', img:'img/47-bridges-and-towers.jpg', title:'Towers and Bridges', location:'Above the Vltava, Prague', desc:'The Old Town and its bridges from above.'},
+  {id:48, ring:'castle', day:'2026-09-06', time:'17:53', img:'img/48-bridges-downstream.jpg', title:'Downstream', location:'Above the Vltava, Prague', desc:'One bridge after another down the river.'},
+  {id:49, ring:'castle', day:'2026-09-06', time:'18:07', img:'img/49-park-pond.jpg', title:'Pond', location:'Letná, Prague', desc:'A still pond under the trees.'},
+  {id:50, ring:'castle', day:'2026-09-06', time:'18:10', img:'img/50-dog-in-the-reeds.jpg', title:'Swim', location:'Letná, Prague', desc:'A dog coming out of the water, mid-shake.'},
+  {id:51, ring:'castle', day:'2026-09-06', time:'18:26', img:'img/51-terrace-steps.jpg', title:'The Steps', location:'Letná, Prague', desc:'Graffiti-covered stone steps up to the terrace, people sitting along the top.'},
+  {id:52, ring:'castle', day:'2026-09-06', time:'18:38', img:'img/52-zizkov-tower.jpg', title:'TV Tower', location:'Letná, Prague', desc:'The Žižkov TV tower on the horizon, a river boat below.'},
+  {id:53, ring:'castle', day:'2026-09-06', time:'18:38', img:'img/53-river-panorama.jpg', title:'Late Sun', location:'Letná, Prague', desc:'The embankment and Týn’s spires in the last of the afternoon light.'},
+];
+
+const RINGS = {
+  train:   { label:'Sept 3 · the train in',  lanes:[350,368,332,314], color:'var(--ring-train)' },
+  oldtown: { label:'Sept 5 · Old Town, night', lanes:[298,316,280,334], color:'var(--ring-oldtown)' },
+  castle:  { label:'Sept 6 · castle to Letná', lanes:[244,262,226,280,298,316], color:'var(--ring-castle)' },
+};
+
+/* Real sky over Prague, Sept 5 2026, local time (NOAA solar
+   position formula, 50.09°N 14.42°E): sun at +6° 18:56, sunset
+   19:39, civil dusk ends 20:13, nautical dusk ends 20:53. */
+const SKY = [
+  { from:'15:30', to:'18:56', color:'var(--sky-day)',       label:'day' },
+  { from:'18:56', to:'19:39', color:'var(--sky-golden)',    label:'low sun' },
+  { from:'19:39', to:'20:13', color:'var(--sky-dusk)',      label:'dusk' },
+  { from:'20:13', to:'20:53', color:'var(--sky-blue-hour)', label:'last blue' },
+  { from:'20:53', to:'22:50', color:'var(--sky-night)',     label:'night' },
+];
+const SPAN_START = toMin('15:30'), SPAN_END = toMin('22:50');
+
+const CX = 500, CY = 500, BEAD_R = 8, SVGNS = 'http://www.w3.org/2000/svg';
+
+function toMin(hhmm){ const [h,m] = hhmm.split(':').map(Number); return h*60 + m; }
+// 12-hour face, 12 at the top, clockwise — the pm hours only.
+function minToAngle(min){ return ((min / 60) % 12) / 12 * 360; }
+function angleToMin(deg){
+  const h12 = ((deg % 360) + 360) % 360 / 30;           // 0..12
+  let min = (h12 + 12) * 60;                             // read it as pm
+  if (min < SPAN_START || min > SPAN_END){
+    // in the unphotographed part of the dial — snap to the nearer end
+    const dStart = Math.abs(angDiff(deg, minToAngle(SPAN_START)));
+    const dEnd = Math.abs(angDiff(deg, minToAngle(SPAN_END)));
+    min = dStart < dEnd ? SPAN_START : SPAN_END;
+  }
+  return min;
+}
+function angDiff(a, b){ return ((a - b + 540) % 360) - 180; }
+function polar(r, deg){ const t = (deg - 90) * Math.PI / 180; return [CX + r*Math.cos(t), CY + r*Math.sin(t)]; }
+function arcPath(r1, r2, a1, a2){
+  const large = (a2 - a1) % 360 > 180 ? 1 : 0;
+  const [x1,y1] = polar(r2, a1), [x2,y2] = polar(r2, a2), [x3,y3] = polar(r1, a2), [x4,y4] = polar(r1, a1);
+  return `M${x1},${y1} A${r2},${r2} 0 ${large} 1 ${x2},${y2} L${x3},${y3} A${r1},${r1} 0 ${large} 0 ${x4},${y4} Z`;
+}
+function el(tag, attrs, parent){
+  const n = document.createElementNS(SVGNS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(n);
+  return n;
+}
+function fmt12(min){
+  const h = Math.floor(min / 60), m = Math.round(min % 60);
+  return `${((h + 11) % 12) + 1}:${String(m).padStart(2,'0')}`;
+}
+function fmtDate(iso){
+  return new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday:'short', day:'numeric', month:'long' });
+}
+
+/* ---------- data prep ---------- */
+PHOTOS.forEach(p => { p.min = toMin(p.time); p.angle = minToAngle(p.min); });
+const ORDER = PHOTOS.slice().sort((a,b) => a.min - b.min || a.day.localeCompare(b.day) || a.id - b.id);
+
+// Every bead sits at its true minute. Where beads on the same day would
+// touch, the later one steps out to that ring's next lane (radially),
+// never sideways along the dial — the angle always stays honest.
+// The castle (4–7pm) and Old Town (8–10:30pm) never share an hour, so
+// a crowded castle cluster may spill into Old Town's empty lanes.
+const MIN_DIST = 2*BEAD_R + 2.5;
+const placed = [];                                        // shared: no two dots may touch, any day
+Object.keys(RINGS).forEach(key => {
+  ORDER.filter(p => p.ring === key).forEach(p => {
+    let best = null, bestClear = -1;
+    for (const r of RINGS[key].lanes){
+      const [x,y] = polar(r, p.angle);
+      const clear = placed.reduce((m,q) => Math.min(m, Math.hypot(q.x - x, q.y - y)), Infinity);
+      if (clear >= MIN_DIST){ best = {r,x,y}; break; }
+      if (clear > bestClear){ bestClear = clear; best = {r,x,y}; }
+    }
+    p.bx = best.x; p.by = best.y; p.br = best.r;
+    placed.push({x:best.x, y:best.y});
+  });
+});
+
+/* ---------- draw the face ---------- */
+const svg = document.getElementById('dial');
+const gSky = document.getElementById('sky'), gTicks = document.getElementById('ticks'),
+      gNum = document.getElementById('numerals'), gTracks = document.getElementById('tracks'),
+      gBeads = document.getElementById('beads'), gHand = document.getElementById('hand');
+
+// sky band (behind all three tracks)
+const SKY_R1 = 212, SKY_R2 = 380;
+SKY.forEach(s => {
+  el('path', { d: arcPath(SKY_R1, SKY_R2, minToAngle(toMin(s.from)), minToAngle(toMin(s.to))), fill: s.color, opacity: 0.9 }, gSky);
+});
+// the unphotographed part of the dial — hatched, dim
+el('path', { d: arcPath(SKY_R1, SKY_R2, minToAngle(SPAN_END), minToAngle(SPAN_START) + 360), fill:'rgba(239,230,207,0.035)', stroke:'rgba(239,230,207,0.08)', 'stroke-dasharray':'4 8' }, gSky);
+// sunset / dark markers
+[['19:39','sunset 7:39'],['20:53','dark 8:53']].forEach(([t, label]) => {
+  const a = minToAngle(toMin(t));
+  const [x1,y1] = polar(SKY_R1, a), [x2,y2] = polar(SKY_R2 + 8, a);
+  el('line', { x1, y1, x2, y2, stroke:'var(--gold)', 'stroke-width':1.5, 'stroke-dasharray':'3 5', opacity:0.7 }, gSky);
+});
+
+// minute + hour ticks
+for (let i = 0; i < 60; i++){
+  const a = i * 6, major = i % 5 === 0;
+  const [x1,y1] = polar(major ? 446 : 458, a), [x2,y2] = polar(470, a);
+  el('line', { x1, y1, x2, y2, stroke:'var(--gold)', 'stroke-width': major ? 3 : 1.2, opacity: major ? 0.9 : 0.5 }, gTicks);
+}
+// numerals — dim outside the photographed hours
+const ROMAN = ['XII','I','II','III','IV','V','VI','VII','VIII','IX','X','XI'];
+ROMAN.forEach((n, i) => {
+  const min = (i + 12) * 60;
+  const [x,y] = polar(418, i * 30);
+  const t = el('text', { x, y, class: 'numeral' + (min + 60 < SPAN_START || min > SPAN_END ? ' off' : '') }, gNum);
+  t.textContent = n;
+});
+
+// track rings
+Object.values(RINGS).forEach(R => {
+  el('circle', { cx:CX, cy:CY, r:R.lanes[0], fill:'none', stroke:R.color, 'stroke-width':1.5, opacity:0.45, 'stroke-dasharray':'2 6' }, gTracks);
+});
+
+// beads — small gold-rimmed "stars", coloured by day
+ORDER.forEach(p => {
+  const R = RINGS[p.ring];
+  const g = el('g', { class:'bead', tabindex:'0', role:'button', 'aria-label': `${p.title}, ${fmt12(p.min)} pm, ${fmtDate(p.day)}` }, gBeads);
+  el('circle', { cx:p.bx, cy:p.by, r:BEAD_R + 9, fill:'transparent' }, g);   // bigger tap target
+  el('circle', { class:'dot', cx:p.bx, cy:p.by, r:BEAD_R, fill:R.color }, g);
+  el('circle', { class:'rim', cx:p.bx, cy:p.by, r:BEAD_R + 3, stroke:R.color }, g);
+  g.addEventListener('click', (e) => { e.stopPropagation(); stopPlay(); select(p, true); });
+  g.addEventListener('pointerdown', (e) => e.stopPropagation());
+  g.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); stopPlay(); select(p, true); } });
+  p.node = g;
+});
+
+// the hand: a long gold pointer with the sun riding on it, Orloj-style
+const handG = el('g', {}, gHand);
+el('line', { x1:CX, y1:CY - 182, x2:CX, y2:CY - 448, stroke:'var(--gold)', 'stroke-width':6, 'stroke-linecap':'round' }, handG);
+el('path', { d:`M${CX},${CY-472} L${CX-14},${CY-438} L${CX+14},${CY-438} Z`, fill:'var(--gold)' }, handG);
+el('circle', { cx:CX, cy:CY - 196, r:17, fill:'url(#sunGrad)', stroke:'#9c7329', 'stroke-width':2 }, handG);
+for (let i = 0; i < 12; i++){
+  const a = i * 30 * Math.PI / 180;
+  el('line', { x1:CX + Math.sin(a)*20, y1:CY - 196 - Math.cos(a)*20, x2:CX + Math.sin(a)*26, y2:CY - 196 - Math.cos(a)*26, stroke:'var(--gold)', 'stroke-width':2.5, 'stroke-linecap':'round' }, handG);
+}
+
+// key
+document.getElementById('key').innerHTML =
+  Object.values(RINGS).map(R => `<span><i style="border:2px solid ${R.color}"></i>${R.label}</span>`).join('') +
+  SKY.map(s => `<span><i class="sq" style="background:${s.color}"></i>${s.label}</span>`).join('');
+
+/* ---------- state ---------- */
+let handMin = SPAN_START, current = null, anim = null;
+
+function setHand(min){
+  handMin = min;
+  handG.setAttribute('transform', `rotate(${minToAngle(min)} ${CX} ${CY})`);
+  document.getElementById('centerTime').textContent = fmt12(min);
+}
+function animateHandTo(min, ms){
+  cancelAnimationFrame(anim);
+  const from = handMin, t0 = performance.now();
+  if (ms <= 0 || matchMedia('(prefers-reduced-motion: reduce)').matches){ setHand(min); return; }
+  const step = (now) => {
+    const k = Math.min(1, (now - t0) / ms), e = k < 0.5 ? 2*k*k : 1 - Math.pow(-2*k + 2, 2) / 2;
+    setHand(from + (min - from) * e);
+    if (k < 1) anim = requestAnimationFrame(step);
+  };
+  anim = requestAnimationFrame(step);
+}
+
+const panelImg = document.getElementById('panelImg');
+function select(p, moveHand){
+  if (current === p) { if (moveHand) animateHandTo(p.min, 500); return; }
+  if (current) current.node.classList.remove('active');
+  current = p; p.node.classList.add('active');
+  gBeads.appendChild(p.node);                              // draw on top
+  if (moveHand) animateHandTo(p.min, 600);
+  panelImg.classList.add('fading');
+  const img = new Image();
+  img.onload = img.onerror = () => {
+    if (current !== p) return;
+    panelImg.src = p.img; panelImg.alt = p.title;
+    panelImg.classList.remove('fading');
+  };
+  img.src = p.img;
+  document.getElementById('panelTime').textContent = fmt12(p.min) + ' pm';
+  document.getElementById('panelDate').innerHTML =
+    `<span class="panel-ring"><i style="background:${RINGS[p.ring].color}"></i>${fmtDate(p.day)}</span>`;
+  document.getElementById('panelTitle').textContent = p.title;
+  document.getElementById('panelLoc').textContent = p.location;
+  document.getElementById('panelDesc').textContent = p.desc;
+  document.getElementById('panelCount').textContent = `${ORDER.indexOf(p) + 1} of ${ORDER.length}, in order of the clock`;
+  document.getElementById('centerSub').textContent = 'pm · ' + RINGS[p.ring].label.split(' · ')[0];
+}
+function nearest(min){
+  return ORDER.reduce((best, p) => Math.abs(p.min - min) < Math.abs(best.min - min) ? p : best, ORDER[0]);
+}
+function stepBy(d){
+  const i = current ? ORDER.indexOf(current) : -1;
+  select(ORDER[(i + d + ORDER.length) % ORDER.length], true);
+}
+
+/* ---------- drag the hand ---------- */
+let dragging = false;
+function pointerMin(e){
+  const b = svg.getBoundingClientRect();
+  const x = (e.clientX - b.left) / b.width * 1000 - CX, y = (e.clientY - b.top) / b.height * 1000 - CY;
+  return angleToMin(Math.atan2(y, x) * 180 / Math.PI + 90);
+}
+svg.addEventListener('pointerdown', (e) => {
+  dragging = true; stopPlay(); svg.classList.add('dragging');
+  svg.setPointerCapture(e.pointerId);
+  cancelAnimationFrame(anim);
+  const m = pointerMin(e); setHand(m); select(nearest(m), false);
+});
+svg.addEventListener('pointermove', (e) => {
+  if (!dragging) return;
+  const m = pointerMin(e); setHand(m); select(nearest(m), false);
+});
+const endDrag = () => {
+  if (!dragging) return;
+  dragging = false; svg.classList.remove('dragging');
+  if (current) animateHandTo(current.min, 250);            // settle onto the photo's minute
+};
+svg.addEventListener('pointerup', endDrag);
+svg.addEventListener('pointercancel', endDrag);
+
+/* ---------- let it run ---------- */
+const playBtn = document.getElementById('playBtn');
+let playTimer = null;
+function startPlay(){
+  playBtn.setAttribute('aria-pressed','true'); playBtn.textContent = 'Stop';
+  if (!current || current === ORDER[ORDER.length - 1]) select(ORDER[0], true); else stepBy(1);
+  playTimer = setInterval(() => {
+    if (current === ORDER[ORDER.length - 1]) { stopPlay(); return; }
+    stepBy(1);
+  }, 2600);
+}
+function stopPlay(){
+  clearInterval(playTimer); playTimer = null;
+  playBtn.setAttribute('aria-pressed','false'); playBtn.textContent = 'Let it run';
+}
+playBtn.addEventListener('click', () => playTimer ? stopPlay() : startPlay());
+document.getElementById('prevBtn').addEventListener('click', () => { stopPlay(); stepBy(-1); });
+document.getElementById('nextBtn').addEventListener('click', () => { stopPlay(); stepBy(1); });
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') { closeLightbox(); return; }
+  if (lightboxEl.classList.contains('open')) return;
+  if (e.key === 'ArrowRight') { stopPlay(); stepBy(1); }
+  if (e.key === 'ArrowLeft') { stopPlay(); stepBy(-1); }
+});
+
+/* ---------- lightbox ---------- */
+const lightboxEl = document.getElementById('lightbox');
+const lightboxImg = document.getElementById('lightboxImg');
+function openLightbox(src, alt){ lightboxImg.src = src; lightboxImg.alt = alt || ''; lightboxEl.classList.add('open'); }
+function closeLightbox(){ lightboxEl.classList.remove('open'); }
+document.getElementById('panelPhoto').addEventListener('click', () => { if (current) openLightbox(current.img, current.title); });
+lightboxEl.querySelector('.lb-close').addEventListener('click', closeLightbox);
+lightboxEl.addEventListener('click', (e) => { if (e.target === lightboxEl) closeLightbox(); });
+
+/* ---------- start on the photo the clock was set from ---------- */
+const start = PHOTOS.find(p => p.id === 22) || ORDER[0];
+setHand(start.min);
+select(start, false);
+</script>
+</body>
+</html>

@@ -164,6 +164,19 @@ through for variety.
   First instance: `urotrip2026/berlin-deal/` ("The Deal") — a draft,
   not yet linked from the eUrope landing page. Built by copying that
   page's structure.
+- `kind:'clock'` — an astronomical-clock dial (Prague's Orloj): a
+  12-hour pm face where every photo is a dot at the true minute it was
+  taken, one concentric ring per day, over sky bands computed from the
+  real sun times for that place and date (day / low sun / dusk / last
+  blue / night). A draggable gold hand scrubs through the photos by time
+  of day; the nearest photo opens beside the dial. Reserve it for a batch
+  whose *time of day* is the story (light turning into night across
+  several days) — and only once the camera clock is trustworthy or
+  corrected, since the whole format is a claim about when. Dots never
+  slide sideways off their minute to avoid overlap; they step out into
+  another lane radially instead. First instance: `urotrip2026/prague/`
+  ("The Clock") — a draft, dashboard-only. Built by copying that
+  page's structure.
 - **A brand-new `kind`'s first instance is a dashboard-only draft
   until the format itself is chosen, not just its content** (decided
   2026-09-04, after The Wall's real, working first instance still got
@@ -451,6 +464,16 @@ pass.
   buildability/fit/reusability before anything was built — worth
   reaching for that pattern again when a new format is genuinely open-
   ended rather than dictated by the batch's own content.
+- `urotrip2026/prague/index.html` (`kind:'clock'`) — `PHOTOS` array:
+  `id, ring`(`'train'|'oldtown'|'castle'` — keys of `RINGS`, one per
+  day, each with its own colour and radial `lanes`), `day, time`(local
+  time, `'HH:MM'`, **already corrected** — this trip's camera ran on IST,
+  local = camera − 3:30, see europe/_review-tools/README.md), `img,
+  title, location, desc`. Array order doesn't matter; dot positions,
+  lanes and the earlier/later sequence are all computed from `time` at
+  runtime. `SKY` holds the sky-band boundaries (NOAA solar formula for
+  that city/date, computed offline — never eyeballed). 53 photos across
+  Sept 3/5/6.
 - `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
   (§7 above) — the Stories ring feed. **Known rule (decided
   2026-08-22):** Stories must be a curated, distinct edit — a handful of
