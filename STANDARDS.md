@@ -175,8 +175,10 @@ through for variety.
   corrected, since the whole format is a claim about when. Dots never
   slide sideways off their minute to avoid overlap; they step out into
   another lane radially instead. First instance: `urotrip2026/prague/`
-  ("The Clock") — a draft, dashboard-only. Built by copying that
-  page's structure.
+  ("The Clock") — promoted to the eUrope landing page and hub card at
+  the user's request on 2026-09-24, the same day it was built ("will
+  see what we can do"), so still open to being swapped for another
+  format. Built by copying that page's structure.
 - **A brand-new `kind`'s first instance is a dashboard-only draft
   until the format itself is chosen, not just its content** (decided
   2026-09-04, after The Wall's real, working first instance still got
