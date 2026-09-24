@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Amsterdam to Prague · Wander</title>
+<meta name="description" content="The whole trip in one walk — Amsterdam, Berlin, Prague, day by day, with the tickets along the way.">
+<meta name="theme-color" content="#efe6d4">
+<meta name="robots" content="noindex">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Wander">
+<meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/amsterdam-to-prague/">
+<meta property="og:title" content="Amsterdam to Prague · Wander">
+<meta property="og:description" content="The whole trip in one walk — Amsterdam, Berlin, Prague, day by day, with the tickets along the way.">
+<meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/east-side-gallery/img/15-the-kiss.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Amsterdam to Prague · Wander">
+<meta name="twitter:description" content="The whole trip in one walk — Amsterdam, Berlin, Prague, day by day, with the tickets along the way.">
+<meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/east-side-gallery/img/15-the-kiss.jpg">
+<link rel="icon" href="../../favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="192x192" href="../../favicon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../../favicon-512.png">
+<link rel="apple-touch-icon" href="../../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+  /* ---------- a travel journal: kraft-ish paper, typewriter tickets,
+     photos taped in at whatever angle they landed. The one eUrope page
+     meant to be read top to bottom as the whole trip, so it's warm
+     paper rather than any of the dark gallery treatments. ---------- */
+  :root{
+    --paper:#efe6d4;
+    --paper-2:#e4d7bd;
+    --ink:#2a2420;
+    --ink-soft:rgba(42,36,32,0.74);
+    --ink-faint:rgba(42,36,32,0.48);
+    --line:rgba(42,36,32,0.18);
+    --rail:#a8322b;
+    --ticket:#faf5e8;
+    --ticket-ink:#3b3530;
+    --tape:rgba(226,206,140,0.62);
+    --amsterdam:#d0632f;
+    --berlin:#3d5a80;
+    --prague:#7a3b69;
+  }
+  *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background:
+      radial-gradient(circle at 12% 18%, rgba(120,90,50,0.05) 0, transparent 22%),
+      radial-gradient(circle at 88% 64%, rgba(120,90,50,0.05) 0, transparent 26%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Libre Caslon Text', Georgia, serif;
+    min-height:100vh;
+  }
+  a{ color:inherit; }
+
+  /* ---------- nav (shared eUrope pattern) ---------- */
+  #top-pill-nav{
+    position:fixed; top:24px; left:24px; z-index:1000;
+    display:inline-flex; align-items:center; gap:8px; flex-wrap:wrap;
+    max-width:calc(100vw - 96px);
+    padding:8px 16px;
+    background:rgba(42,36,32,0.86);
+    backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:9999px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.18);
+    font-size:11.5px; letter-spacing:1.2px;
+  }
+  .pill-main{ text-decoration:none; color:#e6a36f; font-family:'Special Elite', monospace; text-transform:uppercase; }
+  .pill-main:hover{ color:#f2bb8c; }
+  .pill-slash{ color:#8a8478; font-family:ui-monospace, monospace; }
+  .pill-current{ font-style:italic; color:#efe6d4; letter-spacing:0.3px; }
+  .pill-crumb{ font-style:italic; color:#c9bfae; letter-spacing:0.3px; text-decoration:none; }
+  .pill-crumb:hover{ color:#efe6d4; }
+  #contact-badge{
+    position:fixed; top:24px; right:24px; z-index:1000;
+    width:36px; height:36px;
+    background:rgba(42,36,32,0.86);
+    border:1px solid rgba(255,255,255,0.1); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    color:#efe6d4; font-family:ui-monospace, monospace; font-size:11px; font-weight:600;
+    text-decoration:none; box-shadow:0 4px 12px rgba(0,0,0,0.18);
+    transition:transform 0.2s ease;
+  }
+  #contact-badge:hover{ transform:scale(1.08); }
+
+  /* ---------- draft banner ---------- */
+  .draft-banner{
+    max-width:760px; margin:6.2rem auto 0; padding:0.7rem 1rem;
+    border:1.5px dashed var(--rail); border-radius:6px; color:var(--rail);
+    font-family:'Special Elite', monospace; font-size:0.78rem; line-height:1.6;
+    background:rgba(168,50,43,0.05);
+  }
+
+  /* ---------- masthead ---------- */
+  .masthead{ max-width:760px; margin:0 auto; padding:2.2rem 1.2rem 0.4rem; }
+  .kicker{ font-family:'Special Elite', monospace; font-size:0.76rem; letter-spacing:0.16em; text-transform:uppercase; color:var(--rail); margin:0 0 0.8rem; }
+  .masthead h1{ font-weight:400; font-size:clamp(2.2rem,7vw,3.4rem); line-height:1.04; margin:0 0 0.7rem; }
+  .masthead h1 em{ color:var(--rail); font-style:italic; }
+  .masthead .dates{ font-family:'Special Elite', monospace; color:var(--ink-soft); font-size:0.9rem; margin:0 0 1.2rem; }
+
+  /* ---------- commentary slots ---------- */
+  .words{ font-size:1.02rem; line-height:1.8; color:var(--ink); margin:0.4rem 0 0; }
+  .words p{ margin:0 0 0.9rem; }
+  .words-pending{
+    margin:0.6rem 0 0; padding:0.9rem 1rem;
+    border:1.5px dashed var(--line); border-radius:6px;
+    font-family:'Special Elite', monospace; font-size:0.78rem; line-height:1.6; color:var(--ink-faint);
+    background:repeating-linear-gradient(transparent 0 27px, rgba(42,36,32,0.06) 27px 28px);
+  }
+
+  /* ---------- route map ---------- */
+  .route-map{ max-width:1000px; margin:1.6rem auto 0; padding:0 1.2rem; }
+  #route{ height:min(62vh,520px); border-radius:8px; border:1px solid var(--line); box-shadow:0 10px 30px -18px rgba(42,36,32,0.5); }
+  .leaflet-container{ background:var(--paper-2) !important; font-family:'Libre Caslon Text', serif; }
+  /* OSM's own tiles (CARTO's now need an API key), toned down to sit on paper */
+  .leaflet-tile-pane{ filter:sepia(0.38) saturate(0.62) contrast(0.94) brightness(1.03); }
+  .city-pin{
+    padding:4px 10px; border-radius:9999px; border:2px solid var(--paper); white-space:nowrap;
+    color:#fff; font-family:'Special Elite', monospace; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3);
+    transform:translate(-50%,-50%); display:inline-block; cursor:pointer;
+  }
+  .rm-caption{ font-family:'Special Elite', monospace; font-size:0.7rem; color:var(--ink-faint); margin:0.6rem 0 0; line-height:1.6; }
+  .rm-caption a{ color:inherit; }
+  .stop-pin{
+    width:24px; height:24px; border-radius:50%; border:2px solid var(--paper);
+    color:#fff; font-family:'Special Elite', monospace; font-size:11px;
+    display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.3);
+  }
+  .leaflet-popup-content{ font-family:'Libre Caslon Text', serif; font-size:13px; }
+  .leaflet-popup-content a{ color:var(--rail); }
+
+  /* ---------- days ---------- */
+  .days{ max-width:1000px; margin:2.4rem auto 0; padding:0 1.2rem; }
+  .city-break{
+    display:flex; align-items:center; gap:1rem; margin:3.2rem 0 0.4rem;
+    font-family:'Special Elite', monospace; font-size:0.86rem; letter-spacing:0.2em; text-transform:uppercase;
+  }
+  .city-break::before, .city-break::after{ content:''; flex:1; height:1.5px; background:currentColor; opacity:0.35; }
+  .day{ padding:2rem 0 1.6rem; border-bottom:1px solid var(--line); scroll-margin-top:84px; }
+  .day-head{ display:flex; gap:1rem; align-items:baseline; flex-wrap:wrap; }
+  .day-num{ font-family:'Special Elite', monospace; font-size:1.8rem; color:var(--rail); min-width:2.6ch; }
+  .day-date{ font-family:'Special Elite', monospace; font-size:0.8rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--ink-faint); margin:0; }
+  .day-route{ font-size:1.35rem; margin:0.1rem 0 0; }
+  .day-body{ display:grid; grid-template-columns:1fr; gap:1.4rem; margin-top:1.1rem; }
+  @media(min-width:860px){ .day-body{ grid-template-columns:minmax(0,1fr) minmax(0,1.25fr); gap:2.2rem; } }
+
+  /* ---------- ticket stubs ---------- */
+  .tickets{ display:flex; flex-direction:column; gap:0.9rem; }
+  .ticket{
+    position:relative; display:flex; background:var(--ticket); color:var(--ticket-ink);
+    border-radius:4px; min-height:104px;
+    box-shadow:0 1px 0 rgba(0,0,0,0.05), 0 8px 18px -12px rgba(42,36,32,0.55);
+    transform:rotate(var(--tilt, 0deg));
+    /* notched ends, like a torn-off stub */
+    -webkit-mask:radial-gradient(circle 9px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+                 radial-gradient(circle 9px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+            mask:radial-gradient(circle 9px at 0 50%, transparent 98%, #000) left / 51% 100% no-repeat,
+                 radial-gradient(circle 9px at 100% 50%, transparent 98%, #000) right / 51% 100% no-repeat;
+  }
+  .ticket-main{ flex:1; padding:0.8rem 1rem 0.8rem 1.3rem; min-width:0; }
+  .ticket-stub{
+    width:86px; flex:0 0 86px; border-left:2px dashed rgba(59,53,48,0.28);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:0.2rem;
+    font-family:'Special Elite', monospace; font-size:0.62rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-faint);
+    padding:0.5rem 0.4rem; text-align:center;
+  }
+  .ticket-stub b{ font-size:1.05rem; color:var(--ticket-ink); font-weight:400; letter-spacing:0; }
+  .ticket-type{ font-family:'Special Elite', monospace; font-size:0.66rem; letter-spacing:0.2em; text-transform:uppercase; margin:0 0 0.3rem; }
+  .ticket.train .ticket-type{ color:var(--rail); }
+  .ticket.museum .ticket-type{ color:var(--berlin); }
+  .ticket.unknown .ticket-type{ color:var(--ink-faint); }
+  .ticket-what{ font-size:1.05rem; margin:0; line-height:1.3; }
+  .ticket-what .arrow{ color:var(--rail); padding:0 0.2rem; }
+  .ticket-note{ font-family:'Special Elite', monospace; font-size:0.68rem; color:var(--ink-faint); margin:0.35rem 0 0; }
+  .ticket .pending-stamp{
+    position:absolute; right:98px; top:50%; transform:translateY(-50%) rotate(-9deg);
+    border:2px solid rgba(168,50,43,0.55); color:rgba(168,50,43,0.7); border-radius:4px;
+    font-family:'Special Elite', monospace; font-size:0.62rem; letter-spacing:0.14em; text-transform:uppercase;
+    padding:2px 6px; pointer-events:none; background:rgba(250,245,232,0.7);
+  }
+  .ticket.maybe{ opacity:0.72; }
+  .ticket.scanned{ padding:0; -webkit-mask:none; mask:none; background:none; box-shadow:none; }
+  .ticket.scanned img{ width:100%; display:block; border-radius:3px; box-shadow:0 8px 18px -10px rgba(42,36,32,0.6); cursor:zoom-in; }
+
+  /* ---------- taped-in photos ---------- */
+  .photos{ position:relative; display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:1.3rem 1.1rem; align-content:start; padding:0.4rem 0.2rem; }
+  .photo{
+    position:relative; margin:0; background:#fffdf7; padding:8px 8px 10px;
+    box-shadow:0 10px 22px -14px rgba(42,36,32,0.7);
+    transform:translate(var(--dx,0), var(--dy,0)) rotate(var(--tilt,0deg));
+    transition:transform .25s ease, box-shadow .25s ease; cursor:zoom-in;
+  }
+  .photo:hover{ transform:translate(var(--dx,0), var(--dy,0)) rotate(0deg) scale(1.03); z-index:2; box-shadow:0 16px 30px -14px rgba(42,36,32,0.7); }
+  .photo::before{
+    content:''; position:absolute; top:-9px; left:50%; width:62px; height:20px;
+    transform:translateX(-50%) rotate(var(--tape-tilt,-3deg)); background:var(--tape);
+    box-shadow:0 1px 2px rgba(0,0,0,0.06);
+  }
+  .photo img{ width:100%; aspect-ratio:4/3; object-fit:cover; display:block; background:var(--paper-2); }
+  .photo.tall img{ aspect-ratio:3/4; }
+  .photo figcaption{ font-family:'Special Elite', monospace; font-size:0.68rem; color:var(--ink-soft); margin-top:6px; line-height:1.35; }
+  .photo figcaption a{ color:var(--ink-faint); }
+  .no-photos{ font-family:'Special Elite', monospace; font-size:0.78rem; color:var(--ink-faint); padding:1.2rem; border:1.5px dashed var(--line); border-radius:6px; }
+
+  .coda{ max-width:760px; margin:3rem auto 0; padding:0 1.2rem 4rem; }
+  .footnote{ font-family:'Special Elite', monospace; font-size:0.7rem; line-height:1.7; color:var(--ink-faint); margin-top:2rem; }
+
+  /* ---------- lightbox (reused pattern) ---------- */
+  #lightbox{
+    position:fixed; inset:0; z-index:2000; background:rgba(20,17,14,0.95);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .25s ease;
+  }
+  #lightbox.open{ opacity:1; pointer-events:auto; }
+  #lightbox img{ max-width:94vw; max-height:92vh; object-fit:contain; }
+  #lightbox .lb-close{ position:absolute; top:20px; right:24px; background:none; border:none; color:#efe6d4; font-size:28px; cursor:pointer; }
+
+  @media(max-width:600px){
+    #top-pill-nav{ top:14px; left:14px; padding:7px 12px; font-size:10.5px; gap:6px; }
+    #contact-badge{ top:14px; right:14px; }
+    .draft-banner{ margin:5.4rem 1.2rem 0; }
+    .ticket .pending-stamp{ right:92px; }
+    .ticket-stub{ width:78px; flex-basis:78px; }
+  }
+  @media(prefers-reduced-motion:reduce){ .photo{ transition:none; } }
+</style>
+</head>
+<body>
+
+<nav id="top-pill-nav">
+  <a href="../../" class="pill-main">&larr; wander ~ field notes</a>
+  <span class="pill-slash">/</span>
+  <a href="../" class="pill-crumb">eUrope</a>
+  <span class="pill-slash">/</span>
+  <span class="pill-current">Amsterdam to Prague</span>
+</nav>
+<a href="https://contact.varunagarwal.com" id="contact-badge" aria-label="Contact">VA</a>
+
+<div class="draft-banner">
+  DRAFT &mdash; not linked from anywhere yet. Ticket slots are waiting on real scans; every &ldquo;✎&rdquo; box is waiting on Varun's own words. Photos are placeholders pulled from the other eUrope pages.
+</div>
+
+<header class="masthead">
+  <p class="kicker">Wander &middot; eUrope &middot; the whole trip</p>
+  <h1>Amsterdam <em>to</em> Prague.</h1>
+  <p class="dates">28 August &ndash; 6 September 2026 &middot; 3 cities &middot; 2 trains</p>
+  <div id="intro-words"></div>
+</header>
+
+<figure class="route-map">
+  <div id="route" role="img" aria-label="Map of the route: Amsterdam, Berlin and Prague, joined by two train journeys"></div>
+  <p class="rm-caption">Tap a city to zoom in; numbered pins are days &mdash; tap one to jump to it. Dashed lines are the two train journeys, drawn as straight lines between stations, not the actual track. Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors.</p>
+</figure>
+
+<main class="days" id="days"></main>
+
+<section class="coda">
+  <div id="coda-words"></div>
+  <p class="footnote">
+    Dates and times come from the camera, corrected: it stayed on India time the whole trip, so everything here is its timestamp minus 3&frac12; hours. Photos are the same files used on the other eUrope pages &mdash; this page links to them rather than keeping copies.
+  </p>
+</section>
+
+<div id="lightbox">
+  <button class="lb-close" aria-label="Close">&times;</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+/* ============================================================
+   Amsterdam to Prague — kind:'walk' (draft). Unlike skye/ and
+   glasgow-edinburgh/, which hand-place <figure>s in the HTML, this
+   page renders every day from DAYS below, so it can be filled in
+   piece by piece without touching markup:
+
+   - words:     Varun's own commentary, one string per paragraph.
+                Empty array = shows a dashed "✎ pending" box. Never
+                filled in by Claude — this is the one part of the page
+                that has to be his.
+   - tickets:   { type:'train'|'museum'|'unknown', what, from, to,
+                  date, note, maybe, scan }
+                `scan` is a path to the scanned/photographed real
+                ticket (put it in tickets/). With a scan, the typed
+                stub is replaced by the scan itself. `maybe:true` =
+                not sure one was kept; shown faded.
+   - photos:    { src, caption, href, tall } — src is relative to this
+                folder and points at the image already used on another
+                eUrope page (no copies). `href` links back to that page.
+   - stops:     map pins for the day — { name, lat, lng }.
+
+   Only facts the photos themselves establish are typed onto the
+   stubs (which museums, which trains, which days). Times are camera
+   − 3:30 (see europe/_review-tools/README.md).
+   ============================================================ */
+
+const INTRO_WORDS = [];   // ✎ opening paragraph(s) for the whole trip
+const CODA_WORDS  = [];   // ✎ closing paragraph(s) — the way home, looking back
+
+const CITY = {
+  amsterdam:{ label:'Amsterdam', color:'var(--amsterdam)', hex:'#d0632f' },
+  berlin:   { label:'Berlin',    color:'var(--berlin)',    hex:'#3d5a80' },
+  prague:   { label:'Prague',    color:'var(--prague)',    hex:'#7a3b69' },
+};
+
+const DAYS = [
+  { n:'I', date:'2026-08-28', city:'amsterdam', route:'Arriving, and straight into the Van Gogh Museum',
+    words:[],
+    tickets:[
+      { type:'unknown', what:'Getting to Amsterdam', note:'however you arrived — flight, train?', maybe:true, scan:null },
+      { type:'museum', what:'Van Gogh Museum', date:'Fri 28 Aug', scan:null },
+    ],
+    photos:[
+      { src:'../img/28-sunflowers.jpg', caption:'Sunflowers, 1889', href:'../amsterdam-postcards/', tall:true },
+      { src:'../img/02-the-bedroom.jpg', caption:'The Bedroom', href:'../amsterdam-postcards/' },
+      { src:'../img/26-self-portrait-straw-hat.jpg', caption:'Self-Portrait with Straw Hat', href:'../amsterdam-postcards/', tall:true },
+    ],
+    stops:[{ name:'Van Gogh Museum', lat:52.3584, lng:4.8811 }],
+  },
+  { n:'II', date:'2026-08-29', city:'amsterdam', route:'A walk before sunrise, then the Rijksmuseum',
+    words:[],
+    tickets:[ { type:'museum', what:'Rijksmuseum', date:'Sat 29 Aug', scan:null } ],
+    photos:[
+      { src:'../amsterdam-film/img/12-the-house-cat.jpg', caption:'The House Cat — around 6am', href:'../amsterdam-film/' },
+      { src:'../amsterdam-film/img/44-post-it-wall.jpg', caption:'Years of Notes', href:'../amsterdam-film/' },
+      { src:'../img/39-the-milkmaid.jpg', caption:'The Milkmaid', href:'../amsterdam-postcards/', tall:true },
+      { src:'../img/20-gallery-of-honour.jpg', caption:'Gallery of Honour', href:'../amsterdam-postcards/' },
+    ],
+    stops:[{ name:'Rijksmuseum', lat:52.3600, lng:4.8852 }],
+  },
+  { n:'III', date:'2026-08-30', city:'amsterdam', route:'Out to the harbour',
+    words:[],
+    tickets:[],
+    photos:[
+      { src:'../amsterdam-film/img/37-replica-ship.jpg', caption:'A Ship at the Museum Door', href:'../amsterdam-film/' },
+      { src:'../amsterdam-film/img/38-nemo-crossing.jpg', caption:'NEMO', href:'../amsterdam-film/' },
+      { src:'../amsterdam-film/img/16-gulls.jpg', caption:'Gulls', href:'../amsterdam-film/' },
+    ],
+    stops:[{ name:'The harbour, by NEMO', lat:52.3740, lng:4.9123 }],
+  },
+  { n:'IV', date:'2026-08-31', city:'amsterdam', route:'STRAAT, then an evening in Vondelpark',
+    words:[],
+    tickets:[ { type:'museum', what:'STRAAT', note:'street-art museum, NDSM wharf', date:'Mon 31 Aug', scan:null } ],
+    photos:[
+      { src:'../img/47-rainbow-classical-figure.jpg', caption:'PichiAvo, STRAAT', href:'../../street-art/?city=amsterdam', tall:true },
+      { src:'../img/49-tiger-koi-portrait.jpg', caption:'STRAAT', href:'../../street-art/?city=amsterdam' },
+      { src:'../amsterdam-film/img/34-goose.jpg', caption:'Goose, Vondelpark', href:'../amsterdam-film/' },
+      { src:'../amsterdam-film/img/36-roses.jpg', caption:'Roses, Vondelpark', href:'../amsterdam-film/' },
+    ],
+    stops:[{ name:'STRAAT', lat:52.4011, lng:4.8930 }, { name:'Vondelpark', lat:52.3580, lng:4.8686 }],
+  },
+  { n:'V', date:'2026-09-01', city:'berlin', route:'The train east, and Berlin by afternoon',
+    words:[],
+    tickets:[ { type:'train', from:'Amsterdam', to:'Berlin', date:'Tue 1 Sep', note:'first photo out of the window just after 7am', scan:null } ],
+    photos:[
+      { src:'../berlin/img/01-in-transit.jpg', caption:'In Transit', href:'../berlin/' },
+      { src:'../berlin/img/03-berliner-dom.jpg', caption:'Berliner Dom', href:'../berlin/' },
+      { src:'../berlin/img/09-holocaust-memorial.jpg', caption:'Memorial to the Murdered Jews of Europe', href:'../berlin/' },
+      { src:'../berlin/img/12-skyline-fernsehturm.jpg', caption:'The TV Tower over the Spree', href:'../berlin/' },
+    ],
+    stops:[{ name:'Berliner Dom', lat:52.5190, lng:13.4010 }, { name:'Memorial to the Murdered Jews of Europe', lat:52.5139, lng:13.3787 }],
+  },
+  { n:'VI', date:'2026-09-02', city:'berlin', route:'The length of the East Side Gallery',
+    words:[],
+    tickets:[],
+    photos:[
+      { src:'../east-side-gallery/img/15-the-kiss.jpg', caption:'"My God, Help Me to Survive This Deadly Love"', href:'../east-side-gallery/' },
+      { src:'../east-side-gallery/img/01-plaque.jpg', caption:'The entrance plaque', href:'../east-side-gallery/' },
+      { src:'../east-side-gallery/img/02-test-the-rest.jpg', caption:'Test the Rest', href:'../east-side-gallery/', tall:true },
+    ],
+    stops:[{ name:'East Side Gallery', lat:52.5050, lng:13.4397 }],
+  },
+  { n:'VII', date:'2026-09-03', city:'prague', route:'South along the Elbe into Czechia',
+    words:[],
+    tickets:[ { type:'train', from:'Berlin', to:'Prague', date:'Thu 3 Sep', note:'via Dresden and the Elbe valley', scan:null } ],
+    photos:[
+      { src:'../prague/img/04-sandstone-towers.jpg', caption:'Sandstone Towers', href:'../prague/' },
+      { src:'../prague/img/08-call-home.jpg', caption:'Call Home', href:'../prague/' },
+      { src:'../prague/img/10-ruin-on-the-rock.jpg', caption:'Ruin on the Rock', href:'../prague/' },
+    ],
+    stops:[],
+  },
+  { n:'VIII', date:'2026-09-04', city:'prague', route:'No photos from this day',
+    words:[],
+    tickets:[],
+    photos:[],
+    stops:[],
+  },
+  { n:'IX', date:'2026-09-05', city:'prague', route:'Race night in the Old Town',
+    words:[],
+    tickets:[],
+    photos:[
+      { src:'../prague/img/15-finish-arch.jpg', caption:'The Arch, Náměstí Republiky', href:'../prague/' },
+      { src:'../prague/img/20-tyn-over-the-square.jpg', caption:'Týn at Night', href:'../prague/' },
+      { src:'../prague/img/22-the-tower-clock.jpg', caption:'Ten Past Nine', href:'../prague/' },
+      { src:'../prague/img/26-coca-cola-truck.jpg', caption:'Delicious and Refreshing', href:'../prague/' },
+    ],
+    stops:[{ name:'Municipal House', lat:50.0876, lng:14.4280 }, { name:'Old Town Square', lat:50.0875, lng:14.4213 }],
+  },
+  { n:'X', date:'2026-09-06', city:'prague', route:'Up to the castle, down to Letná',
+    words:[],
+    tickets:[ { type:'unknown', what:'Prague Castle', note:'only if you went inside anywhere', maybe:true, scan:null } ],
+    photos:[
+      { src:'../prague/img/35-south-tower.jpg', caption:'South Tower, St. Vitus', href:'../prague/', tall:true },
+      { src:'../prague/img/41-peacock-on-cobbles.jpg', caption:'Peacock', href:'../prague/' },
+      { src:'../prague/img/47-bridges-and-towers.jpg', caption:'Towers and Bridges', href:'../prague/' },
+      { src:'../prague/img/53-river-panorama.jpg', caption:'Late Sun, Letná', href:'../prague/' },
+    ],
+    stops:[{ name:'Prague Castle', lat:50.0909, lng:14.4005 }, { name:'Letná', lat:50.0960, lng:14.4180 }],
+  },
+];
+
+// the two train journeys, station to station (straight lines, not the track)
+const TRAINS = [
+  { from:[52.3791, 4.9003], via:[], to:[52.5251, 13.3694], label:'Amsterdam → Berlin, 1 Sep' },
+  { from:[52.5251, 13.3694], via:[[51.0405, 13.7320]], to:[50.0831, 14.4353], label:'Berlin → Prague via Dresden, 3 Sep' },
+];
+
+/* ---------- helpers ---------- */
+function esc(s){ return String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+// stable pseudo-random from a string, so the "random" tilts are the same every visit
+function seeded(str){ let h = 2166136261; for (const c of str){ h ^= c.charCodeAt(0); h = Math.imul(h, 16777619); } return ((h >>> 0) % 10000) / 10000; }
+function fmtDate(iso){ return new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' }); }
+function shortDate(iso){ return new Date(iso + 'T12:00:00').toLocaleDateString('en-GB', { day:'2-digit', month:'short' }).toUpperCase(); }
+function wordsHTML(paras, prompt){
+  if (paras && paras.length) return `<div class="words">${paras.map(p => `<p>${esc(p)}</p>`).join('')}</div>`;
+  return `<div class="words-pending">✎ ${esc(prompt)}</div>`;
+}
+
+function ticketHTML(t, day){
+  const tilt = ((seeded(day.date + (t.what || t.from || '')) - 0.5) * 2.4).toFixed(2);
+  if (t.scan) return `<div class="ticket scanned" style="--tilt:${tilt}deg"><img src="${esc(t.scan)}" alt="Ticket: ${esc(t.what || (t.from + ' to ' + t.to))}" data-full="${esc(t.scan)}"></div>`;
+  const what = t.type === 'train'
+    ? `${esc(t.from)}<span class="arrow">→</span>${esc(t.to)}`
+    : esc(t.what);
+  return `
+    <div class="ticket ${t.type}${t.maybe ? ' maybe' : ''}" style="--tilt:${tilt}deg">
+      <div class="ticket-main">
+        <p class="ticket-type">${t.type === 'train' ? 'Rail' : t.type === 'museum' ? 'Admission' : 'Ticket?'}</p>
+        <p class="ticket-what">${what}</p>
+        ${t.note ? `<p class="ticket-note">${esc(t.note)}</p>` : ''}
+      </div>
+      <span class="pending-stamp">${t.maybe ? 'if kept' : 'scan to come'}</span>
+      <div class="ticket-stub"><b>${shortDate(day.date).split(' ')[0]}</b>${shortDate(day.date).split(' ')[1]}<span>${day.n}</span></div>
+    </div>`;
+}
+
+function photoHTML(p, day, i){
+  const r = seeded(day.date + p.src);
+  const tilt = ((r - 0.5) * 7).toFixed(2);
+  const dx = ((seeded(p.src + 'x') - 0.5) * 14).toFixed(1);
+  const dy = ((seeded(p.src + 'y') - 0.5) * 16).toFixed(1);
+  const tape = ((seeded(p.src + 't') - 0.5) * 14).toFixed(1);
+  return `
+    <figure class="photo${p.tall ? ' tall' : ''}" style="--tilt:${tilt}deg;--dx:${dx}px;--dy:${dy}px;--tape-tilt:${tape}deg" data-full="${esc(p.src)}">
+      <img src="${esc(p.src)}" alt="${esc(p.caption)}" loading="lazy">
+      <figcaption>${esc(p.caption)}${p.href ? ` · <a href="${esc(p.href)}">see it there</a>` : ''}</figcaption>
+    </figure>`;
+}
+
+/* ---------- render ---------- */
+document.getElementById('intro-words').innerHTML = wordsHTML(INTRO_WORDS, 'Opening words for the whole trip — why these three cities, how it started.');
+document.getElementById('coda-words').innerHTML = wordsHTML(CODA_WORDS, 'Closing words — the way home, and anything that only made sense afterwards.');
+
+let lastCity = null, html = '';
+DAYS.forEach(day => {
+  if (day.city !== lastCity){
+    html += `<div class="city-break" style="color:${CITY[day.city].color}">${CITY[day.city].label}</div>`;
+    lastCity = day.city;
+  }
+  html += `
+    <section class="day" id="day-${day.n}">
+      <div class="day-head">
+        <span class="day-num">${day.n}</span>
+        <div>
+          <p class="day-date">${fmtDate(day.date)}</p>
+          <p class="day-route">${esc(day.route)}</p>
+        </div>
+      </div>
+      <div class="day-body">
+        <div>
+          ${day.tickets.length ? `<div class="tickets">${day.tickets.map(t => ticketHTML(t, day)).join('')}</div>` : ''}
+          ${wordsHTML(day.words, day.photos.length ? 'Your words for this day.' : 'No photos from this day — anything worth saying about it?')}
+        </div>
+        ${day.photos.length
+          ? `<div class="photos">${day.photos.map((p, i) => photoHTML(p, day, i)).join('')}</div>`
+          : `<div class="no-photos">The camera stayed in the bag.</div>`}
+      </div>
+    </section>`;
+});
+document.getElementById('days').innerHTML = html;
+
+/* ---------- map ---------- */
+(function(){
+  if (typeof L === 'undefined') return;
+  const map = L.map('route', { scrollWheelZoom:false, zoomControl:true });
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'', maxZoom:19 }).addTo(map);
+  const bounds = [];
+  TRAINS.forEach(t => {
+    const pts = [t.from, ...t.via, t.to];
+    L.polyline(pts, { color:'#a8322b', weight:3, dashArray:'8 8', opacity:0.85 }).addTo(map).bindTooltip(t.label, { sticky:true });
+    pts.forEach(p => bounds.push(p));
+  });
+  // day pins (shown zoomed in) vs one pin per city (shown at trip scale,
+  // where a city's day pins would otherwise sit on top of each other)
+  const dayLayer = L.layerGroup(), cityLayer = L.layerGroup();
+  const perCity = {};
+  DAYS.forEach(day => day.stops.forEach(s => {
+    const icon = L.divIcon({ className:'', html:`<div class="stop-pin" style="background:${CITY[day.city].hex}">${day.n}</div>`, iconSize:[24,24], iconAnchor:[12,12] });
+    L.marker([s.lat, s.lng], { icon }).addTo(dayLayer)
+      .bindPopup(`<strong>${esc(s.name)}</strong><br>${fmtDate(day.date)}<br><a href="#day-${day.n}">Go to day ${day.n} ↓</a>`);
+    bounds.push([s.lat, s.lng]);
+    (perCity[day.city] = perCity[day.city] || { pts:[], days:[] }).pts.push([s.lat, s.lng]);
+  }));
+  DAYS.forEach(day => { (perCity[day.city] = perCity[day.city] || { pts:[], days:[] }).days.push(day.n); });
+  Object.entries(perCity).forEach(([key, c]) => {
+    if (!c.pts.length) return;
+    const cb = L.latLngBounds(c.pts), label = `${CITY[key].label} · ${c.days[0]}–${c.days[c.days.length - 1]}`;
+    const icon = L.divIcon({ className:'', html:`<span class="city-pin" style="background:${CITY[key].hex}">${label}</span>`, iconSize:[0,0] });
+    L.marker(cb.getCenter(), { icon }).addTo(cityLayer).on('click', () => map.fitBounds(cb.pad(0.35), { maxZoom:14 }));
+  });
+  const CITY_ZOOM = 9;
+  const syncLayers = () => {
+    const zoomedIn = map.getZoom() >= CITY_ZOOM;
+    if (zoomedIn){ map.removeLayer(cityLayer); dayLayer.addTo(map); } else { map.removeLayer(dayLayer); cityLayer.addTo(map); }
+  };
+  map.on('zoomend', syncLayers);
+  map.fitBounds(bounds, { padding:[30,30] });
+  syncLayers();
+})();
+
+/* ---------- lightbox ---------- */
+const lightboxEl = document.getElementById('lightbox'), lightboxImg = document.getElementById('lightboxImg');
+document.addEventListener('click', (e) => {
+  const f = e.target.closest('[data-full]');
+  if (!f || e.target.closest('a')) return;
+  lightboxImg.src = f.dataset.full; lightboxImg.alt = f.querySelector('img')?.alt || '';
+  lightboxEl.classList.add('open');
+});
+const closeLb = () => lightboxEl.classList.remove('open');
+lightboxEl.querySelector('.lb-close').addEventListener('click', closeLb);
+lightboxEl.addEventListener('click', (e) => { if (e.target === lightboxEl) closeLb(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLb(); });
+</script>
+</body>
+</html>

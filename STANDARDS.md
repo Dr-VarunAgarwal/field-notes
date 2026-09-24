@@ -107,7 +107,13 @@ through for variety.
   real route worth mapping — most batches are still albums. Built by
   copying `skye/index.html`'s structure (masthead, intro, route-map
   figure, `.day` sections, DATA-by-id hydration script) rather than a
-  grid album's.
+  grid album's. Exception: `urotrip2026/amsterdam-to-prague/` (draft)
+  renders every day from a `DAYS` array instead of hand-placed HTML
+  (`words`, `tickets` with optional `scan`, `photos`, `stops`), so
+  commentary and ticket scans can be dropped in later without touching
+  markup. **Map tiles:** CARTO basemaps now need an API key (watermark
+  on every tile, as of 2026-09-24) — use `tile.openstreetmap.org` with
+  OSM attribution; skye/ and glasgow-edinburgh/ still need the swap.
 - `kind:'postcards'` — an infinite drag-to-pan canvas of postcard/stamp
   tiles that hash-tile forever in every direction, like
   `urotrip2026/amsterdam-postcards/` ("eUrope"). For a trip still in
