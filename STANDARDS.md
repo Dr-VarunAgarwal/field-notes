@@ -113,7 +113,8 @@ through for variety.
   commentary and ticket scans can be dropped in later without touching
   markup. **Map tiles:** CARTO basemaps now need an API key (watermark
   on every tile, as of 2026-09-24) — use `tile.openstreetmap.org` with
-  OSM attribution; skye/ and glasgow-edinburgh/ still need the swap.
+  OSM attribution (one layer; OSM tiles carry their own labels). skye/
+  and glasgow-edinburgh/ switched over 2026-09-25.
 - `kind:'postcards'` — an infinite drag-to-pan canvas of postcard/stamp
   tiles that hash-tile forever in every direction, like
   `urotrip2026/amsterdam-postcards/` ("eUrope"). For a trip still in

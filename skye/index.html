@@ -312,7 +312,7 @@
   <p class="rm-dates">7–10 June 2018 &nbsp;·&nbsp; four days, anticlockwise round the island, out of Portree</p>
 
   <div id="skye-map"></div>
-  <p class="rm-attrib">Map tiles &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>, data &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</p>
+  <p class="rm-attrib">Map &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors</p>
 
   <div class="rm-legend">
     <p class="rm-item rm-i"><span class="rm-num">I</span> The train up, then onto the island at Kyleakin</p>
@@ -513,7 +513,7 @@
 <script src="https://unpkg.com/leaflet-polylinedecorator@1.6.0/dist/leaflet.polylineDecorator.js"></script>
 <script>
 /* ============================================================
-   THE ROUTE — a real map (CARTO tiles over OpenStreetMap data)
+   THE ROUTE — a real map (OpenStreetMap tiles)
    with the four-day route drawn over it. Independent of the
    photo DATA below; place changes here if the itinerary changes.
    ============================================================ */
@@ -535,11 +535,10 @@
 
   const map = L.map('skye-map', { scrollWheelZoom:false, zoomControl:true });
 
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}{r}.png', {
-    attribution:'', subdomains:'abcd', maxZoom:19
-  }).addTo(map);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}{r}.png', {
-    attribution:'', subdomains:'abcd', maxZoom:19, opacity:0.85
+  // OpenStreetMap's own tiles — CARTO's basemaps started watermarking
+  // every tile "API KEY REQUIRED" (noticed 2026-09-24).
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'', maxZoom:19
   }).addTo(map);
 
   const bounds = L.latLngBounds(STOPS.map(s => [s.lat, s.lng]));
