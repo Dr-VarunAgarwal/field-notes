@@ -172,7 +172,7 @@
     position:absolute; display:block; object-fit:cover;
     width:100%; height:100%; left:0; top:0;
     z-index:1; object-position:center 52%;
-    transition:opacity 0.2s ease;
+    transition:opacity 0.45s ease;
   }
   @media(max-width:639px){
     .header-collage{ height:285px; }
@@ -204,6 +204,7 @@
     border-radius:14px; text-decoration:none; color:inherit;
     box-shadow:0 14px 28px -14px rgba(23,20,12,0.45);
     margin-top:0.1rem;
+    transition:opacity 0.35s ease;
   }
   @media(max-width:639px){
     .featured-card{ max-width:320px; }
@@ -242,7 +243,19 @@
   .grid{ display:grid; grid-template-columns:1fr; gap:1.8rem; }
   @media(min-width:640px){ .grid{ grid-template-columns:1fr 1fr; } }
 
-  .place-card{ text-decoration:none; color:inherit; display:block; }
+  /* each card is tinted with --accent: its cover photo's own dominant vivid
+     colour (the site's extractVividColor, run offline, then clamped darker so
+     text stays readable) — set per place in PLACES.accent, never invented */
+  .place-card{
+    text-decoration:none; color:inherit; display:block;
+    background:#fff;
+    background:color-mix(in srgb, var(--accent, #8a8478) 22%, #fffdf8);
+    border-radius:18px; padding:0.55rem 0.55rem 1rem;
+    box-shadow:inset 0 6px 0 var(--accent, #8a8478), 0 10px 24px -18px rgba(23,20,12,0.55);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
+  }
+  a.place-card:hover{ transform:translateY(-3px); box-shadow:inset 0 6px 0 var(--accent, #8a8478), 0 16px 30px -18px rgba(23,20,12,0.6); }
+  @media (prefers-reduced-motion: reduce){ .place-card, a.place-card:hover{ transition:none; transform:none; } }
   .place-card .cover{ position:relative; }
   .place-card .thumb{
     width:100%; aspect-ratio:4/3; object-fit:cover; display:block;
@@ -276,14 +289,14 @@
     display:flex; align-items:center; gap:0.3rem;
   }
   .place-card .meta-line{
-    font-size:0.72rem; color:var(--ink-soft); margin:0.7rem 0 0.2rem;
+    font-size:0.72rem; font-weight:600; letter-spacing:0.02em; color:var(--accent, var(--ink-soft)); margin:0.7rem 0.35rem 0.2rem;
   }
   .place-card .name{
-    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.15rem; margin:0;
+    font-family:"Fredoka", sans-serif; font-weight:600; font-size:1.15rem; margin:0 0.35rem;
   }
-  .place-card:hover .name{ color:var(--blue); }
+  .place-card:hover .name{ color:var(--accent, var(--blue)); }
   .place-card .blurb{
-    font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0 0;
+    font-size:0.82rem; color:var(--ink-soft); line-height:1.55; margin:0.35rem 0.35rem 0;
   }
 
   /* ---------- expandable place card (eUrope) — expands in place instead
@@ -787,27 +800,27 @@
    the ones with a full album.
    ============================================================ */
 const PLACES = [
-  {name:'London', slug:'london', status:'live', kind:'album', cover:'london/img/07-elephant-shutter.jpg', blurb:'Two walks through the city’s walls — Shoreditch on foot, and an evening round Camden Market.', count:'86 pieces · 2 sections', region:'🇬🇧', tickerNames:['Shoreditch','Camden'],
+  {name:'London', slug:'london', status:'live', kind:'album', accent:'#2d7584', cover:'london/img/07-elephant-shutter.jpg', blurb:'Two walks through the city’s walls — Shoreditch on foot, and an evening round Camden Market.', count:'86 pieces · 2 sections', region:'🇬🇧', tickerNames:['Shoreditch','Camden'],
     sections:[
       {tag:'Shoreditch', label:'Brick Lane and around.', href:'london/', cover:'london/img/07-elephant-shutter.jpg', desc:'Street art, stencils, wheatpaste and whatever else caught my eye on foot.', count:'75 pieces', color:'teal'},
       {tag:'Camden', label:'One evening.', href:'camden/', cover:'camden/img/03-zebra-striped-rhino-mural.jpg', desc:'One evening around Camden Market and the backstreets off Hawley Street.', count:'11 pieces', color:'coral'},
     ]},
-  {name:'Khajuraho', slug:'khajuraho', status:'live', kind:'album', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces', region:'MP 🇮🇳'},
-  {name:'Concerts', slug:'concerts', status:'live', kind:'album', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows', region:''},
-  {name:'Udupi', slug:'udupi', status:'live', kind:'album', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola in Manipal.', count:'15 pieces', region:'Karnataka 🇮🇳'},
-  {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'Manchester', slug:'manchester', status:'live', kind:'album', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
-  {name:'Kanatal', slug:'kanatal', status:'live', kind:'album', cover:'kanatal/img/17-golden-hour-ridge.jpg', blurb:'A day climbing into the Garhwal Himalaya — ridgeline viewpoints, a terraced valley village, smoke haze from a hillside fire, and an evening into dawn at a homestay above the treeline.', count:'19 pieces', region:'Uttarakhand 🇮🇳'},
-  {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
-  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', tickerNames:['Glasgow', 'Edinburgh']},
-  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', cover:'urotrip2026/amsterdam-film/img/03-canal-ring.jpg', blurb:'Six ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, the East Side Gallery wall, Prague on a clock face, and a warehouse of street art at STRAAT.', count:'6 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
+  {name:'Khajuraho', slug:'khajuraho', status:'live', kind:'album', accent:'#9b683b', cover:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', blurb:'Sandstone temple towers, carved friezes and dusk skies over two days in Madhya Pradesh.', count:'26 pieces', region:'MP 🇮🇳'},
+  {name:'Concerts', slug:'concerts', status:'live', kind:'album', accent:'#2a516f', cover:'concerts/img/green-day.jpg', blurb:'Every gig I\'ve stood in a crowd for — artist by artist.', count:'16 shows', region:''},
+  {name:'Udupi', slug:'udupi', status:'live', kind:'album', accent:'#6f422a', cover:'udupi/img/05-sunset-lake.jpg', blurb:'Quiet lakes and backroads around Udupi, Karnataka — plus a night of Bhoota Kola in Manipal.', count:'15 pieces', region:'Karnataka 🇮🇳'},
+  {name:'Glasgow', slug:'glasgow', status:'live', kind:'album', accent:'#335ca3', cover:'glasgow/img/17-red-haired-woman-mural.jpg', blurb:'The Necropolis at golden hour, Kelvingrove\'s taxidermy halls and pipe organ, the mural trail and a West End market.', count:'27 pieces', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'Manchester', slug:'manchester', status:'live', kind:'album', accent:'#af9627', cover:'manchester/img/02-harlequin-bee.jpg', blurb:'A hundred-strong Bee in the City sculpture trail through the centre, then Northern Quarter murals, shutter art and Outhouse MCR\'s painted utility boxes.', count:'29 pieces', region:'England 🇬🇧'},
+  {name:'Kanatal', slug:'kanatal', status:'live', kind:'album', accent:'#9b553b', cover:'kanatal/img/17-golden-hour-ridge.jpg', blurb:'A day climbing into the Garhwal Himalaya — ridgeline viewpoints, a terraced valley village, smoke haze from a hillside fire, and an evening into dawn at a homestay above the treeline.', count:'19 pieces', region:'Uttarakhand 🇮🇳'},
+  {name:'Isle of Skye', slug:'skye', status:'live', kind:'walk', accent:'#656f2a', cover:'skye/img/d3-08-quiraing.jpg', blurb:'The train up from Inverness, then four days round the island — Eilean Donan, the Cuillins, Fairy Pools, Neist Point, the Quiraing — then home past Glenfinnan.', count:'4 days · 42 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿'},
+  {name:'Glasgow & Edinburgh', slug:'glasgow-edinburgh', status:'live', kind:'walk', accent:'#847e32', cover:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', blurb:'Camera-only — the Necropolis and Kelvingrove, then one long circuit round Calton Hill over all of Edinburgh.', count:'2 days · 12 photos', region:'🏴󠁧󠁢󠁳󠁣󠁴󠁿', tickerNames:['Glasgow', 'Edinburgh']},
+  {name:'eUrope', slug:'urotrip2026', status:'live', kind:'postcards', accent:'#536f2a', cover:'urotrip2026/amsterdam-film/img/03-canal-ring.jpg', blurb:'Six ways into the trip so far — postcards from the museum walls, a film strip of everywhere else, a contact sheet from Berlin, the East Side Gallery wall, Prague on a clock face, and a warehouse of street art at STRAAT.', count:'6 sections', region:'🇳🇱🇩🇪🇨🇿', tickerNames:['Amsterdam', 'Berlin', 'Prague'],
     sections:[
-      {tag:'Postcards', label:'Museum walls.', href:'urotrip2026/amsterdam-postcards/', cover:'urotrip2026/img/28-sunflowers.jpg', desc:"A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.", count:'40 pieces, Amsterdam', color:'coral'},
+      {tag:'Postcards', label:'Museum walls.', href:'urotrip2026/amsterdam-postcards/', cover:'urotrip2026/img/28-sunflowers.jpg', desc:"A postcard-and-stamp drag canvas of the artwork itself — paintings from the Van Gogh Museum and the Rijksmuseum.", count:'40 pieces, Amsterdam', color:'coral'},
       {tag:'On Film', label:'Everywhere else.', href:'urotrip2026/amsterdam-film/', cover:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', desc:'A strip of negatives that develop into color on tap — the streets and corners between the museums, Amsterdam so far.', count:'Amsterdam roll, growing', color:'amber'},
       {tag:'Contact Sheet', label:'Berlin, unedited.', href:'urotrip2026/berlin/', cover:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', desc:'The whole roll, not just the keepers — every frame circled in grease pencil or passed over, left visible either way.', count:'15 of ~200 frames, Sept 1', color:'crimson'},
-      {tag:'The Wall', label:'One long wall.', href:'urotrip2026/east-side-gallery/', cover:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', desc:"The East Side Gallery's murals, in walking order, with a scroll strip standing in for the wall itself — plus what's on either side of it.", count:'49 of 78 frames, Sept 2', color:'slate'},
-      {tag:'The Clock', label:'Prague, by the minute.', href:'urotrip2026/prague/', cover:'urotrip2026/prague/img/22-the-tower-clock.jpg', desc:'Three days set on one astronomical-clock dial at the minute each photo was taken, the real sky turning from day to night behind them.', count:'53 photos, Sept 3–6', color:'midnight'},
-      {tag:'STRAAT', label:'A whole warehouse.', href:'street-art/?city=amsterdam', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', desc:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse. An experience more than a gallery, so it sits apart from the trip's own on-the-street formats above.", count:'55 pieces, Amsterdam', color:'teal'},
+      {tag:'The Wall', label:'One long wall.', href:'urotrip2026/east-side-gallery/', cover:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', desc:"The East Side Gallery's murals, in walking order, with a scroll strip standing in for the wall itself — plus what's on either side of it.", count:'48 of 78 frames, Sept 2', color:'slate'},
+      {tag:'The Clock', label:'Prague, by the minute.', href:'urotrip2026/prague/', cover:'urotrip2026/prague/img/22-the-tower-clock.jpg', desc:'Three days set on one astronomical-clock dial at the minute each photo was taken, the real sky turning from day to night behind them.', count:'48 photos, Sept 3–6', color:'midnight'},
+      {tag:'STRAAT', label:'A whole warehouse.', href:'street-art/?city=amsterdam', cover:'urotrip2026/img/47-rainbow-classical-figure.jpg', desc:"Amsterdam's street-art museum — murals, portraits and characters under one roof in a former shipyard warehouse. An experience more than a gallery, so it sits apart from the trip's own on-the-street formats above.", count:'54 pieces, Amsterdam', color:'teal'},
     ]},
   {name:'Manipal', slug:'manipal', status:'story', count:''},
   {name:'Pushkar', slug:'pushkar', status:'story', count:''},
@@ -832,28 +845,30 @@ const draft = PLACES.filter(p => p.status === 'draft');
    the pool, and the coordinates caption updates with it.
    ============================================================ */
 const HEADER_PHOTOS = [
-  {src:'skye/img/d3-08-quiraing.jpg', coords:'57.6417°N, 6.2897°W'},
-  {src:'skye/img/d2-02-eilean-donan-wide.jpg', coords:'57.6417°N, 6.2897°W'},
-  {src:'skye/img/d3-02-fairy-pools-turquoise.jpg', coords:'57.6417°N, 6.2897°W'},
+  // landscape only — portrait shots crop badly in a full-bleed header and
+  // live in FEATURED_PHOTOS instead. No photo appears in both pools.
+  {src:'skye/img/d2-02-eilean-donan-wide.jpg', coords:'57.2742°N, 5.5164°W'},
+  {src:'skye/img/d3-02-fairy-pools-turquoise.jpg', coords:'57.2503°N, 6.2728°W'},
   {src:'khajuraho/img/11-dusk-two-temples-pink-sky.jpg', coords:'24.8318°N, 79.9199°E'},
-  {src:'khajuraho/img/18-nandi-bull-statue.jpg', coords:'24.8318°N, 79.9199°E'},
   {src:'khajuraho/img/26-white-temple-domes-wide.jpg', coords:'24.8318°N, 79.9199°E'},
-  {src:'khajuraho/img/01-sunset-temple-silhouette.jpg', coords:'24.8318°N, 79.9199°E'},
-  {src:'london/img/69-designated-graffiti-area-stencil.jpg', coords:'51.5229°N, 0.0777°W'},
-  {src:'london/img/32-heron-mural-gable.jpg', coords:'51.5229°N, 0.0777°W'},
   {src:'london/img/05-dank-cyberpunk-wide.jpg', coords:'51.5229°N, 0.0777°W'},
-  {src:'london/img/43-xray-ribcage-mural.jpg', coords:'51.5229°N, 0.0777°W'},
-  {src:'glasgow/img/17-red-haired-woman-mural.jpg', coords:'55.8580°N, 4.2475°W'},
+  {src:'london/img/69-designated-graffiti-area-stencil.jpg', coords:'51.5229°N, 0.0777°W'},
+  {src:'camden/img/08-angel-devil-boat-mural.jpg', coords:'51.5390°N, 0.1426°W'},
   {src:'glasgow/img/12-necropolis-crosses-sunset.jpg', coords:'55.8625°N, 4.2316°W'},
-  {src:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', coords:'55.9529°N, 3.1719°W'},
   {src:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', coords:'55.9550°N, 3.1828°W'},
-  {src:'manchester/img/02-harlequin-bee.jpg', coords:'53.4808°N, 2.2426°W'},
-  {src:'manchester/img/15-dapper-fox-afflecks.jpg', coords:'53.4808°N, 2.2426°W'},
+  {src:'manchester/img/16-believe-in-you-moth-mural.jpg', coords:'53.4839°N, 2.2346°W'},
   {src:'kanatal/img/17-golden-hour-ridge.jpg', coords:'30.4667°N, 78.3667°E'},
-  {src:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', coords:'52.5029°N, 13.4393°E'},
+  {src:'udupi/img/01-lake-boats-aerial.jpg', coords:'13.3409°N, 74.7421°E'},
   {src:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', coords:'52.3676°N, 4.9041°E'},
-  {src:'urotrip2026/img/47-rainbow-classical-figure.jpg', coords:'52.4040°N, 4.9204°E'},
+  {src:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', coords:'52.5200°N, 13.4050°E'},
+  {src:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', coords:'52.5029°N, 13.4393°E'},
+  {src:'urotrip2026/prague/img/32-charles-bridge-view.jpg', coords:'50.0909°N, 14.4005°E'},
+  {src:'urotrip2026/prague/img/53-river-panorama.jpg', coords:'50.0960°N, 14.4180°E'},
 ];
+// place key = first path segment (plus the eUrope sub-page), used to keep
+// the featured card from showing the same place as the header at once
+function placeKey(path){ const a = path.split('/'); return a[0] === 'urotrip2026' ? 'urotrip2026' : a[0]; }
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const headerPhotoEl = document.getElementById('header-photo');
 const headerCoordsEl = document.getElementById('header-coords');
 let headerPhotoIdx = Math.floor(Math.random() * HEADER_PHOTOS.length);
@@ -862,14 +877,23 @@ function renderHeaderPhoto(){
   headerPhotoEl.src = p.src;
   headerCoordsEl.textContent = p.coords;
 }
-renderHeaderPhoto();
-document.getElementById('header-collage').addEventListener('click', () => {
+function advanceHeader(){
   headerPhotoEl.style.opacity = 0;
   setTimeout(() => {
     headerPhotoIdx = (headerPhotoIdx + 1) % HEADER_PHOTOS.length;
     renderHeaderPhoto();
     headerPhotoEl.style.opacity = 1;
-  }, 200);
+  }, reduceMotion ? 0 : 450);
+}
+renderHeaderPhoto();
+// preload the next header photo so each change is a fade, not a blank frame
+function preloadNextHeader(){ const n = new Image(); n.src = HEADER_PHOTOS[(headerPhotoIdx + 1) % HEADER_PHOTOS.length].src; }
+preloadNextHeader();
+const HEADER_EVERY = 8000;
+let headerTimer = reduceMotion ? null : setInterval(() => { if (!document.hidden){ advanceHeader(); setTimeout(preloadNextHeader, 600); } }, HEADER_EVERY);
+document.getElementById('header-collage').addEventListener('click', () => {
+  advanceHeader(); setTimeout(preloadNextHeader, 600);
+  if (headerTimer){ clearInterval(headerTimer); headerTimer = setInterval(() => { if (!document.hidden){ advanceHeader(); setTimeout(preloadNextHeader, 600); } }, HEADER_EVERY); }
 });
 
 /* ---------- Navigate pill dropdown ---------- */
@@ -895,14 +919,14 @@ document.addEventListener('click', (e) => {
    ============================================================ */
 const FEATURED_PHOTOS = [
   {img:'skye/img/d3-08-quiraing.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
-  {img:'skye/img/d2-02-eilean-donan-wide.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
-  {img:'skye/img/d3-02-fairy-pools-turquoise.jpg', caption:'', place:'Isle of Skye', slug:'skye'},
+  {img:'khajuraho/img/18-nandi-bull-statue.jpg', caption:'', place:'Khajuraho', slug:'khajuraho'},
+  {img:'khajuraho/img/01-sunset-temple-silhouette.jpg', caption:'', place:'Khajuraho', slug:'khajuraho'},
   {img:'london/img/32-heron-mural-gable.jpg', caption:'ROA — Crane, Hanbury Street.', place:'Shoreditch', slug:'london'},
   {img:'london/img/43-xray-ribcage-mural.jpg', caption:'SHOK-1 — Stolen Heart, Hanbury Street.', place:'Shoreditch', slug:'london'},
   {img:'london/img/61-speak-the-truth-portrait.jpg', caption:'Alo — SPEAKTHETRUTH.', place:'Shoreditch', slug:'london'},
-  {img:'london/img/69-designated-graffiti-area-stencil.jpg', caption:'The Guard Dog — Banksy, at the former Cargo nightclub.', place:'Shoreditch', slug:'london'},
   {img:'london/img/01-bird-collage.jpg', caption:'"Birdy on a book" — Birdy.', place:'Shoreditch', slug:'london'},
   {img:'london/img/03-nope-buddha.jpg', caption:'Peace-sign Buddha stencil — PEACE!', place:'Shoreditch', slug:'london'},
+  {img:'camden/img/03-zebra-striped-rhino-mural.jpg', caption:'', place:'Camden', slug:'camden'},
   {img:'concerts/img/banshee-labyrinth.jpg', caption:'A Murder of Crows — Halloween show at The Banshee Labyrinth, self-billed as the most haunted nightclub in the world.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/green-day.jpg', caption:'Green Day — Lollapalooza India, headline set.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/hanumankind.jpg', caption:'Hanumankind — Lollapalooza India.', place:'Concerts', slug:'concerts'},
@@ -914,34 +938,61 @@ const FEATURED_PHOTOS = [
   {img:'concerts/img/isabel-larosa.jpg', caption:'Isabel LaRosa — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/aurora.jpg', caption:'AURORA — Lollapalooza India, day two.', place:'Concerts', slug:'concerts'},
   {img:'concerts/img/talwinder.jpg', caption:'Talwiinder — Lollapalooza India, day one.', place:'Concerts', slug:'concerts'},
+  {img:'udupi/img/07-kola-arms-raised.jpg', caption:'', place:'Udupi', slug:'udupi'},
   {img:'glasgow/img/17-red-haired-woman-mural.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
-  {img:'glasgow/img/12-necropolis-crosses-sunset.jpg', caption:'', place:'Glasgow', slug:'glasgow'},
   {img:'glasgow/img/14-goma-wellington-statue.jpg', caption:'The Duke of Wellington, cone intact, outside the Gallery of Modern Art.', place:'Glasgow', slug:'glasgow'},
   {img:'glasgow-edinburgh/img/d2-05-holyrood-palace.jpg', caption:'The Palace of Holyroodhouse and the ruin of Holyrood Abbey, shot long from Calton Hill.', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
-  {img:'glasgow-edinburgh/img/d2-01-calton-hill-skyline.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
   {img:'glasgow-edinburgh/img/d1-04-necropolis-city-view.jpg', caption:'', place:'Glasgow & Edinburgh', slug:'glasgow-edinburgh'},
   {img:'manchester/img/01-aubee-piccadilly.jpg', caption:'AuBee, outside Piccadilly station — one of over a hundred Bee in the City sculptures across Manchester in 2018.', place:'Manchester', slug:'manchester'},
   {img:'manchester/img/06-rocket-steampunk-bee.jpg', caption:'Rocket, the Steampunk Bee.', place:'Manchester', slug:'manchester'},
+  {img:'manchester/img/02-harlequin-bee.jpg', caption:'', place:'Manchester', slug:'manchester'},
   {img:'manchester/img/15-dapper-fox-afflecks.jpg', caption:'', place:'Manchester', slug:'manchester'},
-  {img:'kanatal/img/17-golden-hour-ridge.jpg', caption:'', place:'Kanatal', slug:'kanatal'},
   {img:'kanatal/img/13-goat-village-dog.jpg', caption:'', place:'Kanatal', slug:'kanatal'},
   {img:'urotrip2026/img/28-sunflowers.jpg', caption:'Vincent van Gogh — Sunflowers, 1889.', place:'eUrope · Postcards', slug:'urotrip2026/amsterdam-postcards'},
-  {img:'urotrip2026/amsterdam-film/img/06-canal-at-dusk.jpg', caption:'', place:'eUrope · On Film', slug:'urotrip2026/amsterdam-film'},
-  {img:'urotrip2026/berlin/img/12-skyline-fernsehturm.jpg', caption:'The TV Tower over the Spree.', place:'eUrope · Contact Sheet', slug:'urotrip2026/berlin'},
-  {img:'urotrip2026/east-side-gallery/img/15-the-kiss.jpg', caption:'Dmitri Vrubel & Victoria Timofeeva — "My God, Help Me to Survive This Deadly Love," East Side Gallery.', place:'eUrope · The Wall', slug:'urotrip2026/east-side-gallery'},
+  {img:'urotrip2026/amsterdam-film/img/55-the-old-queen.jpg', caption:'', place:'eUrope · On Film', slug:'urotrip2026/amsterdam-film'},
+  {img:'urotrip2026/berlin/img/03-berliner-dom.jpg', caption:'The Berliner Dom, Museum Island.', place:'eUrope · Contact Sheet', slug:'urotrip2026/berlin'},
+  {img:'urotrip2026/east-side-gallery/img/12-doves-barbed-wire.jpg', caption:'Rosemarie Schinzler — Two doves, East Side Gallery.', place:'eUrope · The Wall', slug:'urotrip2026/east-side-gallery'},
+  {img:'urotrip2026/prague/img/22-the-tower-clock.jpg', caption:'The Old Town Hall tower, clock at ten past nine.', place:'eUrope · The Clock', slug:'urotrip2026/prague'},
+  {img:'urotrip2026/prague/img/41-peacock-on-cobbles.jpg', caption:'A peacock on the cobbles, Prague Castle grounds.', place:'eUrope · The Clock', slug:'urotrip2026/prague'},
   {img:'urotrip2026/img/47-rainbow-classical-figure.jpg', caption:'PichiAvo, STRAAT Museum, Amsterdam-Noord.', place:'STRAAT', href:'street-art/?city=amsterdam'},
 ];
 
-const featured = FEATURED_PHOTOS[Math.floor(Math.random() * FEATURED_PHOTOS.length)];
-if (featured) {
-  const card = document.getElementById('featured');
-  card.href = featured.href || `${featured.slug}/`;
-  card.innerHTML = `
+// one card, rotating on its own; never the same place as the header photo
+// showing at that moment, and pauses while hovered or the tab is hidden
+const featuredCard = document.getElementById('featured');
+let featuredIdx = -1, featuredHover = false;
+function pickFeatured(){
+  const avoid = placeKey(HEADER_PHOTOS[headerPhotoIdx].src);
+  for (let tries = 0; tries < 12; tries++){
+    const i = Math.floor(Math.random() * FEATURED_PHOTOS.length);
+    if (i !== featuredIdx && placeKey(FEATURED_PHOTOS[i].img) !== avoid) return i;
+  }
+  return (featuredIdx + 1) % FEATURED_PHOTOS.length;
+}
+function renderFeatured(){
+  const f = FEATURED_PHOTOS[featuredIdx];
+  featuredCard.href = f.href || `${f.slug}/`;
+  featuredCard.innerHTML = `
     <span class="featured-tag">Featured</span>
-    <img src="${featured.img}" alt="">
-    <p class="place-label">From ${featured.place}</p>
-    ${featured.caption ? `<p class="caption">${featured.caption}</p>` : ''}
+    <img src="${f.img}" alt="">
+    <p class="place-label">From ${f.place}</p>
+    ${f.caption ? `<p class="caption">${f.caption}</p>` : ''}
   `;
+}
+if (featuredCard && FEATURED_PHOTOS.length){
+  featuredIdx = pickFeatured();
+  renderFeatured();
+  featuredCard.addEventListener('mouseenter', () => { featuredHover = true; });
+  featuredCard.addEventListener('mouseleave', () => { featuredHover = false; });
+  if (!reduceMotion) setInterval(() => {
+    if (document.hidden || featuredHover) return;
+    const next = pickFeatured();
+    const pre = new Image(); pre.src = FEATURED_PHOTOS[next].img;
+    pre.onload = pre.onerror = () => {
+      featuredCard.style.opacity = 0;
+      setTimeout(() => { featuredIdx = next; renderFeatured(); featuredCard.style.opacity = 1; }, 350);
+    };
+  }, 11000);
 }
 
 // cover badge — LHS place name, RHS region/flag (omitted where region is empty)
@@ -961,7 +1012,7 @@ function coverHTML(p, opts){
 // place instead of navigating away — see the "on the road" note below.
 function expandableCardHTML(p){
   return `
-    <div class="place-card place-card--expandable">
+    <div class="place-card place-card--expandable" style="--accent:${p.accent || '#8a8478'}">
       <button class="place-card-toggle" type="button" aria-expanded="false">
         ${coverHTML(p)}
         <p class="meta-line">${p.count}</p>
@@ -989,7 +1040,7 @@ function expandableCardHTML(p){
 
 // albums grid — live places shown as grid galleries (skip the featured one, or show all incl. featured)
 document.getElementById('grid').innerHTML = liveAlbums.map(p => p.sections ? expandableCardHTML(p) : `
-  <a class="place-card" href="${p.href || p.slug + '/'}">
+  <a class="place-card" href="${p.href || p.slug + '/'}" style="--accent:${p.accent || '#8a8478'}">
     ${coverHTML(p)}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
@@ -999,7 +1050,7 @@ document.getElementById('grid').innerHTML = liveAlbums.map(p => p.sections ? exp
 
 // walks grid — live places built as day-journal/route-map photo walks
 document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
-  <a class="place-card" href="${p.href || p.slug + '/'}">
+  <a class="place-card" href="${p.href || p.slug + '/'}" style="--accent:${p.accent || '#8a8478'}">
     ${coverHTML(p, {pill:'Walk'})}
     <p class="meta-line">${p.count}</p>
     <p class="name">${p.name}</p>
@@ -1015,7 +1066,7 @@ document.getElementById('walks-grid').innerHTML = liveWalks.map(p => `
 // pieces up front reads better than hiding them behind one more click.
 document.getElementById('postcards-grid').innerHTML = livePostcards.map(p => {
   if (!p.sections) return `
-    <a class="place-card" href="${p.href || p.slug + '/'}">
+    <a class="place-card" href="${p.href || p.slug + '/'}" style="--accent:${p.accent || '#8a8478'}">
       ${coverHTML(p)}
       <p class="meta-line">${p.count}</p>
       <p class="name">${p.name}</p>
@@ -1055,7 +1106,7 @@ const GIFT_CITIES = [
   {name:'Camden', slug:'camden', cover:'img/gift-cities/camden.jpg', count:'11 pieces'},
   {name:'Glasgow', slug:'glasgow', cover:'img/gift-cities/glasgow.jpg', count:'9 pieces'},
   {name:'Manchester', slug:'manchester', cover:'img/gift-cities/manchester.jpg', count:'14 pieces'},
-  {name:'Amsterdam', slug:'amsterdam', cover:'img/gift-cities/amsterdam.jpg', count:'55 pieces'},
+  {name:'Amsterdam', slug:'amsterdam', cover:'img/gift-cities/amsterdam.jpg', count:'54 pieces'},
 ];
 document.getElementById('gift-cities').innerHTML = GIFT_CITIES.map(c => `
   <a class="gift-city-card" href="street-art/?city=${c.slug}" style="--bg-img:url('${c.cover}')">

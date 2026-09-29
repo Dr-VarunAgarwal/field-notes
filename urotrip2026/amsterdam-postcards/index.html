@@ -4,17 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>eUrotrip</title>
-<meta name="description" content="A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.">
+<meta name="description" content="A postcard-and-stamp drag canvas of the artwork itself — paintings from the Van Gogh Museum and the Rijksmuseum, Amsterdam.">
 <meta name="theme-color" content="#0a0a0a">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Wander">
 <meta property="og:url" content="https://wander.varunagarwal.com/urotrip2026/amsterdam-postcards/">
 <meta property="og:title" content="Postcards · eUrope · Wander">
-<meta property="og:description" content="A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.">
+<meta property="og:description" content="A postcard-and-stamp drag canvas of the artwork itself — paintings from the Van Gogh Museum and the Rijksmuseum, Amsterdam.">
 <meta property="og:image" content="https://wander.varunagarwal.com/urotrip2026/img/28-sunflowers.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Postcards · eUrope · Wander">
-<meta name="twitter:description" content="A postcard-and-stamp drag canvas of the artwork itself — Van Gogh Museum and the Rijksmuseum so far, Berlin and Prague's museums still to come.">
+<meta name="twitter:description" content="A postcard-and-stamp drag canvas of the artwork itself — paintings from the Van Gogh Museum and the Rijksmuseum, Amsterdam.">
 <meta name="twitter:image" content="https://wander.varunagarwal.com/urotrip2026/img/28-sunflowers.jpg">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -587,7 +587,7 @@ function generatePaperSVG(w, h){
 }
 const pcStampSVG = generatePaperSVG(180, 150);
 
-/* ============ shared data: Amsterdam · Berlin · Prague ============ */
+/* ============ shared data: Amsterdam museums ============ */
 const palette = [
   {paper:'#c23b2c', ink:'#f4ede0'}, {paper:'#e9e2cf', ink:'#2c3e4a'},
   {paper:'#274b6b', ink:'#e9e2cf'}, {paper:'#2f7d6b', ink:'#f4ede0'},
@@ -651,16 +651,10 @@ const items = [
   { kicker:'AMSTERDAM 38', title:'Abstraction de la réalité', artist:'Nicolaas Warb', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Painted by Sophia Warburg, who worked under the pseudonym "Nicolaas Warb" after changing her own name during the Second World War.', photo:'../img/43-abstraction-de-la-realite.jpg', orientation:'portrait' },
   { kicker:'AMSTERDAM 39', title:'Ribbons', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'A swirl of interlocking color bands — no label in frame, artist unconfirmed.', photo:'../img/44-ribbons.jpg', orientation:'portrait' },
   { kicker:'AMSTERDAM 40', title:'Rockpool', artist:'Jacobien de Rooij', byline:'Rijksmuseum', mark:'AM', location:'Amsterdam, Netherlands', date:'Aug 2026', desc:'Jacobien de Rooij (b. 1947) — tide pools inspired by the west coast of Ireland, in dense, textured color.', photo:'../img/45-rockpool.jpg', orientation:'portrait' },
-  { kicker:'BERLIN 01', title:'East Side Gallery', byline:'Friedrichshain', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'A mile and a half of Wall left standing, repainted by artists from around the world after 1990.' },
-  { kicker:'BERLIN 02', title:'Museum Island', byline:'Mitte', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Five museums on one small island in the Spree — the Pergamon alone is worth the whole day.' },
-  { kicker:'BERLIN 03', title:'Mauerpark Sunday', byline:'Prenzlauer Berg', mark:'BE', location:'Berlin, Germany', date:'Jul 2026', desc:'Flea market stalls, karaoke in the amphitheater, and currywurst eaten standing up.' },
-  { kicker:'PRAGUE 01', title:'Charles Bridge at Sunrise', byline:'Staré Město', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Empty of tour groups for about twenty minutes — just statues, mist, and the castle above the river.' },
-  { kicker:'PRAGUE 02', title:'The Astronomical Clock', byline:'Old Town Square', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'Six hundred years old and still drawing a crowd on the hour for its walk of apostles.' },
-  { kicker:'PRAGUE 03', title:'Up to the Castle', byline:'Hradčany', mark:'PR', location:'Prague, Czech Republic', date:'Aug 2026', desc:'The climb past Golden Lane rewards you with the best rooftop view in the city.' },
 ];
-// Berlin/Prague entries have no photo yet (trip hasn't happened) -- keep them
-// in `items` for later, but the canvas only draws from ones with a real photo
-// so they don't show up as empty placeholder frames.
+// Only real, photographed pieces belong in `items` -- the stamp view draws
+// from all of it. (Six pre-trip Berlin/Prague placeholders with invented
+// copy were removed 2026-09-30; no museum art was shot in Prague.)
 const photoItems = items.filter(i => i.photo);
 
 /* ============ STAMP VIEW: tile builder ============ */

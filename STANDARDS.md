@@ -80,8 +80,19 @@ whether it should also be added to these arrays in `index.html`:
 - `PLACES` — flip `status` to `'live'`, fill in `cover`/`blurb`/`count`,
   and set `kind` (see below).
 - `FEATURED_PHOTOS` — a couple of strong shots, captions optional.
+  Portrait shots belong here, not in the header.
 - `HEADER_PHOTOS` — if it has a photo that earns the rare full-bleed
-  header treatment.
+  header treatment. **Landscape only** (portraits crop badly full-bleed),
+  and **never the same file as a `FEATURED_PHOTOS` entry** — both rotate
+  on their own (header every 8s, featured every 11s, paused while the tab
+  is hidden, the featured card is hovered, or reduced-motion is on), and
+  the featured card skips any photo from the same place the header is
+  showing at that moment. (Rules set 2026-09-30.)
+- `accent` on the `PLACES` entry — the card's tint/stripe colour: the
+  cover photo's dominant vivid colour from the site's own
+  `extractVividColor` (run offline in Python), clamped to HLS lightness
+  0.30–0.42 / saturation 0.45–0.85 so text stays readable on cream.
+  Recompute it if the cover changes; never pick it by eye.
 - `STORIES` — a story user/slide set for the ring feed. Insert it in
   array position by its latest slide date, newest first (the feed
   renders in array order, it isn't sorted at runtime).
@@ -155,7 +166,7 @@ through for variety.
   `'album'` or `'contactsheet'`. First instance:
   `urotrip2026/east-side-gallery/` ("The Wall") — promoted to the
   eUrope landing page after being compared against `kind:'deal'` as
-  a real alternative (see the rule below), 49 of 78 distinct frames
+  a real alternative (see the rule below), 48 of 78 distinct frames
   curated. Built by copying that page's structure.
 - `kind:'deal'` — a dealt hand of face-down cards scattered across a
   tableau at fixed, hand-set positions/tilts; each back shows only a
@@ -436,7 +447,7 @@ pass.
   rather than on it). A fixed bottom progress bar tracks
   `wall-wrap`'s own `scrollLeft` against its `scrollWidth`, labeled
   start/Oberbaumbrücke rather than claiming a real distance. Sidebar/
-  lightbox pattern copied verbatim from contact sheet. 49 of 78
+  lightbox pattern copied verbatim from contact sheet. 48 of 78
   distinct East Side Gallery frames (Sept 2) curated — a thorough
   pass, not the whole leg: real near-duplicate framings of the same
   mural were skipped, but a mural that genuinely spans many meters
@@ -465,7 +476,7 @@ pass.
   with `.card`'s own separate position/tilt/deal-in-animation
   transform. A "Deal again" control re-renders the deck fresh
   (unflipped) at the same fixed positions — nothing about a spread is
-  remembered between visits, on purpose. 22 real Sept 1 photos, a
+  remembered between visits, on purpose. 21 real Sept 1 photos, a
   different curated cut of the same day `urotrip2026/berlin/`'s
   contact sheet covers (not a duplicate of its 15 frames). First new
   kind whose spec came out of a 4-concept design workflow (Sundial,
@@ -481,7 +492,7 @@ pass.
   title, location, desc`. Array order doesn't matter; dot positions,
   lanes and the earlier/later sequence are all computed from `time` at
   runtime. `SKY` holds the sky-band boundaries (NOAA solar formula for
-  that city/date, computed offline — never eyeballed). 53 photos across
+  that city/date, computed offline — never eyeballed). 48 photos across
   Sept 3/5/6.
 - `stories/<id>/img/` + the hub's `STORIES` array + `log/index.html`
   (§7 above) — the Stories ring feed. **Known rule (decided

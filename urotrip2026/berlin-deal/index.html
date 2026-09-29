@@ -242,9 +242,9 @@
 <div class="intro">
   <p class="intro-kicker">Wander &middot; eUrope &middot; a curated spread</p>
   <h1>The Deal.</h1>
-  <p>Twenty-two photos from Berlin's first day, dealt face-down. Each card carries one true clue &mdash; a place, a detail, nothing invented &mdash; and nothing else. Turn a card over to see what it actually was. This isn't the unedited roll (that's the <a href="../berlin/" style="color:var(--brass);">contact sheet</a>) &mdash; it's a hand-picked spread, guessed at before it's seen.</p>
+  <p>Twenty-one photos from Berlin's first day, dealt face-down. Each card carries one true clue &mdash; a place, a detail, nothing invented &mdash; and nothing else. Turn a card over to see what it actually was. This isn't the unedited roll (that's the <a href="../berlin/" style="color:var(--brass);">contact sheet</a>) &mdash; it's a hand-picked spread, guessed at before it's seen.</p>
   <div class="note">
-    <strong>22 cards, Sept 1.</strong> A first deal from the same day the contact sheet covers &mdash; a different, curated cut of it, not a duplicate. Reload for a fresh face-down spread; nothing is remembered between visits.
+    <strong>21 cards, Sept 1.</strong> A first deal from the same day the contact sheet covers &mdash; a different, curated cut of it, not a duplicate. Reload for a fresh face-down spread; nothing is remembered between visits.
   </div>
 </div>
 
@@ -267,7 +267,7 @@
 <script>
 /* ============================================================
    Berlin, Sept 1 — the same day as urotrip2026/berlin/'s contact
-   sheet, a different curated cut of it. 22 hand-picked frames, not
+   sheet, a different curated cut of it. 21 hand-picked frames, not
    the unedited roll. ox/oy/tilt are a fixed authored scatter layout
    (seeded once, then kept — never randomized at runtime, so the
    dealt POSITIONS are identical every load; only which cards start
@@ -316,8 +316,8 @@ const DECK = [
     place:'a crosswalk', teaser:'a red man and a green man, both wearing hats',
     caption:'An Ampelmann signal — the East German pedestrian figure, kept on after reunification instead of replaced.', location:'Berlin' },
   { id:'d13', order:13, ox:61.3, oy:87.0, tilt:2.0, swatch:'#6e8c2e', img:'img/13-brandenburg-gate.jpg',
-    place:'Brandenburg Gate', teaser:'a chariot, four horses, on top of a gate',
-    caption:'The Quadriga atop the Brandenburg Gate.', location:'Brandenburg Gate, Berlin' },
+    place:'a street corner', teaser:'a corner building, a black car turning past',
+    caption:'A street corner, a black car turning past the hotel front.', location:'Berlin' },
   { id:'d14', order:14, ox:6.7, oy:39.6, tilt:-6.1, swatch:'#4c708c', img:'img/14-reichstag-exterior.jpg',
     place:'Reichstag', teaser:'flags, columns, an inscription no one reads anymore',
     caption:'The Reichstag’s facade, flags out.', location:'Reichstag, Berlin' },
@@ -339,12 +339,9 @@ const DECK = [
   { id:'d20', order:20, ox:26.5, oy:37.3, tilt:7.5, swatch:'#3b708c', img:'img/20-tiergarten-bridge.jpg',
     place:'Tiergarten', teaser:'an iron footbridge, painted white, a canal beneath',
     caption:'One of Tiergarten’s footbridges, canal below.', location:'Tiergarten, Berlin' },
-  { id:'d21', order:21, ox:41.5, oy:36.4, tilt:-4.6, swatch:'#888c4a', img:'img/21-dusk-swan.jpg',
-    place:'a lake at dusk', teaser:'a swan, close up, looking straight at the lens',
-    caption:'A swan at the lake’s edge as the light goes gold — Tiergarten, near the end of the day.', location:'Tiergarten, Berlin' },
   { id:'d22', order:22, ox:9.4, oy:12.3, tilt:1.5, swatch:'#8c6c4d', img:'img/22-dusk-picnic.jpg',
-    place:'a lake at dusk', teaser:'a picnic, no plates, whatever was in the bag',
-    caption:'An evening picnic by the water — the day’s last stop, not its most photographed.', location:'Tiergarten, Berlin' },
+    place:'a lake at dusk', teaser:'a swan at the water’s edge, head down',
+    caption:'A swan at the edge of the water as the light goes, Tiergarten.', location:'Tiergarten, Berlin' },
 ];
 
 const deckEl = document.getElementById('deck');
