@@ -429,8 +429,9 @@ pass.
   with the frames (`.filmstrip-wrap` itself is the scroll container,
   sized via `width:max-content` on an inner wrapper) rather than
   sitting fixed while only the photos scroll underneath them — they're
-  the same physical strip. First 15 frames are real (Sept 1 leg),
-  rest of that day's ~200 shots still to come.
+  the same physical strip. 34 real frames (Sept 1), rendered as stacked
+  6-frame strips; every frame full colour and clickable since 2026-09-18
+  (the keeper/pass circling was dropped — `keeper` is no longer read).
 - `urotrip2026/east-side-gallery/index.html` (`kind:'wall'`) —
   `PANELS` array, flat (no per-roll grouping like contact sheet has):
   `kind`(`'mural'|'aside'`), `no`, `img`, `aspect`(the saved image's

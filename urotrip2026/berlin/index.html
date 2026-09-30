@@ -168,11 +168,22 @@
      row: `.filmstrip-inner` is sized to its content (`width:max-content`)
      and stacks [hole row / photo row / hole row], and each hole row is
      `width:100%` of that same content width, so both rows are exactly
-     as wide as the frames and move as one unit when dragged. */
+     as wide as the frames and move as one unit when dragged.
+
+     A real contact sheet isn't one continuous ribbon, though — a 36-exp
+     roll comes back from the lab cut into strips of ~6 frames each,
+     stacked one under the other so you can read the whole roll without
+     scrolling sideways through all of it. We do the same: JS below
+     chunks each roll into `FRAMES_PER_STRIP`-frame strips, and each one
+     gets its own `.filmstrip-wrap` (own pair of hole rows) so the crop
+     marks land where a real strip would actually be cut. Horizontal
+     scroll on any one strip is now just a mobile fallback, not how you
+     see the rest of the roll. */
   .filmstrip-wrap{
     position:relative; background:var(--film);
     overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:thin;
   }
+  .filmstrip-wrap + .filmstrip-wrap{ margin-top:5px; }
   .filmstrip-wrap::-webkit-scrollbar{ height:6px; }
   .filmstrip-wrap::-webkit-scrollbar-thumb{ background:rgba(236,228,211,0.15); border-radius:3px; }
   .filmstrip-inner{ width:max-content; }
@@ -206,23 +217,20 @@
   }
 
   /* ---------- frame ---------- */
-  .frame{ position:relative; flex:0 0 auto; width:150px; }
+  /* Every frame renders the same way now — full color, clickable, no
+     pass/keeper split. (Used to dim non-picks to 42% opacity and mark
+     picks with a hand-drawn red circle; both removed 2026-09-18 — the
+     circle didn't read as meaningful to an actual viewer, it just
+     looked like an arbitrary judgment call with no way to see why.) */
+  .frame{ position:relative; flex:0 0 auto; width:150px; cursor:pointer; }
   .frame-photo-wrap{
     position:relative; width:150px; height:100px;
     background:#20180f; overflow:hidden;
     border:1px solid rgba(236,228,211,0.08);
+    transition:transform .18s ease;
   }
-  .frame-photo{ width:100%; height:100%; object-fit:cover; display:block; filter:saturate(0.72) contrast(1.03); }
-  .frame.is-pass .frame-photo{ opacity:0.42; filter:saturate(0.15) contrast(0.92) brightness(0.85); }
-  .frame.is-keeper{ cursor:pointer; }
-  .frame.is-keeper .frame-photo-wrap{ transition:transform .18s ease; }
-  .frame.is-keeper:hover .frame-photo-wrap{ transform:scale(1.035); }
-  .frame.is-keeper .frame-photo{ filter:none; }
-
-  .frame-mark{ position:absolute; inset:0; pointer-events:none; }
-  .frame-mark svg{ width:100%; height:100%; overflow:visible; }
-  .frame-mark path{ fill:none; stroke:var(--red); stroke-width:2.4; stroke-linecap:round; opacity:0.88; }
-  .frame-mark path.pass2{ opacity:0.55; stroke-width:2; }
+  .frame:hover .frame-photo-wrap{ transform:scale(1.035); }
+  .frame-photo{ width:100%; height:100%; object-fit:cover; display:block; }
 
   .hero-corner{ position:absolute; width:14px; height:14px; border-color:var(--amber); pointer-events:none; }
   .hero-corner.tl{ top:3px; left:3px; border-top:2.5px solid; border-left:2.5px solid; }
@@ -233,7 +241,6 @@
   .frame-edge{
     padding:4px 1px 0; font-size:9.5px; letter-spacing:0.06em; color:var(--amber);
   }
-  .frame.is-pass .frame-edge{ color:rgba(217,162,75,0.45); }
 
   /* hover caption — a single fixed element JS repositions per frame, rather
      than a per-frame absolutely-positioned child: the filmstrip scrolls
@@ -260,9 +267,7 @@
     font-size:0.68rem; letter-spacing:0.03em; color:var(--paper-faint);
   }
   .legend span{ display:inline-flex; align-items:center; gap:0.4rem; }
-  .legend .swatch{ width:14px; height:14px; border-radius:50%; border:2px solid var(--red); flex:0 0 auto; }
-  .legend .swatch.corner{ border-radius:2px; border:none; border-top:2.5px solid var(--amber); border-left:2.5px solid var(--amber); }
-  .legend .swatch.dim{ background:rgba(240,217,208,0.18); border:none; border-radius:2px; }
+  .legend .swatch.corner{ width:14px; height:14px; border-radius:2px; border-top:2.5px solid var(--amber); border-left:2.5px solid var(--amber); flex:0 0 auto; }
 
   /* ---------- sidebar (opens a keeper frame) ---------- */
   #overlay{
@@ -348,18 +353,17 @@
   </div>
   <p class="intro-kicker">Wander &middot; eUrope &middot; on the roll</p>
   <h1>Berlin, contact sheet.</h1>
-  <p>Every frame from the Berlin roll, in the order it was actually shot &mdash; not curated into a gallery. A few get circled in grease pencil; those are the only ones that open. Everything else stays visible, dimmed, passed over &mdash; the judgment call made in public instead of thrown away.</p>
+  <p>Every frame from the Berlin roll, in the order it was actually shot &mdash; not curated into a gallery. Nothing here got sorted into keepers and rejects; every shot is up at full size, tap any of them to open it.</p>
   <div class="note">
-    <strong>First 15 of the roll.</strong> Real photos now, evenly picked across one full day (Sept 1) out of ~200 shots — not the whole roll yet. Sept 2's East Side Gallery shoot doesn't live here as a second roll after all — it turned out to need its own format, see <a href="../east-side-gallery/" style="color:var(--amber);">The Wall</a> instead.
+    <strong>34 of the roll.</strong> Picked across one full day (Sept 1) out of ~200 shots — not the whole roll yet, but wider than the first pass: Museum Island through Tiergarten at dusk, in order. Sept 2's East Side Gallery shoot doesn't live here as a second roll after all — it turned out to need its own format, see <a href="../east-side-gallery/" style="color:var(--amber);">The Wall</a> instead.
   </div>
 </div>
 
 <div id="rolls"></div>
 
 <div class="legend">
-  <span><span class="swatch"></span> circled = kept, click to open</span>
+  <span>tap any frame to open it full size</span>
   <span><span class="swatch corner"></span> bracketed = the one to print big</span>
-  <span><span class="swatch dim"></span> dim = passed over</span>
 </div>
 
 <div id="tooltip"></div>
@@ -376,14 +380,20 @@
 
 <script>
 /* ============================================================
-   Roll 1 — Berlin, Sept 1. First 15 real frames, evenly picked
-   across the full day (~200 shots) rather than the start of the
-   roll, so this excerpt still reads as "the whole day" rather
-   than just the morning. 3 keepers incl. 1 hero. Sept 2's East
-   Side Gallery shoot lives on its own page (../east-side-gallery/,
-   kind:'wall') instead of as a second roll here — the material
-   turned out to want a different format, not a second contact
-   sheet. See DECISIONS.md 2026-09-04.
+   Roll 1 — Berlin, Sept 1. 34 frames across the full day (~200
+   shots), Museum Island through Tiergarten at dusk, in order
+   shot. Frames 1-15 were the first pass; 16-38 added later from
+   the same leg once the rest of the day's shots got a proper
+   look. Every frame is full-size and clickable now — no
+   keeper/pass split, no grease-pencil circle (removed 2026-09-18,
+   see CSS comment above `.frame`). `hero:true` is the one
+   exception: still just Skyline, Fernsehturm, marked with a
+   corner bracket instead of a circle — Brandenburg Gate and the
+   Reichstag dome came close. Sept 2's East Side Gallery shoot
+   lives on its own page (../east-side-gallery/, kind:'wall')
+   instead of as a second roll here — the material turned out to
+   want a different format, not a second contact sheet. See
+   DECISIONS.md 2026-09-04.
    ============================================================ */
 const ROLLS = [
   {
@@ -392,21 +402,40 @@ const ROLLS = [
     place:'Berlin',
     date:'Sep 2026',
     frames:[
-      {no:'01',  keeper:false, title:'In Transit', img:'img/01-in-transit.jpg'},
-      {no:'02',  keeper:false, title:'Rotes Rathaus', img:'img/02-rotes-rathaus.jpg'},
-      {no:'03A', keeper:true,  title:'Berliner Dom', img:'img/03-berliner-dom.jpg', location:'Berliner Dom, Berlin', dateFull:'Sep 2026', desc:'The cathedral\'s domes catching the afternoon light, Museum Island.'},
-      {no:'04',  keeper:false, title:'Altes Museum', img:'img/04-altes-museum.jpg'},
-      {no:'05',  keeper:false, title:'DHM Quadriga', img:'img/05-dhm-quadriga.jpg'},
-      {no:'06',  keeper:false, title:'Unter den Linden', img:'img/06-unter-den-linden.jpg'},
-      {no:'07',  keeper:false, title:'Street Corner', img:'img/07-street-corner.jpg'},
-      {no:'08',  keeper:false, title:'Bundeskanzleramt', img:'img/08-bundeskanzleramt.jpg'},
-      {no:'09A', keeper:true,  title:'Memorial to the Murdered Jews of Europe', img:'img/09-holocaust-memorial.jpg', location:'Memorial to the Murdered Jews of Europe, Berlin', dateFull:'Sep 2026', desc:'The stelae field near the Brandenburg Gate — no single view of it, the ground drops away as you walk in.'},
-      {no:'10',  keeper:false, title:'Side Street', img:'img/10-side-street.jpg'},
-      {no:'11',  keeper:false, title:'Trabi World', img:'img/11-trabi-world.jpg'},
-      {no:'12A', keeper:true,  hero:true, title:'Skyline, Fernsehturm', img:'img/12-skyline-fernsehturm.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'The TV Tower over the Spree — the one shot from the day that earns the print.'},
-      {no:'13',  keeper:false, title:'Rooftops', img:'img/13-rooftops.jpg'},
-      {no:'14',  keeper:false, title:'Evening Walk', img:'img/14-evening-walk.jpg'},
-      {no:'15',  keeper:false, title:'Picnic in the Grass', img:'img/15-picnic.jpg'},
+      {no:'01', title:'In Transit', img:'img/01-in-transit.jpg', location:'En route, Berlin', dateFull:'Sep 2026', desc:'A blurred window shot, still moving when the shutter went.'},
+      {no:'02', title:'Rotes Rathaus', img:'img/02-rotes-rathaus.jpg', location:'Rotes Rathaus, Berlin', dateFull:'Sep 2026', desc:'Berlin\'s red-brick city hall, its clock tower over the square.'},
+      {no:'03', title:'Berliner Dom', img:'img/03-berliner-dom.jpg', location:'Berliner Dom, Berlin', dateFull:'Sep 2026', desc:'The cathedral\'s domes catching the afternoon light, Museum Island.'},
+      {no:'04', title:'Altes Museum', img:'img/04-altes-museum.jpg', location:'Altes Museum, Berlin', dateFull:'Sep 2026', desc:'The museum\'s colonnade, seen across the Lustgarten.'},
+      {no:'05', title:'DHM Quadriga', img:'img/05-dhm-quadriga.jpg', location:'Deutsches Historisches Museum, Berlin', dateFull:'Sep 2026', desc:'The rooftop quadriga on the old armory building, now the history museum.'},
+      {no:'06', title:'Unter den Linden', img:'img/06-unter-den-linden.jpg', location:'Unter den Linden, Berlin', dateFull:'Sep 2026', desc:'Berlin\'s grand boulevard, running from the Spree to the Brandenburg Gate.'},
+      {no:'07', title:'Street Corner', img:'img/07-street-corner.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'An ordinary corner between the landmarks.'},
+      {no:'08', title:'Bundeskanzleramt', img:'img/08-bundeskanzleramt.jpg', location:'Bundeskanzleramt, Berlin', dateFull:'Sep 2026', desc:'The Chancellery\'s glass-and-concrete block, on the bend of the Spree.'},
+      {no:'09', title:'Memorial to the Murdered Jews of Europe', img:'img/09-holocaust-memorial.jpg', location:'Memorial to the Murdered Jews of Europe, Berlin', dateFull:'Sep 2026', desc:'The stelae field near the Brandenburg Gate — no single view of it, the ground drops away as you walk in.'},
+      {no:'10', title:'Side Street', img:'img/10-side-street.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'A quieter block, off the main route.'},
+      {no:'11', title:'Trabi World', img:'img/11-trabi-world.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'A shopfront of old Trabants, kept running as a novelty ride.'},
+      {no:'12', hero:true, title:'Skyline, Fernsehturm', img:'img/12-skyline-fernsehturm.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'The TV Tower over the Spree — the one shot from the day that earns the print.'},
+      {no:'13', title:'Rooftops', img:'img/13-rooftops.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'Rooftops running out toward the edge of the city.'},
+      {no:'14', title:'Evening Walk', img:'img/14-evening-walk.jpg', location:'Tiergarten, Berlin', dateFull:'Sep 2026', desc:'A canal path through the park, the light starting to go.'},
+      {no:'15', title:'Picnic in the Grass', img:'img/15-picnic.jpg', location:'Tiergarten, Berlin', dateFull:'Sep 2026', desc:'Friends down on the grass at the end of the day.'},
+      {no:'16', title:'Lustgarten Statue', img:'img/16-lustgarten-statue.jpg', location:'Lustgarten, Berlin', dateFull:'Sep 2026', desc:'A bronze figure in the museum garden, Marienkirche\'s spire behind it.'},
+      {no:'17', title:'Altes Museum Fountains', img:'img/17-altes-museum-fountains.jpg', location:'Lustgarten, Berlin', dateFull:'Sep 2026', desc:'The museum\'s fountains, people cutting across the grass.'},
+      {no:'19', title:'Winged Victory', img:'img/19-winged-victory.jpg', location:'Schlossbrücke, Berlin', dateFull:'Sep 2026', desc:'Sun flaring off a bronze figure at the top of the bridge — one of eight, all mid-story.'},
+      {no:'20', title:'Schlossbrücke Statue', img:'img/20-schlossbruecke-statue.jpg', location:'Schlossbrücke, Berlin', dateFull:'Sep 2026', desc:'Another of the bridge\'s eight statues, mid-story in bronze.'},
+      {no:'21', title:'Neue Wache', img:'img/21-neue-wache.jpg', location:'Neue Wache, Berlin', dateFull:'Sep 2026', desc:'Käthe Kollwitz\'s Pietà, alone under the room\'s open oculus — the whole memorial is just her, the rain, and the light.'},
+      {no:'22', title:'Old Berlin, New Berlin', img:'img/22-old-berlin-new-berlin.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'A 19th-century facade with the Fernsehturm rising behind it.'},
+      {no:'23', title:'Ampelmann', img:'img/23-ampelmann.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'The old East German crossing signal, kept on as a local mascot.'},
+      {no:'25', title:'Brandenburg Gate', img:'img/25-brandenburg-gate.jpg', location:'Brandenburg Gate, Berlin', dateFull:'Sep 2026', desc:'The one everyone actually came for.'},
+      {no:'26', title:'At the Gate', img:'img/26-at-the-gate.jpg', location:'Brandenburg Gate, Berlin', dateFull:'Sep 2026', desc:'A stop for the obligatory photo.'},
+      {no:'28', title:'Café Tables', img:'img/28-cafe-tables.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'Outdoor seating on a tree-lined street, between the sights.'},
+      {no:'29', title:'Kurfürstendamm', img:'img/29-kurfuerstendamm.jpg', location:'Kurfürstendamm, Berlin', dateFull:'Sep 2026', desc:'The shopping street, mid-afternoon foot traffic.'},
+      {no:'30', title:'Sticker Pole', img:'img/30-sticker-pole.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'A lamppost gone thick with stickers, same as every other city on the trip.'},
+      {no:'31', title:'Leaving the American Sector', img:'img/31-leaving-the-american-sector.jpg', location:'Checkpoint Charlie, Berlin', dateFull:'Sep 2026', desc:'The old warning sign, still standing at the crossing point.'},
+      {no:'32', title:'Wall Remnant', img:'img/32-wall-remnant.jpg', location:'Berlin', dateFull:'Sep 2026', desc:'A surviving stretch of the Wall, graffiti layered on top of graffiti.'},
+      {no:'34', title:'Rooftop Sculptures', img:'img/34-rooftop-sculptures.jpg', location:'Reichstag, Berlin', dateFull:'Sep 2026', desc:'Roofline figures with the skyline behind them.'},
+      {no:'35', title:'Golden Hour, from the Dome', img:'img/35-golden-hour-from-the-dome.jpg', location:'Reichstag Dome, Berlin', dateFull:'Sep 2026', desc:'The city catching the last light, seen through the glass on the way up the ramp.'},
+      {no:'36', title:'Canal Bridge', img:'img/36-canal-bridge.jpg', location:'Tiergarten, Berlin', dateFull:'Sep 2026', desc:'One of the park\'s arched bridges, trees closing in on both sides.'},
+      {no:'37', title:'Sun on the Water', img:'img/37-sun-on-the-water.jpg', location:'Tiergarten, Berlin', dateFull:'Sep 2026', desc:'Glare off the canal, the walk back through the park.'},
+      {no:'38', title:'Swans at Dusk', img:'img/38-swans-at-dusk.jpg', location:'Tiergarten, Berlin', dateFull:'Sep 2026', desc:'The day\'s last stop, a pair of swans working the shoreline as the light goes.'},
     ]
   }
 ];
@@ -433,68 +462,56 @@ function placeholderArt(seed){
   return `data:image/svg+xml;base64,${btoa(svg)}`;
 }
 
-/* ============ hand-drawn grease-pencil circle ============ */
-function wobbleCirclePath(seed, cx, cy, rx, ry){
-  const rnd = seededRand(seed);
-  const N = 13;
-  let d = '';
-  for(let i=0;i<=N;i++){
-    const a = (i/N) * Math.PI*2;
-    const j = 0.86 + rnd()*0.26;
-    const x = (cx + Math.cos(a)*rx*j).toFixed(1);
-    const y = (cy + Math.sin(a)*ry*j).toFixed(1);
-    d += (i===0 ? `M${x},${y} ` : `L${x},${y} `);
-  }
-  return d + 'Z';
-}
-function markSVG(seed){
-  const cx=75, cy=50, rx=58, ry=38;
-  const d1 = wobbleCirclePath(seed, cx, cy, rx, ry);
-  const d2 = wobbleCirclePath(seed+97, cx, cy, rx*0.94, ry*0.94);
-  return `<svg viewBox="0 0 150 100"><path d="${d1}"/><path class="pass2" d="${d2}"/></svg>`;
-}
-
 /* ============ render ============ */
 const rollsEl = document.getElementById('rolls');
+const FRAMES_PER_STRIP = 6; // real 36-exp rolls come back cut into ~6-frame strips
 let uid = 0;
 const frameIndex = {};
 
+function buildFrameEl(f, ri, fi){
+  const id = uid++;
+  frameIndex[id] = f;
+  const seed = ri * 1000 + fi;
+  const frameEl = document.createElement('div');
+  frameEl.className = 'frame';
+  frameEl.dataset.id = id;
+  frameEl.dataset.seed = seed;
+  frameEl.innerHTML = `
+    <div class="frame-photo-wrap">
+      <img class="frame-photo" src="${f.img || placeholderArt(seed)}" alt="">
+      ${f.hero ? `<span class="hero-corner tl"></span><span class="hero-corner tr"></span><span class="hero-corner bl"></span><span class="hero-corner br"></span>` : ''}
+    </div>
+    <div class="frame-edge">${f.no}</div>
+  `;
+  return frameEl;
+}
+
 ROLLS.forEach((roll, ri) => {
-  const kept = roll.frames.filter(f => f.keeper).length;
   const section = document.createElement('section');
   section.className = 'roll';
   section.innerHTML = `
     <div class="roll-head">
       <h2 class="roll-label">${roll.label} &mdash; <em style="font-style:normal;color:var(--paper-dim);">${roll.place}</em></h2>
-      <div class="roll-meta">${roll.date} &middot; <b>${kept}</b> kept of ${roll.frames.length}</div>
+      <div class="roll-meta">${roll.date} &middot; <b>${roll.frames.length}</b> frames</div>
     </div>
-    <div class="filmstrip-wrap">
+    <div class="strips"></div>
+  `;
+  const stripsEl = section.querySelector('.strips');
+  for (let start = 0; start < roll.frames.length; start += FRAMES_PER_STRIP) {
+    const chunk = roll.frames.slice(start, start + FRAMES_PER_STRIP);
+    const wrap = document.createElement('div');
+    wrap.className = 'filmstrip-wrap';
+    wrap.innerHTML = `
       <div class="filmstrip-inner">
         <div class="sprocket-row"></div>
         <div class="filmstrip"></div>
         <div class="sprocket-row bottom"></div>
       </div>
-    </div>
-  `;
-  const strip = section.querySelector('.filmstrip');
-  roll.frames.forEach((f, fi) => {
-    const id = uid++;
-    frameIndex[id] = f;
-    const seed = ri * 1000 + fi;
-    const frameEl = document.createElement('div');
-    frameEl.className = 'frame' + (f.keeper ? ' is-keeper' : ' is-pass');
-    frameEl.dataset.id = id;
-    frameEl.dataset.seed = seed;
-    frameEl.innerHTML = `
-      <div class="frame-photo-wrap">
-        <img class="frame-photo" src="${f.img || placeholderArt(seed)}" alt="">
-        ${f.keeper ? `<div class="frame-mark">${markSVG(seed)}</div>` : ''}
-        ${f.hero ? `<span class="hero-corner tl"></span><span class="hero-corner tr"></span><span class="hero-corner bl"></span><span class="hero-corner br"></span>` : ''}
-      </div>
-      <div class="frame-edge">${f.no}</div>
     `;
-    strip.appendChild(frameEl);
-  });
+    const strip = wrap.querySelector('.filmstrip');
+    chunk.forEach((f, ci) => strip.appendChild(buildFrameEl(f, ri, start + ci)));
+    stripsEl.appendChild(wrap);
+  }
   rollsEl.appendChild(section);
 });
 
@@ -504,7 +521,6 @@ function showTooltip(frameEl, f){
   tooltipEl.innerHTML = `
     <div class="cap-no">#${f.no}</div>
     <div class="cap-title">${f.title}</div>
-    ${(!f.keeper && f.cutNote) ? `<div class="cap-cut">${f.cutNote}</div>` : ''}
   `;
   const rect = frameEl.getBoundingClientRect();
   tooltipEl.classList.add('open');
@@ -566,7 +582,7 @@ function closeLightbox(){
 }
 
 rollsEl.addEventListener('click', (e) => {
-  const frameEl = e.target.closest('.frame.is-keeper');
+  const frameEl = e.target.closest('.frame');
   if (!frameEl) return;
   const f = frameIndex[+frameEl.dataset.id];
   openSidebar(f, +frameEl.dataset.seed);
